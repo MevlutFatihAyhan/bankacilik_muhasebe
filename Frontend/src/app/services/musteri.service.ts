@@ -1,0 +1,36 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Musteri } from '../models/musteri.model';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class MusteriService {
+    private apiUrl = 'http://localhost:5064/api/Musteri';
+
+    constructor(private http: HttpClient) { }
+
+    // API'den listeyi getir (GET)
+    getMusteriler(): Observable<Musteri[]> {
+        return this.http.get<Musteri[]>(this.apiUrl);
+    }
+
+    getMusteriById(id: number): Observable<Musteri> {
+        return this.http.get<Musteri>(`${this.apiUrl}/${id}`);
+    }
+
+    // API'ye yeni kayıt gönder (POST)
+    addMusteri(musteri: Musteri): Observable<any> {
+        return this.http.post(this.apiUrl, musteri);
+    }
+
+    updateMusteri(id: number, musteri: Musteri): Observable<any> {
+        return this.http.put(`${this.apiUrl}/${id}`, musteri);
+    }
+
+
+    deleteMusteri(id: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/${id}`);
+    }
+}

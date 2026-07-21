@@ -1,0 +1,89 @@
+<div class="receipt-container" *ngIf="dekont">
+  <div class="receipt-card">
+    
+    <div class="receipt-header">
+      <div class="bank-logo">VaqıvBank İşlem Dekontu</div>
+      <div class="receipt-id">İşlem ID: #{{ islemId }}</div>
+    </div>
+
+    <div class="receipt-body">
+      
+      <!-- Tutar ve Yön Vurgusu -->
+      <div class="receipt-amount-box">
+        <p class="amount-label">İşlem Tutarı</p>
+        <h2 class="amount-val" [style.color]="dekont.islemYonu === 'A' ? '#2e7d32' : '#DA0037'">
+          {{ dekont.islemYonu === 'A' ? '+' : '-' }} {{ dekont.islemTutari | number:'1.2-2' }} {{ dekont.dovizCinsi }}
+        </h2>
+        <span class="status-badge" [class.success]="true">İşlem Başarılı</span>
+      </div>
+
+      <div class="receipt-details">
+<div class="receipt-container" *ngIf="dekont">
+  <div class="receipt-card">
+    
+    <div class="receipt-header">
+      <div class="bank-logo">VaqıvBank İşlem Dekontu</div>
+      <div class="receipt-id">İşlem ID: #{{ islemId }}</div>
+    </div>
+
+    <div class="receipt-body">
+      
+      <!-- Tutar ve Yön Vurgusu -->
+      <div class="receipt-amount-box">
+        <p class="amount-label">İşlem Tutarı</p>
+        <h2 class="amount-val" [style.color]="dekont.islemYonu === 'B' ? '#2e7d32' : '#DA0037'">
+          {{ dekont.islemYonu === 'B' ? '+' : '-' }} {{ dekont.islemTutari | number:'1.2-2' }} {{ dekont.dovizCinsi }}
+        </h2>
+        <span class="status-badge" [class.success]="true">İşlem Başarılı</span>
+      </div>
+
+      <div class="receipt-details">
+        
+        <div class="detail-row">
+          <span class="detail-label">İşlem Tarihi</span>
+          <span class="detail-val">{{ dekont.islemTarihi | date:'dd.MM.yyyy HH:mm' }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Hesap No</span>
+          <span class="detail-val">{{ dekont.hesapNo }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">İşlem Yönü</span>
+          <span class="detail-val">{{ dekont.islemYonu === 'B' ? 'Geliş (Alacak)' : 'Gidiş (Borç)' }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Sonraki Bakiye</span>
+          <span class="detail-val">{{ dekont.yeniBakiye | number:'1.2-2' }} {{ dekont.dovizCinsi }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Açıklama</span>
+          <span class="detail-val">{{ dekont.aciklama }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Referans No</span>
+          <span class="detail-val">{{ dekont.referansNo }}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">İşlem Kodu</span>
+          <span class="detail-val">{{ dekont.islemKodu }}</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="receipt-footer">
+      <button class="btn-secondary" [routerLink]="['/admin/hesap-hareketleri']">Geri Dön</button>
+      <button class="btn-primary" (click)="yazdir()">Dekontu Yazdır</button>
+    </div>
+  </div>
+</div>
+
+<div class="receipt-container" *ngIf="!dekont">
+  <p style="text-align: center; padding: 20px;">Dekont yükleniyor...</p>
+</div>

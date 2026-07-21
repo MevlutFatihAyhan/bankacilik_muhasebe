@@ -1,0 +1,115 @@
+.dashboard-container-home {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px;
+  font-family: 'Elms Sans', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* CHART SECTION */
+.chart-section {
+  background: white;
+  border-radius: 4px;
+  padding: 24px;
+  border: 1px solid #ddd;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 15px;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  color: #111;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.chart-subtitle {
+  font-size: 12px;
+  color: #666;
+  margin: 4px 0 0 0;
+}
+
+.volume-badge {
+  background: transparent;
+  color: #111;
+  font-size: 20px;
+  font-weight: 600;
+  border-bottom: 3px solid #DA0037;
+  padding-bottom: 2px;
+}
+
+.canvas-wrapper {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+/* STATS SECTION */
+.stats-section {
+  margin-top: 10px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #111;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.stats-grid-home {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 4px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  border-color: #eee;
+  border-left-color: #DA0037;
+  box-shadow: 0 4px 12px rgba(218, 0, 55, 0.05); /* #DA0037 -> rgba(218, 0, 55, ...) */
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-title {
+  font-size: 12px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 400;
+}
+
+.stat-val {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111;
+  margin-top: 4px;
+}

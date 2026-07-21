@@ -1,0 +1,67 @@
+<div class="filter-bar">
+    <button class="filter-btn" (click)="toggleFilter()">
+        <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> Filtrele
+    </button>
+    <input type="text" [(ngModel)]="searchTerm" class="search-input shadow-input" placeholder="Hesap ara..." style="background-color: transparent;">
+</div>
+
+<div class="filter-panel" *ngIf="isFilterOpen">
+    <div class="filter-row">
+        <div class="filter-item">
+            <label>Müşteri Tipi</label>
+            <select [(ngModel)]="filterMusteriTipi">
+                <option value="Tümü">Tümü</option>
+                <option value="Bireysel">Bireysel</option>
+                <option value="Tüzel">Tüzel</option>
+            </select>
+        </div>
+        <div class="filter-item">
+            <label>Hesap Türü</label>
+            <select [(ngModel)]="filterHesapTuru">
+                <option value="Tümü">Tümü</option>
+                <option value="Vadeli">Vadeli</option>
+                <option value="Vadesiz">Vadesiz</option>
+            </select>
+        </div>
+        <div class="filter-item">
+            <label>Döviz</label>
+            <select [(ngModel)]="filterDoviz">
+                <option value="Tümü">Tümü</option>
+                <option value="TL">TL</option>
+                <option value="Dolar">Dolar</option>
+                <option value="Euro">Euro</option>
+                <option value="Altın">Altın</option>
+            </select>
+        </div>
+        <div class="filter-actions">
+            <button class="btn-secondary" (click)="resetFilters()">Temizle</button>
+        </div>
+    </div>
+</div>
+
+<ng-container *ngIf="(filteredData | sort:sortColumn:sortDirection) as result">
+<table class="data-table">
+    <thead>
+        <tr class="table-header-row">
+            <th class="p-12 sortable" (click)="sortBy('no')">Hesap No <span *ngIf="sortColumn === 'no'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+            <th class="p-12 sortable" (click)="sortBy('ad')">Müşteri Adı <span *ngIf="sortColumn === 'ad'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+            <th class="p-12 sortable" (click)="sortBy('iban')">IBAN <span *ngIf="sortColumn === 'iban'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+            <th class="p-12 sortable" (click)="sortBy('tur')">Hesap Türü <span *ngIf="sortColumn === 'tur'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+            <th class="p-12 sortable" (click)="sortBy('doviz')">Döviz Cinsi <span *ngIf="sortColumn === 'doviz'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let hesap of result" class="table-row">
+            <td class="p-12">{{ hesap.hesapNo }}</td>
+            <td class="p-12">Müşteri #{{ hesap.musteriId }}</td>
+            <td class="p-12">{{ hesap.iban }}</td>
+            <td class="p-12">{{ hesap.hesapTuru }}</td>
+            <td class="p-12" style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;">{{ hesap.dovizCinsi }}</td>
+            <td class="p-12" style="border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                <button class="info-btn" [routerLink]="['/admin/hesaplar', hesap.hesapNo]">i</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</ng-container>
+

@@ -1,0 +1,33 @@
+<h2 style="font-size: 18px; font-weight: 500; margin-bottom: 30px;">+ Yeni Hesap Ekle</h2>
+
+<div class="form-container">
+    <div class="form-left">
+        <div class="form-group">
+            <label class="form-label">Müşteri ID</label>
+            <input type="number" class="form-control shadow-input" [(ngModel)]="musteriId" placeholder="Müşteri ID girin">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Hesap Türü</label>
+            <select class="form-control shadow-input" [(ngModel)]="hesapTuru">
+                <option value="Vadesiz">Vadesiz Hesap</option>
+                <option value="Vadeli">Vadeli Hesap</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Döviz Cinsi</label>
+            <select class="form-control shadow-input" [(ngModel)]="dovizCinsi">
+                <option value="TL">TL</option>
+                <option value="Dolar">Dolar</option>
+                <option value="Euro">Euro</option>
+                <option value="Altin">Altın</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-right">
+        <div style="flex: 1"></div>
+        <div style="text-align: right; margin-top: 20px;">
+            <button class="btn-primary shadow-btn" (click)="kaydet()" style="width: 150px; height: 45px; font-size: 18px;">Hesabı Aç</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,145 @@
+.receipt-container {
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: 'Elms Sans', sans-serif;
+}
+
+.receipt-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.receipt-header {
+  background: #fdfdfd;
+  padding: 30px;
+  text-align: center;
+  border-bottom: 2px dashed #ddd;
+}
+
+.bank-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #DA0037;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.receipt-id {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #888;
+}
+
+.receipt-body {
+  padding: 40px 30px;
+}
+
+.receipt-amount-box {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.amount-label {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.amount-val {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+}
+
+.status-badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.receipt-details {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+  background: #fafafa;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #777;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.detail-val {
+  color: #111;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.receipt-footer {
+  padding: 20px 30px;
+  background: #fdfdfd;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #DA0037;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+@media print {
+  .btn-primary, .btn-secondary, .filter-bar, .sidebar {
+    display: none !important;
+  }
+  .receipt-container {
+    max-width: 100%;
+    box-shadow: none;
+    border: none;
+  }
+  .receipt-card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}

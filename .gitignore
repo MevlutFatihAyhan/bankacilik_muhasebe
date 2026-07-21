@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.angular/
+Backend/BankAPI/bin/
+Backend/BankAPI/obj/
+.env
+
+scratch/

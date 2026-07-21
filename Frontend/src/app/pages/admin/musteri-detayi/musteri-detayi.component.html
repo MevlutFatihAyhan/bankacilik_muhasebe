@@ -1,0 +1,56 @@
+<div class="profile-container" *ngIf="musteriDetay">
+  <div class="profile-header">
+    <div class="profile-avatar">
+      {{ musteriDetay.ad.charAt(0) }}{{ musteriDetay.soyad ? musteriDetay.soyad.charAt(0) : '' }}
+    </div>
+    <div class="profile-title">
+      <h2>{{ musteriDetay.ad }} {{ musteriDetay.soyad }}</h2>
+      <p class="profile-id">Müşteri No: #{{ musteriDetay.musteriId }}</p>
+    </div>
+    <div class="profile-status">
+      <span class="status-badge" [class.active]="musteriDetay.aktifmi === 1">{{ musteriDetay.aktifmi === 1 ? 'Aktif' : 'Pasif' }}</span>
+    </div>
+  </div>
+
+  <div class="profile-body">
+    <div class="info-section">
+      <h3>Genel Bilgiler</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Müşteri Tipi</label>
+          <span>{{ musteriDetay.MUSTERI_TIPI === 1 ? 'Bireysel' : 'Tüzel' }}</span>
+        </div>
+        <div class="info-item">
+          <label>TCKN / VKN</label>
+          <span>{{ musteriDetay.TCKN_VKN }}</span>
+        </div>
+        <div class="info-item">
+          <label>Kayıt Tarihi</label>
+          <span>{{ musteriDetay.olusturmaTarihi | date:'dd.MM.yyyy' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h3>İletişim Bilgileri</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Email</label>
+          <span>{{ musteriDetay.email }}</span>
+        </div>
+        <div class="info-item">
+          <label>Telefon</label>
+          <span>{{ musteriDetay.telefon }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-actions">
+    <button class="btn-primary" [routerLink]="['/admin/musteri-listesi']">Geri Dön</button>
+  </div>
+</div>
+
+<div class="profile-container" *ngIf="!musteriDetay">
+  <p style="padding: 20px; text-align: center;">Yükleniyor...</p>
+</div>

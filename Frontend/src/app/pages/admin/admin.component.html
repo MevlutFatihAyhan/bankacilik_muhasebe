@@ -1,0 +1,87 @@
+<div class="dashboard-container">
+  <!-- SOL MENÜ (SIDEBAR) -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="images/star1.jpeg" alt="Logo" width="40" height="40">
+      <span>VaqıvBank</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Anasayfa -->
+      <button class="nav-item box" routerLink="anasayfa" routerLinkActive="active">
+        Anasayfa
+      </button>
+
+      <!-- Müşteri -->
+      <div class="nav-group">
+        <button class="nav-item box" (click)="toggleMusteriMenu()" [class.active]="isMusteriMenuOpen">
+          <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriMenuOpen ? '▼' : '▶' }}</span>
+          <span style="flex:1; text-align:left; padding-left: 10px;">Müşteri</span>
+        </button>
+        
+        <div class="sub-menu" *ngIf="isMusteriMenuOpen" style="display: flex; flex-direction: column;">
+          
+          <button class="sub-item" routerLink="musteri-listesi" routerLinkActive="active" style="padding-left: 45px;">
+            Müşteri Listesi
+          </button>
+          
+          <button class="sub-item" (click)="toggleMusteriEkleMenu()" style="gap: 8px; padding-left: 21px;">
+            <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriEkleMenuOpen ? '▼' : '▶' }}</span>
+            Müşteri Ekle
+          </button>
+          
+          <div *ngIf="isMusteriEkleMenuOpen" style="display: flex; flex-direction: column;">
+            <button class="sub-item" routerLink="bireysel-musteri-ekle" routerLinkActive="active" style="padding-left: 65px; font-size: 15px;">
+              Bireysel Müşteri Ekle
+            </button>
+            <button class="sub-item" routerLink="tuzel-musteri-ekle" routerLinkActive="active" style="padding-left: 65px; font-size: 15px;">
+              Tüzel Müşteri Ekle
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Hesaplar -->
+      <div class="nav-group">
+        <button class="nav-item box" (click)="toggleHesapMenu()" [class.active]="isHesapMenuOpen">
+          <span style="width: 16px; display: inline-block; text-align: center;">{{ isHesapMenuOpen ? '▼' : '▶' }}</span>
+          <span style="flex:1; text-align:left; padding-left: 10px;">Hesaplar</span>
+        </button>
+        <div class="sub-menu" *ngIf="isHesapMenuOpen" style="display: flex; flex-direction: column;">
+          <button class="sub-item" routerLink="hesap-listeleri" routerLinkActive="active" style="padding-left: 45px;">
+            Hesap Listeleri
+          </button>
+          <button class="sub-item" routerLink="hesap-hareketleri" routerLinkActive="active" style="padding-left: 45px;">
+            Hesap Hareketleri
+          </button>
+          <button class="sub-item" routerLink="hesap-ekle" routerLinkActive="active" style="padding-left: 45px;">
+            Hesap Ekle
+          </button>
+        </div>
+      </div>
+
+    </nav>
+  </aside>
+
+  <!-- SAĞ İÇERİK (MAIN CONTENT) -->
+  <main class="main-content">
+    <header class="top-header">
+      <div class="user-profile" (click)="toggleProfileMenu()" style="cursor: pointer; position: relative;">
+        <span>Admin</span>
+        <div class="user-icon">👤</div>
+        
+        <div *ngIf="isProfileMenuOpen" class="profile-dropdown" style="position: absolute; top: 100%; right: 0; margin-top: 10px; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 10px; z-index: 1000; min-width: 150px;">
+          <button (click)="logout()" style="width: 100%; padding: 10px; background: none; border: none; text-align: left; cursor: pointer; color: #DA0037; font-size: 16px; font-weight: 500; font-family: 'Elms Sans', sans-serif;">
+            Çıkış Yap
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Dinamik İçerik (Router) -->
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,37 @@
+<div class="filter-bar" style="margin-bottom: 20px;">
+    <span class="filter-text" style="font-size: 24px; font-weight: 500;">Hesap Detayı: {{ hesapDetay?.no }}</span>
+    <button routerLink="/admin/hesap-listeleri" class="btn-primary-sm" style="background-color: #333;">Geri Dön</button>
+</div>
+
+<div class="card-container" style="max-width: 600px; padding: 40px;">
+    <div style="display: flex; flex-direction: column; gap: 15px; font-size: 16px;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+            <strong style="color: #555;">Müşteri Adı:</strong>
+            <span>{{ hesapDetay?.ad }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+            <strong style="color: #555;">IBAN:</strong>
+            <span>{{ hesapDetay?.iban }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+            <strong style="color: #555;">Hesap Türü:</strong>
+            <span>{{ hesapDetay?.tur }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+            <strong style="color: #555;">Döviz Cinsi:</strong>
+            <span>{{ hesapDetay?.doviz }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+            <strong style="color: #555;">Bakiye:</strong>
+            <span style="font-weight: 600; color: #2e7d32;">{{ hesapDetay?.bakiye | number:'1.2-2' }} {{ hesapDetay?.doviz === 'TL' ? '₺' : '$' }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+            <strong style="color: #555;">Şube:</strong>
+            <span>{{ hesapDetay?.sube }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <strong style="color: #555;">Açılış Tarihi:</strong>
+            <span>{{ hesapDetay?.acilisTarihi }}</span>
+        </div>
+    </div>
+</div>
