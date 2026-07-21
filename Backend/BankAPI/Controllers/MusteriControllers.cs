@@ -30,6 +30,19 @@ namespace BankAPI.Controllers{
                 return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
             }
         }
+        [HttpGet("{id}")]
+        public IActionResult MusteriGetir(decimal id){
+            try{
+                var musteri = _musteriService.MusteriGetir(id);
+                if (musteri == null){
+                    return NotFound(new { message = "Müşteri bulunamadı" });
+                }
+                return Ok(musteri);
+            }catch(Exception ex){
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
         [HttpPut]
         public IActionResult MusteriGuncelleme([FromBody] Musteri musteri){
             try{

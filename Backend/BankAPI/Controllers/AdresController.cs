@@ -57,6 +57,24 @@ namespace BankAPI.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public IActionResult AdresGetir(decimal id)
+        {
+            try
+            {
+                var adres = _adresService.AdresGetir(id);
+                if (adres == null)
+                {
+                    return NotFound(new { message = "Adres bulunamadı" });
+                }
+                return Ok(adres);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
         [HttpGet("musteri/{musteriId}")]
         public IActionResult MusteriAdresleriGetir(decimal musteriId)
         {
