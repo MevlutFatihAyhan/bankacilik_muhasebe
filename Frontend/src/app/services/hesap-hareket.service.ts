@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HesapHareket } from '../models/hesap-hareket.model';
+import { environment } from '../../environments/environments';
 
 @Injectable({
     providedIn: 'root'
 })
 export class HesapHareketService {
-    private apiUrl = 'http://localhost:5064/api/HesapHareket';
+    private apiUrl = environment.apiUrl + '/HesapHareket';
 
     constructor(private http: HttpClient) { }
 
