@@ -28,5 +28,11 @@ namespace BankAPI.Models
 
         [JsonPropertyName("acikAdres")]
         public string ACIK_ADRES { get; set; }
+
+        [JsonPropertyName("olusturmaTarihi")]
+        public DateTime? OLUSTURMA_TARIHI { get; set; }
+
+        [JsonPropertyName("guncellemeTarihi")]
+        public DateTime? GUNCELLEME_TARIHI { get; set; }
     }
 }

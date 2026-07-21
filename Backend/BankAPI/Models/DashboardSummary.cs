@@ -37,10 +37,12 @@ namespace BankAPI.Models
 
     public class SonIslem
     {
+        public decimal IslemId { get; set; }
         public string HesapNo { get; set; }
         public string IslemYonu { get; set; }
         public decimal IslemTutari { get; set; }
         public string DovizCinsi { get; set; }
+        public decimal YeniBakiye { get; set; }
         public string Aciklama { get; set; }
         public System.DateTime IslemTarihi { get; set; }
     }

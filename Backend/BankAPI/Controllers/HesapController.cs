@@ -29,6 +29,38 @@ namespace BankAPI.Controllers
             }
         }
 
+        [HttpGet("{hesapNo}")]
+        public IActionResult HesapGetir(string hesapNo)
+        {
+            try
+            {
+                var hesap = _hesapService.HesapGetir(hesapNo);
+                if (hesap == null)
+                {
+                    return NotFound(new { message = "Hesap bulunamadı" });
+                }
+                return Ok(hesap);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
+        [HttpPut("{hesapNo}/durum")]
+        public IActionResult HesapDurumGuncelle(string hesapNo, [FromBody] DurumGuncelleRequest request)
+        {
+            try
+            {
+                _hesapService.HesapDurumGuncelle(hesapNo, request.Durum);
+                return Ok(new { message = "Hesap durumu güncellendi" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
         [HttpGet("musteri/{musteriId}")]
         public IActionResult MusteriHesaplariGetir(decimal musteriId)
         {
@@ -42,5 +74,10 @@ namespace BankAPI.Controllers
                 return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
             }
         }
+    }
+
+    public class DurumGuncelleRequest
+    {
+        public int Durum { get; set; }
     }
 }

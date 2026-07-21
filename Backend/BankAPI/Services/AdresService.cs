@@ -102,21 +102,57 @@ namespace BankAPI.Services
                     {
                         while (reader.Read())
                         {
-                            MusteriAdres adres = new MusteriAdres();
-                            adres.AdresID = Convert.ToDecimal(reader["ADRES_ID"]);
-                            adres.MusteriID = Convert.ToDecimal(reader["MUSTERI_ID"]);
-                            adres.ADRES_BASLIK = reader["ADRES_BASLIK"]?.ToString();
-                            adres.ULKE = reader["ULKE"].ToString();
-                            adres.SEHIR = reader["SEHIR"].ToString();
-                            adres.ILCE = reader["ILCE"]?.ToString();
-                            adres.POSTA_KODU = reader["POSTA_KODU"]?.ToString();
-                            adres.ACIK_ADRES = reader["ACIK_ADRES"].ToString();
-                            adresListesi.Add(adres);
+                            adresListesi.Add(MapAdres(reader));
                         }
                     }
                 }
             }
             return adresListesi;
+        }
+
+        // Tek adres getir — PKG_MUSTERI.PRC_ADRES_GETIR
+        public MusteriAdres AdresGetir(decimal adresId)
+        {
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_MUSTERI.PRC_ADRES_GETIR", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("P_ADRES_ID", OracleDbType.Decimal).Value = adresId;
+
+                    OracleParameter outCursor = new OracleParameter("P_RESULT", OracleDbType.RefCursor);
+                    outCursor.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(outCursor);
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return MapAdres(reader);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static MusteriAdres MapAdres(OracleDataReader reader)
+        {
+            return new MusteriAdres
+            {
+                AdresID = Convert.ToDecimal(reader["ADRES_ID"]),
+                MusteriID = Convert.ToDecimal(reader["MUSTERI_ID"]),
+                ADRES_BASLIK = reader["ADRES_BASLIK"]?.ToString(),
+                ULKE = reader["ULKE"]?.ToString(),
+                SEHIR = reader["SEHIR"]?.ToString(),
+                ILCE = reader["ILCE"]?.ToString(),
+                POSTA_KODU = reader["POSTA_KODU"]?.ToString(),
+                ACIK_ADRES = reader["ACIK_ADRES"]?.ToString(),
+                OLUSTURMA_TARIHI = reader["OLUSTURMA_TARIHI"] != DBNull.Value ? Convert.ToDateTime(reader["OLUSTURMA_TARIHI"]) : (DateTime?)null,
+                GUNCELLEME_TARIHI = reader["GUNCELLEME_TARIHI"] != DBNull.Value ? Convert.ToDateTime(reader["GUNCELLEME_TARIHI"]) : (DateTime?)null
+            };
         }
     }
 }

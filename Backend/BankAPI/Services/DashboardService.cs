@@ -96,10 +96,12 @@ namespace BankAPI.Services
                             {
                                 SonIslem islem = new SonIslem
                                 {
+                                    IslemId = reader["ISLEM_ID"] != DBNull.Value ? Convert.ToDecimal(reader["ISLEM_ID"]) : 0,
                                     HesapNo = reader["HESAP_NO"]?.ToString(),
-                                    IslemYonu = reader["ISLEM_YONU"]?.ToString(),
+                                    IslemYonu = reader["ISLEM_YONU"]?.ToString()?.Trim(),
                                     IslemTutari = reader["ISLEM_TUTARI"] != DBNull.Value ? Convert.ToDecimal(reader["ISLEM_TUTARI"]) : 0,
-                                    DovizCinsi = reader["DOVIZ_CINSI"]?.ToString(),
+                                    DovizCinsi = reader["DOVIZ_CINSI"]?.ToString()?.Trim(),
+                                    YeniBakiye = reader["YENI_BAKIYE"] != DBNull.Value ? Convert.ToDecimal(reader["YENI_BAKIYE"]) : 0,
                                     Aciklama = reader["ACIKLAMA"]?.ToString(),
                                     IslemTarihi = Convert.ToDateTime(reader["ISLEM_TARIHI"])
                                 };

@@ -1,18 +1,12 @@
 -- ============================================================
---  00_FULL_RESET.SQL
---  01_Tables.sql / 02_Triggers.sql / 03_Procedures.sql tarafindan
---  olusturulan TUM canli nesneleri siler, boylece 01_Tables.sql
---  bastan (temiz bir semada) tekrar calistirilabilir.
---
---  NOT: 05_Cleanup_Unused_Objects.sql BUNUN YERINE GECMEZ — o script
---  sadece eskiyen/kullanilmayan (legacy) nesneleri temizler, asil
---  tablolara dokunmaz. sys_cleanup.sql de sadece SYS semasindaki
---  kazara olusmus nesneleri hedefler.
+--  SYS_CLEANUP.SQL
+--  Baglanan kullanicinin kendi semasindaki uygulama nesnelerini
+--  (tablo, paket, fonksiyon, sequence) tamamen siler. 00_Full_Reset.sql
+--  ile ayni isi yapar; kazara farkli bir semada olusmus nesneleri
+--  temizlemek icin ayri tutulmustur.
 --
 --  DIKKAT: Bu script TUM VERIYI KALICI OLARAK SILER. Once yedek alin!
 -- ============================================================
-
-ALTER SESSION SET CURRENT_SCHEMA = APPUSER;
 
 SET SERVEROUTPUT ON;
 

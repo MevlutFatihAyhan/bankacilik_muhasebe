@@ -10,9 +10,11 @@
 --  kazara olusmus nesneleri hedefler.
 --
 --  DIKKAT: Bu script TUM VERIYI KALICI OLARAK SILER. Once yedek alin!
+--
+--  NOT: Nesneler baglanan kullanicinin kendi semasinda aranir/silinir
+--  (sabit bir semaya baglanmaz). Hangi kullanici ile baglaniyorsaniz
+--  (ADMIN, APPUSER vb.) o semadaki nesneler silinir.
 -- ============================================================
-
-ALTER SESSION SET CURRENT_SCHEMA = APPUSER;
 
 SET SERVEROUTPUT ON;
 

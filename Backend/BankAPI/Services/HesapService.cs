@@ -50,6 +50,48 @@ namespace BankAPI.Services
             }
         }
 
+        // Hesap durumu güncelle — PKG_HESAP.PRC_HESAP_DURUM_GUNCELLE
+        public void HesapDurumGuncelle(string hesapNo, int durum)
+        {
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_HESAP.PRC_HESAP_DURUM_GUNCELLE", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("p_hesap_no", OracleDbType.Varchar2).Value = hesapNo;
+                    cmd.Parameters.Add("p_durum", OracleDbType.Int32).Value = durum;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Tek hesap getir — PKG_HESAP.PRC_HESAP_GETIR
+        public Hesap HesapGetir(string hesapNo)
+        {
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_HESAP.PRC_HESAP_GETIR", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("p_hesap_no", OracleDbType.Varchar2).Value = hesapNo;
+                    cmd.Parameters.Add("p_result", OracleDbType.RefCursor, ParameterDirection.Output);
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return MapHesap(reader);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         // Bir müşterinin tüm hesaplarını getir — PKG_HESAP.PRC_MUSTERI_HESAPLARI (Inline SQL kaldırıldı)
         public List<Hesap> MusteriHesaplariGetir(decimal musteriId)
         {
@@ -68,20 +110,26 @@ namespace BankAPI.Services
                     {
                         while (reader.Read())
                         {
-                            Hesap hesap = new Hesap();
-                            hesap.HESAP_NO = reader["HESAP_NO"].ToString();
-                            hesap.MUSTERI_ID = Convert.ToDecimal(reader["MUSTERI_ID"]);
-                            hesap.IBAN = reader["IBAN"]?.ToString()?.Trim();
-                            hesap.HESAP_TURU = reader["HESAP_TURU"]?.ToString();
-                            hesap.DOVIZ_CINSI = reader["DOVIZ_CINSI"]?.ToString()?.Trim();
-                            hesap.BAKIYE = Convert.ToDecimal(reader["BAKIYE"]);
-                            hesap.DURUM = Convert.ToInt32(reader["DURUM"]);
-                            hesapListesi.Add(hesap);
+                            hesapListesi.Add(MapHesap(reader));
                         }
                     }
                 }
             }
             return hesapListesi;
+        }
+
+        private static Hesap MapHesap(OracleDataReader reader)
+        {
+            return new Hesap
+            {
+                HESAP_NO = reader["HESAP_NO"]?.ToString()?.Trim(),
+                MUSTERI_ID = Convert.ToDecimal(reader["MUSTERI_ID"]),
+                IBAN = reader["IBAN"]?.ToString()?.Trim(),
+                HESAP_TURU = reader["HESAP_TURU"]?.ToString(),
+                DOVIZ_CINSI = reader["DOVIZ_CINSI"]?.ToString()?.Trim(),
+                BAKIYE = Convert.ToDecimal(reader["BAKIYE"]),
+                DURUM = Convert.ToInt32(reader["DURUM"])
+            };
         }
     }
 }
