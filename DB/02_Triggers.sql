@@ -228,6 +228,35 @@ BEGIN
 END TRG_MVD_HESAPHAREKET_PREVENT_UPDATE;
 /
 
+-- ============================================================
+-- TRIGGER: TRG_MVD_HESAPHAREKET_SIL_BAKIYE
+-- Tablo : MVD_HESAPHAREKET
+-- Olay  : BEFORE DELETE
+-- Görev : Bir hareket silindiginde MVD_HESAP bakiyesini geri al.
+--          Ekleme (INSERT) trigger'i bakiyeyi degistirdigi icin, silme
+--          isleminde de simetrik olarak bakiyenin duzeltilmesi gerekir.
+--          B (para girisi) silinirse bakiyeden dusulur; C (para cikisi)
+--          silinirse bakiyeye geri eklenir.
+-- ============================================================
+
+CREATE OR REPLACE TRIGGER TRG_MVD_HESAPHAREKET_SIL_BAKIYE
+BEFORE DELETE ON MVD_HESAPHAREKET
+FOR EACH ROW
+BEGIN
+    IF :OLD.ISLEM_YONU = 'B' THEN
+        -- B = Para girisi silindi: bakiyeden geri al
+        UPDATE MVD_HESAP
+           SET BAKIYE = BAKIYE - :OLD.ISLEM_TUTARI
+         WHERE HESAP_NO = :OLD.HESAP_NO;
+    ELSE
+        -- C = Para cikisi silindi: bakiyeye geri ekle
+        UPDATE MVD_HESAP
+           SET BAKIYE = BAKIYE + :OLD.ISLEM_TUTARI
+         WHERE HESAP_NO = :OLD.HESAP_NO;
+    END IF;
+END TRG_MVD_HESAPHAREKET_SIL_BAKIYE;
+/
+
 CREATE OR REPLACE TRIGGER TRG_MVD_HESAPHAREKET_HACIM
 AFTER INSERT OR UPDATE OR DELETE ON MVD_HESAPHAREKET
 BEGIN

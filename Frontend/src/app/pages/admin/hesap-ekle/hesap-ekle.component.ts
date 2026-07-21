@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HesapService } from '../../../services/hesap.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-hesap-ekle',
@@ -14,8 +15,11 @@ export class HesapEkleComponent {
   musteriId: number = 0;
   hesapTuru: string = 'Vadesiz';
   dovizCinsi: string = 'TL';
-  
-  constructor(private hesapService: HesapService) {}
+
+  constructor(
+    private hesapService: HesapService,
+    private router: Router
+  ) { }
 
   kaydet() {
     this.hesapService.addHesap({
@@ -27,11 +31,9 @@ export class HesapEkleComponent {
       bakiye: 0,
       durum: 'AKTIF'
     }).subscribe({
-      next: () => { 
+      next: () => {
         alert('Hesap başarıyla açıldı!');
-        this.musteriId = 0;
-        this.hesapTuru = 'Vadesiz';
-        this.dovizCinsi = 'TL';
+        this.router.navigate(['/admin/hesap-listeleri']);
       },
       error: () => { alert('Hata oluştu!'); }
     });

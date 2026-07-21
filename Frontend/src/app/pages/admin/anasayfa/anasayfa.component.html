@@ -18,7 +18,7 @@
     <h2 class="section-title">Sistem Özeti</h2>
     <div class="stats-grid-home">
 
-      <div class="stat-card">
+      <div class="stat-card" (click)="router.navigate(['/admin/musteri-listesi'])">
         <div class="stat-info">
           <div class="stat-title">Aktif Kullanıcı</div>
           <div class="stat-val">{{ activeUsers | number:'1.0-0' }}</div>

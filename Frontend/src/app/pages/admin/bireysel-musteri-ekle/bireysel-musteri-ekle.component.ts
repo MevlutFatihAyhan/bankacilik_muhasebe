@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MusteriService } from '../../../services/musteri.service';
 import { AdresService } from '../../../services/adres.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-bireysel-musteri-ekle',
@@ -23,7 +24,8 @@ export class BireyselMusteriEkleComponent {
 
   constructor(
     private musteriService: MusteriService,
-    private adresService: AdresService
+    private adresService: AdresService,
+    private router: Router
   ) {}
 
   kaydet() {
@@ -50,8 +52,7 @@ export class BireyselMusteriEkleComponent {
           acikAdres: this.adres
         }).subscribe();
         alert('Bireysel Müşteri eklendi!');
-        // clear form
-        this.ad = ''; this.soyad = ''; this.email = ''; this.tckn = ''; this.sehir = ''; this.ilce = ''; this.postaKodu = ''; this.adres = '';
+        this.router.navigate(['/admin/musteri-listesi']);
       },
       error: () => alert('Hata!')
     });

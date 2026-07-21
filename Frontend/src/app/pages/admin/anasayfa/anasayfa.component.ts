@@ -1,5 +1,6 @@
 import { Component, AfterViewInit, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import Chart from 'chart.js/auto';
 
 @Component({
@@ -22,7 +23,10 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
   termAccs: number = 0;
   demandAccs: number = 0;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    public router: Router
+  ) {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {

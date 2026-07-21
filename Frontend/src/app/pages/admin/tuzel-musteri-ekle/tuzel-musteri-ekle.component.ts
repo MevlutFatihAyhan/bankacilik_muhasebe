@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MusteriService } from '../../../services/musteri.service';
 import { AdresService } from '../../../services/adres.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tuzel-musteri-ekle',
@@ -22,7 +23,8 @@ export class TuzelMusteriEkleComponent {
 
   constructor(
     private musteriService: MusteriService,
-    private adresService: AdresService
+    private adresService: AdresService,
+    private router: Router
   ) {}
 
   kaydet() {
@@ -49,8 +51,7 @@ export class TuzelMusteriEkleComponent {
           acikAdres: this.adres
         }).subscribe();
         alert('Tüzel Müşteri eklendi!');
-        // clear form
-        this.ad = ''; this.email = ''; this.vkn = ''; this.sehir = ''; this.ilce = ''; this.postaKodu = ''; this.adres = '';
+        this.router.navigate(['/admin/musteri-listesi']);
       },
       error: () => alert('Hata!')
     });

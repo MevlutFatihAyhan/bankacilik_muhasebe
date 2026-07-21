@@ -1,4 +1,13 @@
-ALTER SESSION SET CURRENT_SCHEMA = APPUSER;
+-- ============================================================
+--  RECREATE_TABLE.SQL
+--  SADECE MVD_HESAPHAREKET tablosunu bastan olusturmak icin
+--  bakim/onarim betigidir. Tablonun tanimi 01_Tables.sql ile
+--  BIREBIR AYNIDIR; normal kurulumda buna GEREK YOKTUR.
+--
+--  DIKKAT: MVD_HESAPHAREKET icindeki TUM HAREKET VERISI silinir.
+--  Nesneler baglanan kullanicinin kendi semasinda islenir.
+-- ============================================================
+
 DROP TABLE MVD_HESAPHAREKET CASCADE CONSTRAINTS;
 
 CREATE TABLE MVD_HESAPHAREKET (
@@ -14,19 +23,16 @@ CREATE TABLE MVD_HESAPHAREKET (
     REFERANS_NO  VARCHAR2(50),
     CONSTRAINT FK_HAREKET_HESAP
         FOREIGN KEY (HESAP_NO)
-        REFERENCES MVD_HESAP (HESAP_NO)
+        REFERENCES MVD_HESAP (HESAP_NO),
+    CONSTRAINT CHK_HAREKET_ISLEM_YONU
+        CHECK (ISLEM_YONU IN ('B', 'C'))
 );
 
-ALTER TABLE MVD_HESAPHAREKET
-ADD CONSTRAINT CHK_HAREKET_ISLEM_YONU
-CHECK (ISLEM_YONU IN ('B', 'C'));
-
--- 01_Tables.sql'de tanimli olan ama bu recreate script'inde eksik olan indexler
 CREATE INDEX IX_HAREKET_HESAP_NO
     ON MVD_HESAPHAREKET (HESAP_NO);
 
 CREATE INDEX IX_HAREKET_HESAP_TARIH
     ON MVD_HESAPHAREKET (HESAP_NO, ISLEM_TARIHI DESC);
 
-@DB\02_Triggers.sql
-EXIT;
+-- Tabloya bagli trigger'lar DROP ile birlikte silindigi icin yeniden derlenir
+@@02_Triggers.sql

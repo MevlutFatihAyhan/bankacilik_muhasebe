@@ -14,8 +14,9 @@ export class AdminComponent {
   isMusteriEkleMenuOpen = true;
   isHesapMenuOpen = true;
   isProfileMenuOpen = false;
+  isUserMenuOpen: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   toggleMusteriMenu() {
     this.isMusteriMenuOpen = !this.isMusteriMenuOpen;
@@ -31,6 +32,10 @@ export class AdminComponent {
 
   toggleProfileMenu() {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
+
+  toggleUserMenu() {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
   }
 
   logout() {
