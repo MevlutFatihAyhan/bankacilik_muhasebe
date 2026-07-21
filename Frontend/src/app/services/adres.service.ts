@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MusteriAdres } from '../models/musteri-adres.model';
+import { environment } from '../../environments/environments';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AdresService {
-    private apiUrl = 'http://localhost:5064/api/Adres';
-
+    private apiUrl = environment.apiUrl + '/Adres';
     constructor(private http: HttpClient) { }
 
     getAdresler(musteriId: number): Observable<MusteriAdres[]> {

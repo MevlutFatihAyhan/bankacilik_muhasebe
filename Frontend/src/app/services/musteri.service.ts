@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Musteri } from '../models/musteri.model';
+import { environment } from '../../environments/environments';
 
 @Injectable({
     providedIn: 'root'
 })
 export class MusteriService {
-    private apiUrl = 'http://localhost:5064/api/Musteri';
+    private apiUrl = environment.apiUrl + '/Musteri';
 
     constructor(private http: HttpClient) { }
 

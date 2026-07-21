@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Hesap } from '../models/hesap.model';
+import { environment } from '../../environments/environments';
 
 @Injectable({
     providedIn: 'root'
 })
 export class HesapService {
-    private apiUrl = 'http://localhost:5064/api/Hesap';
+    private apiUrl = environment.apiUrl + '/Hesap';
 
     constructor(private http: HttpClient) { }
 

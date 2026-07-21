@@ -5,4 +5,4 @@ Backend/BankAPI/bin/
 Backend/BankAPI/obj/
 .env
 
-scratch/
+/.vscode 
