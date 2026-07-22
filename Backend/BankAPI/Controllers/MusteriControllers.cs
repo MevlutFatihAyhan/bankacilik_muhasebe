@@ -16,7 +16,7 @@ namespace BankAPI.Controllers{
         public IActionResult MusteriEkle([FromBody] Musteri musteri){
             try{
                 _musteriService.MusteriEkle(musteri);
-                return Ok(new { message = "Müşteri başarıyla eklendi" });
+                return Ok("Musteri basarıyla eklendi.");
             }catch(Exception ex){
                 return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
             }
@@ -47,7 +47,7 @@ namespace BankAPI.Controllers{
         public IActionResult MusteriGuncelleme([FromBody] Musteri musteri){
             try{
                 _musteriService.MusteriGuncelleme(musteri);
-                return Ok(new { message = "Müşteri başarıyla güncellendi" });
+                return Ok("Musteri basarıyla güncellendi.");
             }catch(Exception ex){
                 return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
             }

@@ -29,13 +29,17 @@ export class HesapEkleComponent {
       hesapTuru: this.hesapTuru,
       dovizCinsi: this.dovizCinsi,
       bakiye: 0,
-      durum: 'AKTIF'
+      durum: 1
     }).subscribe({
       next: () => {
         alert('Hesap başarıyla açıldı!');
         this.router.navigate(['/admin/hesap-listeleri']);
       },
-      error: () => { alert('Hata oluştu!'); }
+      error: (err) => { 
+        console.error(err);
+        const errorMsg = err.error?.message || err.message || 'Bilinmeyen bir hata oluştu!';
+        alert('Hata: ' + errorMsg); 
+      }
     });
   }
 }

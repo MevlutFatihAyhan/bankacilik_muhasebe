@@ -8,7 +8,8 @@
       <p class="profile-id">Müşteri No: #{{ musteriDetay.musteriId }}</p>
     </div>
     <div class="profile-status">
-      <span class="status-badge" [class.active]="musteriDetay.aktifmi === 1">{{ musteriDetay.aktifmi === 1 ? 'Aktif' : 'Pasif' }}</span>
+      <span class="status-badge" [class.active]="musteriDetay.aktifMi === 1">{{ musteriDetay.aktifMi === 1 ? 'Aktif' :
+        'Pasif' }}</span>
     </div>
   </div>
 
@@ -18,11 +19,11 @@
       <div class="info-grid">
         <div class="info-item">
           <label>Müşteri Tipi</label>
-          <span>{{ musteriDetay.MUSTERI_TIPI === 1 ? 'Bireysel' : 'Tüzel' }}</span>
+          <span>{{ musteriDetay.musteriTipi === 1 ? 'Bireysel' : 'Tüzel' }}</span>
         </div>
         <div class="info-item">
           <label>TCKN / VKN</label>
-          <span>{{ musteriDetay.TCKN_VKN }}</span>
+          <span>{{ musteriDetay.kimlikNo }}</span>
         </div>
         <div class="info-item">
           <label>Kayıt Tarihi</label>

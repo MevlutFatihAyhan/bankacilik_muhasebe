@@ -80,19 +80,19 @@ export class MusteriListesiComponent implements OnInit {
 
       // 2. Müşteri Tipi Filtresi (1: Bireysel, 2: Tüzel)
       let matchesTipi = true;
-      if (this.filterMusteriTipi === 'Bireysel') matchesTipi = m.MUSTERI_TIPI === 1;
-      if (this.filterMusteriTipi === 'Tüzel') matchesTipi = m.MUSTERI_TIPI === 2;
+      if (this.filterMusteriTipi === 'Bireysel') matchesTipi = m.musteriTipi === 1;
+      if (this.filterMusteriTipi === 'Tüzel') matchesTipi = m.musteriTipi === 2;
 
-      // 3. Durum Filtresi (1: Aktif, 0: Pasif)
+      // 3. Durum Filtresi (1: Aktif, 2: Pasif)
       let matchesDurum = true;
-      if (this.filterDurum === 'Aktif') matchesDurum = m.aktifmi === 1;
-      if (this.filterDurum === 'Pasif') matchesDurum = m.aktifmi === 0;
+      if (this.filterDurum === 'Aktif') matchesDurum = m.aktifMi === 1;
+      if (this.filterDurum === 'Pasif') matchesDurum = m.aktifMi === 2;
 
       return matchesSearch && matchesTipi && matchesDurum;
     });
   }
 
   showInfo(musteri: Musteri) {
-    alert(`MÜŞTERİ DETAYLARI\n\nID: ${musteri.musteriId}\nAd / Unvan: ${musteri.ad} ${musteri.soyad}\nTCKN/VKN: ${musteri.TCKN_VKN}\nEmail: ${musteri.email}\nTelefon: ${musteri.telefon}\nDurum: ${musteri.aktifmi === 1 ? 'Aktif' : 'Pasif'}`);
+    alert(`MÜŞTERİ DETAYLARI\n\nID: ${musteri.musteriId}\nAd / Unvan: ${musteri.ad} ${musteri.soyad}\nTCKN/VKN: ${musteri.kimlikNo}\nEmail: ${musteri.email}\nTelefon: ${musteri.telefon}\nDurum: ${musteri.aktifMi === 1 ? 'Aktif' : 'Pasif'}`);
   }
 }

@@ -4,9 +4,9 @@ export interface Musteri {
     soyad: string;
     email: string;
     telefon: string;
-    aktifmi: number;
-    MUSTERI_TIPI?: number;
-    TCKN_VKN?: string;
+    aktifMi: number;
+    musteriTipi?: number;
+    kimlikNo?: string;
     olusturmaTarihi?: string | Date;
-    guncellenmeTarihi?: string | Date;
+    guncellemeTarihi?: string | Date;
 }

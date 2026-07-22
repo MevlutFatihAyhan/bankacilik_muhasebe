@@ -5,5 +5,5 @@ export interface Hesap {
     hesapTuru: string;
     dovizCinsi: string;
     bakiye: number;
-    durum: string;
+    durum: number;
 }

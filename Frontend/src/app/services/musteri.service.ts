@@ -23,11 +23,11 @@ export class MusteriService {
 
     // API'ye yeni kayıt gönder (POST)
     addMusteri(musteri: Musteri): Observable<any> {
-        return this.http.post(this.apiUrl, musteri);
+        return this.http.post(this.apiUrl, musteri, { responseType: 'text' as 'json' });
     }
 
     updateMusteri(id: number, musteri: Musteri): Observable<any> {
-        return this.http.put(`${this.apiUrl}/${id}`, musteri);
+        return this.http.put(`${this.apiUrl}/${id}`, musteri, { responseType: 'text' as 'json' });
     }
 
 
