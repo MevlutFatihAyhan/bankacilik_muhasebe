@@ -1,12 +1,14 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { AdminComponent } from './pages/admin/admin.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
     path: 'admin',
     component: AdminComponent,
+    canActivate: [authGuard],
     children: [
       { path: 'anasayfa', loadComponent: () => import('./pages/admin/anasayfa/anasayfa.component').then(m => m.AnasayfaComponent) },
       { path: 'musteri-listesi', loadComponent: () => import('./pages/admin/musteri-listesi/musteri-listesi.component').then(m => m.MusteriListesiComponent) },

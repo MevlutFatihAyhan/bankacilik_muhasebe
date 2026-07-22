@@ -9,6 +9,8 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'LOGIN.PASSWORD': 'Şifre',
     'LOGIN.PASSWORD_PLACEHOLDER': 'Şifrenizi girin',
     'LOGIN.SUBMIT': 'Giriş Yap',
+    'LOGIN.ERROR_REQUIRED': 'Lütfen kullanıcı adı ve şifrenizi girin.',
+    'LOGIN.ERROR_INVALID': 'Kullanıcı adı veya şifre hatalı! (Demo: admin / 123456)',
 
     // Nav & Admin
     'NAV.HOME': 'Anasayfa',
@@ -21,7 +23,7 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'NAV.ACCOUNT_LISTS': 'Hesap Listeleri',
     'NAV.ACCOUNT_TRANSACTIONS': 'Hesap Hareketleri',
     'NAV.ADD_ACCOUNT': 'Hesap Ekle',
-
+    
     // User menu & Common
     'COMMON.ADMIN': 'Admin',
     'COMMON.LOGOUT': 'Çıkış Yap',
@@ -72,6 +74,8 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'LOGIN.PASSWORD': 'Password',
     'LOGIN.PASSWORD_PLACEHOLDER': 'Enter your password',
     'LOGIN.SUBMIT': 'Log In',
+    'LOGIN.ERROR_REQUIRED': 'Please enter username and password.',
+    'LOGIN.ERROR_INVALID': 'Invalid username or password! (Demo: admin / 123456)',
 
     // Nav & Admin
     'NAV.HOME': 'Dashboard',
@@ -84,7 +88,7 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'NAV.ACCOUNT_LISTS': 'Account Lists',
     'NAV.ACCOUNT_TRANSACTIONS': 'Account Transactions',
     'NAV.ADD_ACCOUNT': 'Add Account',
-
+    
     // User menu & Common
     'COMMON.ADMIN': 'Admin',
     'COMMON.LOGOUT': 'Log Out',

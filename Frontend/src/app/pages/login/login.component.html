@@ -25,20 +25,35 @@
       <img src="images/star1.jpeg" alt="Logo" width="55" height="55">
       <span>VaqıvBank</span>
     </div>
+
+    <!-- Error Message Alert -->
+    <div class="login-error-alert" *ngIf="errorMessage">
+      ⚠️ {{ errorMessage | translate }}
+    </div>
     
-    <form class="login-form">
+    <form class="login-form" (ngSubmit)="onLogin()">
       
       <div class="login-form-group">
         <label for="username">{{ 'LOGIN.USERNAME' | translate }}</label>
-        <input type="text" id="username" name="username" [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate">
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          [(ngModel)]="username"
+          [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate">
       </div>
       
       <div class="login-form-group">
         <label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
-        <input type="password" id="password" name="password" [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate">
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          [(ngModel)]="pass"
+          [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate">
       </div>
       
-      <button type="button" routerLink="/admin">{{ 'LOGIN.SUBMIT' | translate }}</button>
+      <button type="submit">{{ 'LOGIN.SUBMIT' | translate }}</button>
     
     </form>
   </div>

@@ -1,20 +1,46 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../services/language.service';
+import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, TranslatePipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  constructor(public langService: LanguageService) {}
+  username: string = '';
+  pass: string = '';
+  errorMessage: string = '';
+
+  constructor(
+    public langService: LanguageService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   setLanguage(lang: 'tr' | 'en') {
     this.langService.setLanguage(lang);
+  }
+
+  onLogin() {
+    this.errorMessage = '';
+
+    if (!this.username.trim() || !this.pass.trim()) {
+      this.errorMessage = 'LOGIN.ERROR_REQUIRED';
+      return;
+    }
+
+    const success = this.authService.login(this.username, this.pass);
+    if (success) {
+      this.router.navigate(['/admin']);
+    } else {
+      this.errorMessage = 'LOGIN.ERROR_INVALID';
+    }
   }
 }

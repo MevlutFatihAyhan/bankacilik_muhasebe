@@ -92,8 +92,18 @@
     color: #333;
 }
 
-.login-header img {
-    height: 55px;
+.login-error-alert {
+    width: 100%;
+    padding: 10px 14px;
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    text-align: center;
 }
 
 .login-form {

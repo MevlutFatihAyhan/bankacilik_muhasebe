@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { LanguageService } from '../../services/language.service';
+import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
@@ -20,7 +21,8 @@ export class AdminComponent {
 
   constructor(
     private router: Router,
-    public langService: LanguageService
+    public langService: LanguageService,
+    private authService: AuthService
   ) { }
 
   toggleMusteriMenu() {
@@ -48,6 +50,6 @@ export class AdminComponent {
   }
 
   logout() {
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }
