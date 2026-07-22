@@ -2,11 +2,14 @@ import { Component, AfterViewInit, OnInit, Inject, PLATFORM_ID } from '@angular/
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import Chart from 'chart.js/auto';
+import { DashboardService, DashboardSummary } from '../../../services/dashboard.service';
+import { LanguageService } from '../../../services/language.service';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-anasayfa',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './anasayfa.component.html',
   styleUrl: './anasayfa.component.css'
 })
@@ -23,22 +26,78 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
   termAccs: number = 0;
   demandAccs: number = 0;
 
+  summaryData: DashboardSummary | null = null;
+  chartValues: number[] = [0, 0, 0, 0];
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    public router: Router
+    public router: Router,
+    private dashboardService: DashboardService,
+    public langService: LanguageService
   ) {}
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.animateValue('totalVolume', 0, 255854551.88, 1500);
-      this.animateValue('activeUsers', 0, 256, 1500);
-      this.animateValue('corpUsers', 0, 78, 1500);
-      this.animateValue('indUsers', 0, 178, 1500);
-      this.animateValue('goldAccs', 0, 68, 1500);
-      this.animateValue('dollarAccs', 0, 101, 1500);
-      this.animateValue('termAccs', 0, 88, 1500);
-      this.animateValue('demandAccs', 0, 168, 1500);
-    }
+    this.dashboardDataYukle();
+  }
+
+  dashboardDataYukle() {
+    this.dashboardService.getSummary().subscribe({
+      next: (data) => {
+        this.summaryData = data;
+
+        const musteri = data.musteriIstatistikleri;
+        const targetActiveUsers = musteri?.aktifMusteriSayisi || 0;
+        const targetCorpUsers = musteri?.tuzelSayisi || 0;
+        const targetIndUsers = musteri?.bireyselSayisi || 0;
+
+        const hesaplar = data.hesapIstatistikleri || [];
+        const targetGoldAccs = hesaplar.find(h => h.dovizCinsi === 'ALTIN' || h.dovizCinsi === 'Altin')?.hesapSayisi || 0;
+        const targetDollarAccs = hesaplar.find(h => h.dovizCinsi === 'USD' || h.dovizCinsi === 'Dolar')?.hesapSayisi || 0;
+        
+        let targetTermAccs = 0;
+        let targetDemandAccs = 0;
+        hesaplar.forEach(h => {
+          targetTermAccs += h.vadeliSayisi || 0;
+          targetDemandAccs += h.vadesizSayisi || 0;
+        });
+
+        const hacimler = data.hacimIstatistikleri || [];
+        let targetTotalVolume = 0;
+        hacimler.forEach(h => {
+          targetTotalVolume += h.toplamHacim || 0;
+        });
+
+        if (targetTotalVolume > 0 && data.sonIslemler && data.sonIslemler.length > 0) {
+          this.chartValues = [
+            Math.round(targetTotalVolume * 0.1),
+            Math.round(targetTotalVolume * 0.25),
+            Math.round(targetTotalVolume * 0.5),
+            Math.round(targetTotalVolume)
+          ];
+        } else {
+          this.chartValues = [0, 0, 0, 0];
+        }
+
+        if (isPlatformBrowser(this.platformId)) {
+          this.animateValue('totalVolume', 0, targetTotalVolume, 1200);
+          this.animateValue('activeUsers', 0, targetActiveUsers, 1200);
+          this.animateValue('corpUsers', 0, targetCorpUsers, 1200);
+          this.animateValue('indUsers', 0, targetIndUsers, 1200);
+          this.animateValue('goldAccs', 0, targetGoldAccs, 1200);
+          this.animateValue('dollarAccs', 0, targetDollarAccs, 1200);
+          this.animateValue('termAccs', 0, targetTermAccs, 1200);
+          this.animateValue('demandAccs', 0, targetDemandAccs, 1200);
+
+          this.createChart(this.chartValues);
+        }
+      },
+      error: (err) => {
+        console.error('Dashboard verisi çekilemedi:', err);
+        if (isPlatformBrowser(this.platformId)) {
+          this.createChart([0, 0, 0, 0]);
+        }
+      }
+    });
   }
 
   animateValue(propName: keyof AnasayfaComponent, start: number, end: number, duration: number) {
@@ -47,7 +106,6 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
       
-      // Easing out (yavaşlayarak bitme efekti)
       const easeOut = 1 - Math.pow(1 - progress, 3);
       
       (this as any)[propName] = start + (end - start) * easeOut;
@@ -55,7 +113,7 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
       if (progress < 1) {
         window.requestAnimationFrame(step);
       } else {
-        (this as any)[propName] = end; // Ensure exact value at the end
+        (this as any)[propName] = end;
       }
     };
     window.requestAnimationFrame(step);
@@ -63,22 +121,32 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
-      this.createChart();
+      this.createChart(this.chartValues);
     }
   }
 
-  createChart() {
+  createChart(chartData: number[] = [0, 0, 0, 0]) {
     const ctx = document.getElementById('volumeChart') as HTMLCanvasElement;
     if (!ctx) return;
+
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    const w1 = this.langService.t('DASHBOARD.WEEK_1');
+    const w2 = this.langService.t('DASHBOARD.WEEK_2');
+    const w3 = this.langService.t('DASHBOARD.WEEK_3');
+    const w4 = this.langService.t('DASHBOARD.WEEK_4');
+    const volumeLabel = this.langService.t('DASHBOARD.WEEKLY_VOLUME');
 
     this.chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['1. Hafta', '2. Hafta', '3. Hafta', '4. Hafta'],
+        labels: [w1, w2, w3, w4],
         datasets: [{
-          label: 'Haftalık Hacim (Milyon ₺)',
-          data: [45, 60, 55, 95],
-          borderColor: '#DA0037', // Kiremit Kırmızısı (Ana Banka Rengi)
+          label: volumeLabel,
+          data: chartData,
+          borderColor: '#DA0037',
           borderWidth: 2,
           tension: 0.1,
           fill: false,
@@ -102,7 +170,8 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
             displayColors: false,
             callbacks: {
               label: function(context) {
-                return context.parsed.y + ' Milyon ₺';
+                const val = context.parsed?.y ?? 0;
+                return val.toLocaleString('tr-TR') + ' ₺';
               }
             }
           }
@@ -114,9 +183,10 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
               color: '#f0f0f0'
             },
             ticks: {
+              precision: 0,
               font: { family: "'Elms Sans', sans-serif" },
               callback: function(value) {
-                return value + 'M';
+                return Number(value).toLocaleString('tr-TR') + ' ₺';
               }
             }
           },

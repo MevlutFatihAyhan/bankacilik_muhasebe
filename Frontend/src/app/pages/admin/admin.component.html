@@ -8,37 +8,35 @@
     <nav class="sidebar-nav">
       <!-- Anasayfa -->
       <button class="nav-item box" routerLink="anasayfa" routerLinkActive="active">
-        Anasayfa
+        {{ 'NAV.HOME' | translate }}
       </button>
 
       <!-- Müşteri -->
       <div class="nav-group">
         <button class="nav-item box" (click)="toggleMusteriMenu()" [class.active]="isMusteriMenuOpen">
-          <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriMenuOpen ? '▼' : '▶'
-            }}</span>
-          <span style="flex:1; text-align:left; padding-left: 10px;">Müşteri</span>
+          <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriMenuOpen ? '▼' : '▶' }}</span>
+          <span style="flex:1; text-align:left; padding-left: 10px;">{{ 'NAV.CUSTOMER' | translate }}</span>
         </button>
 
         <div class="sub-menu" *ngIf="isMusteriMenuOpen" style="display: flex; flex-direction: column;">
 
           <button class="sub-item" routerLink="musteri-listesi" routerLinkActive="active" style="padding-left: 45px;">
-            Müşteri Listesi
+            {{ 'NAV.CUSTOMER_LIST' | translate }}
           </button>
 
           <button class="sub-item" (click)="toggleMusteriEkleMenu()" style="gap: 8px; padding-left: 21px;">
-            <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriEkleMenuOpen ? '▼' : '▶'
-              }}</span>
-            Müşteri Ekle
+            <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriEkleMenuOpen ? '▼' : '▶' }}</span>
+            {{ 'NAV.ADD_CUSTOMER' | translate }}
           </button>
 
           <div *ngIf="isMusteriEkleMenuOpen" style="display: flex; flex-direction: column;">
             <button class="sub-item" routerLink="bireysel-musteri-ekle" routerLinkActive="active"
               style="padding-left: 65px; font-size: 15px;">
-              Bireysel Müşteri Ekle
+              {{ 'NAV.ADD_INDIVIDUAL_CUSTOMER' | translate }}
             </button>
             <button class="sub-item" routerLink="tuzel-musteri-ekle" routerLinkActive="active"
               style="padding-left: 65px; font-size: 15px;">
-              Tüzel Müşteri Ekle
+              {{ 'NAV.ADD_CORPORATE_CUSTOMER' | translate }}
             </button>
           </div>
 
@@ -49,17 +47,17 @@
       <div class="nav-group">
         <button class="nav-item box" (click)="toggleHesapMenu()" [class.active]="isHesapMenuOpen">
           <span style="width: 16px; display: inline-block; text-align: center;">{{ isHesapMenuOpen ? '▼' : '▶' }}</span>
-          <span style="flex:1; text-align:left; padding-left: 10px;">Hesaplar</span>
+          <span style="flex:1; text-align:left; padding-left: 10px;">{{ 'NAV.ACCOUNTS' | translate }}</span>
         </button>
         <div class="sub-menu" *ngIf="isHesapMenuOpen" style="display: flex; flex-direction: column;">
           <button class="sub-item" routerLink="hesap-listeleri" routerLinkActive="active" style="padding-left: 45px;">
-            Hesap Listeleri
+            {{ 'NAV.ACCOUNT_LISTS' | translate }}
           </button>
           <button class="sub-item" routerLink="hesap-hareketleri" routerLinkActive="active" style="padding-left: 45px;">
-            Hesap Hareketleri
+            {{ 'NAV.ACCOUNT_TRANSACTIONS' | translate }}
           </button>
           <button class="sub-item" routerLink="hesap-ekle" routerLinkActive="active" style="padding-left: 45px;">
-            Hesap Ekle
+            {{ 'NAV.ADD_ACCOUNT' | translate }}
           </button>
         </div>
       </div>
@@ -70,16 +68,34 @@
   <!-- SAĞ İÇERİK (MAIN CONTENT) -->
   <main class="main-content">
     <header class="top-header">
+      <!-- Language Switcher -->
+      <div class="lang-switcher">
+        <button 
+          class="lang-btn" 
+          [class.active]="langService.currentLang() === 'tr'" 
+          (click)="setLanguage('tr')" 
+          title="Türkçe">
+          <span class="flag">🇹🇷</span> TR
+        </button>
+        <button 
+          class="lang-btn" 
+          [class.active]="langService.currentLang() === 'en'" 
+          (click)="setLanguage('en')" 
+          title="English">
+          <span class="flag">🇬🇧</span> EN
+        </button>
+      </div>
+
       <div class="user-profile-container">
         <div class="user-profile" (click)="toggleUserMenu()">
-          <span>Admin</span>
+          <span>{{ 'COMMON.ADMIN' | translate }}</span>
           <div class="user-icon">
             👤
           </div>
         </div>
         <div class="dropdown-menu" *ngIf="isUserMenuOpen">
           <button class="dropdown-item" (click)="logout()">
-            🚪 Çıkış Yap
+            🚪 {{ 'COMMON.LOGOUT' | translate }}
           </button>
         </div>
       </div>

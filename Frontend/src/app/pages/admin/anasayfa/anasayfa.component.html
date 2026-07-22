@@ -3,8 +3,8 @@
   <div class="chart-section">
     <div class="chart-header">
       <div class="header-text">
-        <h2 class="chart-title">BU AYKİ İŞLEM HACMİ</h2>
-        <p class="chart-subtitle">Haftalık dağılım</p>
+        <h2 class="chart-title">{{ 'DASHBOARD.THIS_MONTH_VOLUME' | translate }}</h2>
+        <p class="chart-subtitle">{{ 'DASHBOARD.WEEKLY_DISTRIBUTION' | translate }}</p>
       </div>
       <div class="volume-badge">{{ totalVolume | number:'1.2-2' }} ₺</div>
     </div>
@@ -15,54 +15,54 @@
 
   <!-- Stats Section -->
   <div class="stats-section">
-    <h2 class="section-title">Sistem Özeti</h2>
+    <h2 class="section-title">{{ 'DASHBOARD.SYSTEM_SUMMARY' | translate }}</h2>
     <div class="stats-grid-home">
 
       <div class="stat-card" (click)="router.navigate(['/admin/musteri-listesi'])">
         <div class="stat-info">
-          <div class="stat-title">Aktif Kullanıcı</div>
+          <div class="stat-title">{{ 'DASHBOARD.ACTIVE_USER' | translate }}</div>
           <div class="stat-val">{{ activeUsers | number:'1.0-0' }}</div>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-info">
-          <div class="stat-title">Tüzel Kullanıcı</div>
+          <div class="stat-title">{{ 'DASHBOARD.CORPORATE_USER' | translate }}</div>
           <div class="stat-val">{{ corpUsers | number:'1.0-0' }}</div>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-info">
-          <div class="stat-title">Bireysel Kullanıcı</div>
+          <div class="stat-title">{{ 'DASHBOARD.INDIVIDUAL_USER' | translate }}</div>
           <div class="stat-val">{{ indUsers | number:'1.0-0' }}</div>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-info">
-          <div class="stat-title">Altın Hesabı</div>
+          <div class="stat-title">{{ 'DASHBOARD.GOLD_ACCOUNT' | translate }}</div>
           <div class="stat-val">{{ goldAccs | number:'1.0-0' }}</div>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-info">
-          <div class="stat-title">Dolar Hesabı</div>
+          <div class="stat-title">{{ 'DASHBOARD.DOLLAR_ACCOUNT' | translate }}</div>
           <div class="stat-val">{{ dollarAccs | number:'1.0-0' }}</div>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-info">
-          <div class="stat-title">Vadeli Hesap</div>
+          <div class="stat-title">{{ 'DASHBOARD.TERM_ACCOUNT' | translate }}</div>
           <div class="stat-val">{{ termAccs | number:'1.0-0' }}</div>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-info">
-          <div class="stat-title">Vadesiz Hesap</div>
+          <div class="stat-title">{{ 'DASHBOARD.DEMAND_ACCOUNT' | translate }}</div>
           <div class="stat-val">{{ demandAccs | number:'1.0-0' }}</div>
         </div>
       </div>

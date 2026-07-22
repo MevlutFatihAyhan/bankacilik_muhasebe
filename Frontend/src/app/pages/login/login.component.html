@@ -1,4 +1,24 @@
 <div class="login-container">
+  <!-- Top Right Language Switcher -->
+  <div class="login-lang-pos">
+    <div class="lang-switcher">
+      <button 
+        class="lang-btn" 
+        [class.active]="langService.currentLang() === 'tr'" 
+        (click)="setLanguage('tr')" 
+        title="Türkçe">
+        <span class="flag">🇹🇷</span> TR
+      </button>
+      <button 
+        class="lang-btn" 
+        [class.active]="langService.currentLang() === 'en'" 
+        (click)="setLanguage('en')" 
+        title="English">
+        <span class="flag">🇬🇧</span> EN
+      </button>
+    </div>
+  </div>
+
   <div class="login-content">
     
     <div class="login-header">
@@ -9,16 +29,16 @@
     <form class="login-form">
       
       <div class="login-form-group">
-        <label for="username">Kullanıcı Adı</label>
-        <input type="text" id="username" name="username" placeholder="Kullanıcı adınızı girin">
+        <label for="username">{{ 'LOGIN.USERNAME' | translate }}</label>
+        <input type="text" id="username" name="username" [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate">
       </div>
       
       <div class="login-form-group">
-        <label for="password">Şifre</label>
-        <input type="password" id="password" name="password" placeholder="Şifrenizi girin">
+        <label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
+        <input type="password" id="password" name="password" [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate">
       </div>
       
-      <button type="button" routerLink="/admin">Giriş Yap</button>
+      <button type="button" routerLink="/admin">{{ 'LOGIN.SUBMIT' | translate }}</button>
     
     </form>
   </div>

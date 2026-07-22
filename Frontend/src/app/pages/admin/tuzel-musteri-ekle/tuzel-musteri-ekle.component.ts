@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './tuzel-musteri-ekle.component.html',
   styleUrls: ['./tuzel-musteri-ekle.component.css']
 })
+
 export class TuzelMusteriEkleComponent {
   ad: string = '';
   email: string = '';
