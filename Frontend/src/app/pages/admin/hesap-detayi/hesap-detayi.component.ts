@@ -6,7 +6,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   selector: 'app-hesap-detayi',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './hesap-detayi.component.html'
+  templateUrl: './hesap-detayi.component.html',
+  styleUrl: './hesap-detayi.component.css'
 })
 export class HesapDetayiComponent implements OnInit {
   hesapId: string | null = null;

@@ -1,37 +1,37 @@
-<div class="filter-bar" style="margin-bottom: 20px;">
-    <span class="filter-text" style="font-size: 24px; font-weight: 500;">Hesap Detayı: {{ hesapDetay?.no }}</span>
-    <button routerLink="/admin/hesap-listeleri" class="btn-primary-sm" style="background-color: #333;">Geri Dön</button>
+<div class="hesap-detayi-header">
+    <span class="hesap-detayi-title">Hesap Detayı: {{ hesapDetay?.no }}</span>
+    <button routerLink="/admin/hesap-listeleri" class="btn-back">Geri Dön</button>
 </div>
 
-<div class="card-container" style="max-width: 600px; padding: 40px;">
-    <div style="display: flex; flex-direction: column; gap: 15px; font-size: 16px;">
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-            <strong style="color: #555;">Müşteri Adı:</strong>
-            <span>{{ hesapDetay?.ad }}</span>
+<div class="hesap-card">
+    <div class="detail-list">
+        <div class="detail-row">
+            <span class="detail-label">Müşteri Adı:</span>
+            <span class="detail-value">{{ hesapDetay?.ad }}</span>
         </div>
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-            <strong style="color: #555;">IBAN:</strong>
-            <span>{{ hesapDetay?.iban }}</span>
+        <div class="detail-row">
+            <span class="detail-label">IBAN:</span>
+            <span class="detail-value">{{ hesapDetay?.iban }}</span>
         </div>
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-            <strong style="color: #555;">Hesap Türü:</strong>
-            <span>{{ hesapDetay?.tur }}</span>
+        <div class="detail-row">
+            <span class="detail-label">Hesap Türü:</span>
+            <span class="detail-value">{{ hesapDetay?.tur }}</span>
         </div>
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-            <strong style="color: #555;">Döviz Cinsi:</strong>
-            <span>{{ hesapDetay?.doviz }}</span>
+        <div class="detail-row">
+            <span class="detail-label">Döviz Cinsi:</span>
+            <span class="detail-value">{{ hesapDetay?.doviz }}</span>
         </div>
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-            <strong style="color: #555;">Bakiye:</strong>
-            <span style="font-weight: 600; color: #2e7d32;">{{ hesapDetay?.bakiye | number:'1.2-2' }} {{ hesapDetay?.doviz === 'TL' ? '₺' : '$' }}</span>
+        <div class="detail-row">
+            <span class="detail-label">Bakiye:</span>
+            <span class="detail-value bakiye">{{ hesapDetay?.bakiye | number:'1.2-2' }} {{ hesapDetay?.doviz === 'TL' ? '₺' : '$' }}</span>
         </div>
-        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-            <strong style="color: #555;">Şube:</strong>
-            <span>{{ hesapDetay?.sube }}</span>
+        <div class="detail-row">
+            <span class="detail-label">Şube:</span>
+            <span class="detail-value">{{ hesapDetay?.sube }}</span>
         </div>
-        <div style="display: flex; justify-content: space-between;">
-            <strong style="color: #555;">Açılış Tarihi:</strong>
-            <span>{{ hesapDetay?.acilisTarihi }}</span>
+        <div class="detail-row">
+            <span class="detail-label">Açılış Tarihi:</span>
+            <span class="detail-value">{{ hesapDetay?.acilisTarihi }}</span>
         </div>
     </div>
 </div>

@@ -10,7 +10,7 @@ import { Musteri } from '../../../models/musteri.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './musteri-duzenle.component.html',
-  styleUrls: ['../tuzel-musteri-ekle/tuzel-musteri-ekle.component.css']
+  styleUrl: './musteri-duzenle.component.css'
 })
 export class MusteriDuzenleComponent implements OnInit {
   musteriId: number = 0;
