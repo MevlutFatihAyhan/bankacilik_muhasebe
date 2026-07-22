@@ -8,8 +8,7 @@
       <p class="profile-id">Müşteri No: #{{ musteriDetay.musteriId }}</p>
     </div>
     <div class="profile-status">
-      <span class="status-badge" [class.active]="musteriDetay.aktifMi === 1">{{ musteriDetay.aktifMi === 1 ? 'Aktif' :
-        'Pasif' }}</span>
+      <span class="status-badge" [class.active]="musteriDetay.aktifMi === 1">{{ musteriDetay.aktifMi === 1 ? 'Aktif' : 'Pasif' }}</span>
     </div>
   </div>
 
@@ -45,10 +44,69 @@
         </div>
       </div>
     </div>
+
+    <!-- ADRES YÖNETİMİ BÖLÜMÜ -->
+    <div class="info-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #DA0037; padding-bottom: 8px; margin-bottom: 20px;">
+        <h3 style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">Kayıtlı Adresler ({{ adresler.length }})</h3>
+        <button class="btn-primary" (click)="yeniAdresFormAcik = !yeniAdresFormAcik" style="padding: 6px 14px; font-size: 13px; cursor: pointer;">
+          {{ yeniAdresFormAcik ? 'İptal' : '+ Yeni Adres Ekle' }}
+        </button>
+      </div>
+
+      <!-- Yeni Adres Ekleme Formu -->
+      <div *ngIf="yeniAdresFormAcik" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e9ecef;">
+        <h4 style="margin-top: 0; margin-bottom: 15px; font-size: 14px; font-weight: 600; color: #333;">+ Yeni Adres Tanımla</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+          <div>
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">Adres Başlığı</label>
+            <input type="text" class="form-control" [(ngModel)]="yeniAdresBaslik" placeholder="Ev, İş, Yazlık vb." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">Şehir *</label>
+            <input type="text" class="form-control" [(ngModel)]="yeniSehir" placeholder="İstanbul" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">İlçe</label>
+            <input type="text" class="form-control" [(ngModel)]="yeniIlce" placeholder="Kadıköy" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 15px;">
+          <div>
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">Posta Kodu</label>
+            <input type="text" class="form-control" [(ngModel)]="yeniPostaKodu" placeholder="34000" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">Açık Adres *</label>
+            <input type="text" class="form-control" [(ngModel)]="yeniAcikAdres" placeholder="Mahalle, Cadde, Sokak, No/Daire" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <button class="btn-primary" (click)="yeniAdresEkle()" style="padding: 8px 18px; font-size: 14px; cursor: pointer;">Adresi Kaydet</button>
+        </div>
+      </div>
+
+      <!-- Adres Listesi Grid -->
+      <div *ngIf="adresler.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px;">
+        <div *ngFor="let a of adresler" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; background: #fff; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #DA0037; font-size: 14px;">📍 {{ a.adresBaslik || 'Adres' }}</span>
+            <button (click)="adresSil(a.adresId)" title="Adresi Sil" style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+              🗑️ Sil
+            </button>
+          </div>
+          <p style="margin: 0 0 6px 0; font-size: 13px; color: #333; line-height: 1.4;">{{ a.acikAdres }}</p>
+          <span style="font-size: 12px; color: #777;">{{ a.ilce ? a.ilce + ' / ' : '' }}{{ a.sehir }} {{ a.postaKodu ? '(' + a.postaKodu + ')' : '' }}</span>
+        </div>
+      </div>
+
+      <p *ngIf="adresler.length === 0 && !yeniAdresFormAcik" style="color: #888; font-style: italic; font-size: 14px; margin-top: 10px;">Henüz kayıtlı bir adres bulunmamaktadır.</p>
+    </div>
   </div>
 
   <div class="profile-actions">
-    <button class="btn-primary" [routerLink]="['/admin/musteri-listesi']">Geri Dön</button>
+    <button class="btn-primary" [routerLink]="['/admin/musteri-duzenle', musteriDetay.musteriId]">Düzenle</button>
+    <button class="btn-primary" [routerLink]="['/admin/musteri-listesi']" style="margin-left: 10px;">Geri Dön</button>
   </div>
 </div>
 

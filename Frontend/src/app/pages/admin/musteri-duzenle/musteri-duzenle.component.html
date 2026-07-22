@@ -1,0 +1,47 @@
+<h2 style="font-size: 18px; font-weight: 500; margin-bottom: 30px;">Müşteri Bilgilerini Düzenle #{{ musteriId }}</h2>
+
+<div class="form-container" *ngIf="!loading">
+    <div class="form-left">
+        <div class="form-group" style="display: flex; gap: 20px;">
+            <div style="flex: 1">
+                <label class="form-label">Ad</label>
+                <input type="text" class="form-control shadow-input" [(ngModel)]="ad">
+            </div>
+            <div style="flex: 1" *ngIf="musteriTipi === 1">
+                <label class="form-label">Soyad</label>
+                <input type="text" class="form-control shadow-input" [(ngModel)]="soyad">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">{{ musteriTipi === 1 ? 'TCKN No' : 'VKN No' }}</label>
+            <input type="text" class="form-control shadow-input" [(ngModel)]="kimlikNo">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Durum</label>
+            <select class="form-control shadow-input" [(ngModel)]="aktifMi">
+                <option [ngValue]="1">Aktif</option>
+                <option [ngValue]="2">Pasif</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-right">
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control shadow-input" [(ngModel)]="email">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Telefon</label>
+            <input type="tel" class="form-control shadow-input" [(ngModel)]="telefon">
+        </div>
+        
+        <div style="text-align: right; margin-top: 40px; display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn-primary shadow-btn" (click)="iptal()" style="width: 120px; height: 45px; font-size: 16px; background-color: #6c757d;">İptal</button>
+            <button class="btn-primary shadow-btn" (click)="guncelle()" style="width: 150px; height: 45px; font-size: 16px;">Güncelle</button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="loading" style="text-align: center; padding: 40px;">
+    <p>Müşteri bilgileri yükleniyor...</p>
+</div>

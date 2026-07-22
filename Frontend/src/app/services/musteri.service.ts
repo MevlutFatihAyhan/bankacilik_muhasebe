@@ -26,8 +26,8 @@ export class MusteriService {
         return this.http.post(this.apiUrl, musteri, { responseType: 'text' as 'json' });
     }
 
-    updateMusteri(id: number, musteri: Musteri): Observable<any> {
-        return this.http.put(`${this.apiUrl}/${id}`, musteri, { responseType: 'text' as 'json' });
+    updateMusteri(musteri: Musteri): Observable<any> {
+        return this.http.put(this.apiUrl, musteri, { responseType: 'text' as 'json' });
     }
 
 
