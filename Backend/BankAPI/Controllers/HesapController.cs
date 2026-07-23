@@ -29,6 +29,20 @@ namespace BankAPI.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult TumHesaplariGetir()
+        {
+            try
+            {
+                var hesapListesi = _hesapService.TumHesaplariGetir();
+                return Ok(hesapListesi);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
         [HttpGet("{hesapNo}")]
         public IActionResult HesapGetir(string hesapNo)
         {

@@ -29,13 +29,45 @@ namespace BankAPI.Controllers
             }
         }
 
-        [HttpGet("{hesapNo}")]
+        [HttpGet]
+        public IActionResult TumHareketleriGetir()
+        {
+            try
+            {
+                var hareketListesi = _hareketService.TumHareketleriGetir();
+                return Ok(hareketListesi);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("hesap/{hesapNo}")]
         public IActionResult HesapHareketleriGetir(string hesapNo)
         {
             try
             {
                 var hareketListesi = _hareketService.HesapHareketleriGetir(hesapNo);
                 return Ok(hareketListesi);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("{islemId}")]
+        public IActionResult HareketGetir(decimal islemId)
+        {
+            try
+            {
+                var hareket = _hareketService.HareketGetir(islemId);
+                if (hareket == null)
+                {
+                    return NotFound(new { message = "Hareket bulunamadı" });
+                }
+                return Ok(hareket);
             }
             catch (Exception ex)
             {

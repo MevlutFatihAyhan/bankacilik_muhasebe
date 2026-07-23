@@ -70,23 +70,79 @@ namespace BankAPI.Services
                     {
                         while (reader.Read())
                         {
-                            HesapHareket hareket = new HesapHareket();
-                            hareket.ISLEM_ID = Convert.ToDecimal(reader["ISLEM_ID"]);
-                            hareket.HESAP_NO = reader["HESAP_NO"].ToString();
-                            hareket.ISLEM_YONU = reader["ISLEM_YONU"]?.ToString()?.Trim();
-                            hareket.ISLEM_TUTARI = Convert.ToDecimal(reader["ISLEM_TUTARI"]);
-                            hareket.DOVIZ_CINSI = reader["DOVIZ_CINSI"]?.ToString()?.Trim();
-                            hareket.YENI_BAKIYE = reader["YENI_BAKIYE"] != DBNull.Value ? Convert.ToDecimal(reader["YENI_BAKIYE"]) : 0;
-                            hareket.ISLEM_TARIHI = Convert.ToDateTime(reader["ISLEM_TARIHI"]);
-                            hareket.ACIKLAMA = reader["ACIKLAMA"]?.ToString();
-                            hareket.ISLEM_KODU = reader["ISLEM_KODU"]?.ToString();
-                            hareket.REFERANS_NO = reader["REFERANS_NO"]?.ToString();
-                            hareketListesi.Add(hareket);
+                            hareketListesi.Add(MapHareket(reader));
                         }
                     }
                 }
             }
             return hareketListesi;
+        }
+
+        // Tüm hesap hareketlerini getir — PKG_HESAP.PRC_HAREKET_LISTE
+        public List<HesapHareket> TumHareketleriGetir()
+        {
+            List<HesapHareket> hareketListesi = new List<HesapHareket>();
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_HESAP.PRC_HAREKET_LISTE", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("p_result", OracleDbType.RefCursor, ParameterDirection.Output);
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            hareketListesi.Add(MapHareket(reader));
+                        }
+                    }
+                }
+            }
+            return hareketListesi;
+        }
+
+        // Tek bir hareketi ISLEM_ID ile getir — PKG_HESAP.PRC_HAREKET_GETIR
+        public HesapHareket HareketGetir(decimal islemId)
+        {
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_HESAP.PRC_HAREKET_GETIR", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("p_islem_id", OracleDbType.Decimal).Value = islemId;
+                    cmd.Parameters.Add("p_result", OracleDbType.RefCursor, ParameterDirection.Output);
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return MapHareket(reader);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static HesapHareket MapHareket(OracleDataReader reader)
+        {
+            return new HesapHareket
+            {
+                ISLEM_ID = Convert.ToDecimal(reader["ISLEM_ID"]),
+                HESAP_NO = reader["HESAP_NO"]?.ToString()?.Trim(),
+                ISLEM_YONU = reader["ISLEM_YONU"]?.ToString()?.Trim(),
+                ISLEM_TUTARI = Convert.ToDecimal(reader["ISLEM_TUTARI"]),
+                DOVIZ_CINSI = reader["DOVIZ_CINSI"]?.ToString()?.Trim(),
+                YENI_BAKIYE = reader["YENI_BAKIYE"] != DBNull.Value ? Convert.ToDecimal(reader["YENI_BAKIYE"]) : 0,
+                ISLEM_TARIHI = Convert.ToDateTime(reader["ISLEM_TARIHI"]),
+                ACIKLAMA = reader["ACIKLAMA"]?.ToString(),
+                ISLEM_KODU = reader["ISLEM_KODU"]?.ToString(),
+                REFERANS_NO = reader["REFERANS_NO"]?.ToString()
+            };
         }
     }
 }

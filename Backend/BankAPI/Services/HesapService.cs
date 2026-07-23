@@ -92,6 +92,31 @@ namespace BankAPI.Services
             return null;
         }
 
+        // Tüm hesapları getir — PKG_HESAP.PRC_HESAP_LISTE
+        public List<Hesap> TumHesaplariGetir()
+        {
+            List<Hesap> hesapListesi = new List<Hesap>();
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_HESAP.PRC_HESAP_LISTE", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("p_result", OracleDbType.RefCursor, ParameterDirection.Output);
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            hesapListesi.Add(MapHesap(reader));
+                        }
+                    }
+                }
+            }
+            return hesapListesi;
+        }
+
         // Bir müşterinin tüm hesaplarını getir — PKG_HESAP.PRC_MUSTERI_HESAPLARI (Inline SQL kaldırıldı)
         public List<Hesap> MusteriHesaplariGetir(decimal musteriId)
         {
