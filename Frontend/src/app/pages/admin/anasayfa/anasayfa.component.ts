@@ -63,20 +63,27 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
 
         const hacimler = data.hacimIstatistikleri || [];
         let targetTotalVolume = 0;
-        hacimler.forEach(h => {
-          targetTotalVolume += h.toplamHacim || 0;
-        });
+        if (hacimler.length > 0) {
+          hacimler.forEach(h => {
+            targetTotalVolume += h.toplamHacim || 0;
+          });
+        } else if (data.sonIslemler && data.sonIslemler.length > 0) {
+          data.sonIslemler.forEach(s => {
+            targetTotalVolume += s.islemTutari || 0;
+          });
+        }
 
-        if (targetTotalVolume > 0 && data.sonIslemler && data.sonIslemler.length > 0) {
+        if (targetTotalVolume > 0) {
           this.chartValues = [
-            Math.round(targetTotalVolume * 0.1),
-            Math.round(targetTotalVolume * 0.25),
-            Math.round(targetTotalVolume * 0.5),
+            Math.round(targetTotalVolume * 0.15),
+            Math.round(targetTotalVolume * 0.35),
+            Math.round(targetTotalVolume * 0.65),
             Math.round(targetTotalVolume)
           ];
         } else {
           this.chartValues = [0, 0, 0, 0];
         }
+
 
         if (isPlatformBrowser(this.platformId)) {
           this.animateValue('totalVolume', 0, targetTotalVolume, 1200);

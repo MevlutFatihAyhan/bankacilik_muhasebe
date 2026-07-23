@@ -31,43 +31,61 @@
 </div>
 
 <ng-container *ngIf="(filteredData | sort:sortColumn:sortDirection) as result">
-    <table class="data-table">
-        <thead>
-            <tr class="table-header-row">
-                <th class="p-12 sortable" (click)="sortBy('musteriId')">Müşteri ID <span
-                        *ngIf="sortColumn === 'musteriId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12 sortable" (click)="sortBy('ad')">Ad / Unvan <span
-                        *ngIf="sortColumn === 'ad'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12 sortable" (click)="sortBy('email')">Email <span
-                        *ngIf="sortColumn === 'email'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12 sortable" (click)="sortBy('telefon')">Telefon <span
-                        *ngIf="sortColumn === 'telefon'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12 sortable" (click)="sortBy('aktifMi')">Durum <span
-                        *ngIf="sortColumn === 'aktifMi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let musteri of result | slice:(currentPage-1)*pageSize : currentPage*pageSize"
-                class="table-row">
-                <td class="p-12">{{ musteri.musteriId }}</td>
-                <td class="p-12">{{ musteri.ad }} {{ musteri.soyad }}</td>
-                <td class="p-12">{{ musteri.email }}</td>
-                <td class="p-12">{{ musteri.telefon }}</td>
-                <td class="p-12" style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                    {{ musteri.aktifMi === 1 ? 'Aktif' : 'Pasif' }}</td>
-                <td class="p-12" style="border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;">
-                    <button class="info-btn" [routerLink]="['/admin/musteri-detayi', musteri.musteriId]"
-                        title="Müşteri Detaylarını Gör">i</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr class="table-header-row">
+                    <th class="p-12 sortable" (click)="sortBy('musteriId')">Müşteri ID <span
+                            *ngIf="sortColumn === 'musteriId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('ad')">Ad / Unvan <span
+                            *ngIf="sortColumn === 'ad'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('email')">Email <span
+                            *ngIf="sortColumn === 'email'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('telefon')">Telefon <span
+                            *ngIf="sortColumn === 'telefon'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('aktifMi')">Durum <span
+                            *ngIf="sortColumn === 'aktifMi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let musteri of result | slice:(currentPage-1)*pageSize : currentPage*pageSize"
+                    class="table-row">
+                    <td class="p-12">{{ musteri.musteriId }}</td>
+                    <td class="p-12">{{ musteri.ad }} {{ musteri.soyad }}</td>
+                    <td class="p-12">{{ musteri.email }}</td>
+                    <td class="p-12">{{ musteri.telefon }}</td>
+                    <td class="p-12" style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                        {{ musteri.aktifMi === 1 ? 'Aktif' : 'Pasif' }}</td>
+                    <td class="p-12" style="border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                        <button class="info-btn" [routerLink]="['/admin/musteri-detayi', musteri.musteriId]"
+                            title="Müşteri Detaylarını Gör">i</button>
+                    </td>
+                </tr>
+                <tr *ngIf="result.length === 0">
+                    <td colspan="6" style="text-align: center; padding: 24px; color: #707070;">
+                        Müşteri bulunamadı.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <div class="pagination-controls" *ngIf="result.length > pageSize">
-        <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">Önceki</button>
-        <span class="page-info">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) }}</span>
-        <button class="btn-page" (click)="currentPage = currentPage + 1"
-            [disabled]="currentPage * pageSize >= result.length">Sonraki</button>
+    <div class="pagination-controls" *ngIf="result.length > 0">
+        <span class="page-info">
+            Toplam <strong>{{ result.length }}</strong> kayıttan 
+            <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - 
+            <strong>{{ Math.min(currentPage * pageSize, result.length) }}</strong> arası gösteriliyor
+        </span>
+
+        <div class="pagination-actions">
+            <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
+                ‹ Önceki
+            </button>
+            <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1 }}</span>
+            <button class="btn-page" (click)="currentPage = currentPage + 1" [disabled]="currentPage * pageSize >= result.length">
+                Sonraki ›
+            </button>
+        </div>
     </div>
 </ng-container>

@@ -1,254 +1,310 @@
 -- ============================================================
 --  04_EXAMPLES.SQL
---  Örnek INSERT, UPDATE, DELETE ve SELECT işlemleri
+--  Örnek Veri Seti (Seed Data Script)
 --  Çalıştırma sırası: 03_Procedures.sql'den sonra çalıştırılmalıdır.
--- ============================================================
---  NOT: DURUM değerleri → AKTIF / PASIF / KAPALI
---       ISLEM_YONU       → B (Para Girisi) / C (Para Cikisi)
 -- ============================================================
 
 SET SERVEROUTPUT ON;
 
 -- ============================================================
--- ÖRNEK 1: Müşteri Ekleme (PKG_MUSTERI.PRC_MUSTERI_EKLE)
+-- 1. TEMİZLİK: Mevcut Örnek Verilerin Temizlenmesi (FK Sırasına Göre)
 -- ============================================================
-
-DECLARE
-    v_musteri_id MST_MUSTERI.MUSTERI_ID%TYPE;
 BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 1: Musteri Ekleme ---');
-
-    PKG_MUSTERI.PRC_MUSTERI_EKLE(
-        P_AD           => 'Ahmet',
-        P_SOYAD        => 'Yilmaz',
-        P_MUSTERI_TIPI => 1,             -- 1: Bireysel, 2: Tuzel
-        P_KIMLIK_NO    => '11111111111', -- 11 haneli TC Kimlik No
-        P_EMAIL        => 'ahmet.yilmaz@ornek.com',
-        P_TELEFON      => '05551234567',
-        P_AKTIF_MI     => 1,
-        P_MUSTERI_ID   => v_musteri_id
-    );
-
-    DBMS_OUTPUT.PUT_LINE('Musteri eklendi. MUSTERI_ID: ' || v_musteri_id);
+    EXECUTE IMMEDIATE 'DELETE FROM MVD_HESAPHAREKET';
+    EXECUTE IMMEDIATE 'DELETE FROM MVD_HESAP';
+    EXECUTE IMMEDIATE 'DELETE FROM MST_MUSTERIADRES';
+    EXECUTE IMMEDIATE 'DELETE FROM MST_MUSTERI';
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Mevcut veri tabloları temizlendi.');
+EXCEPTION
+    WHEN OTHERS THEN
+        NULL;
 END;
 /
 
 -- ============================================================
--- ÖRNEK 2: Müşteri Güncelleme (PKG_MUSTERI.PRC_MUSTERI_GUNCELLE)
+-- 2. MÜŞTERİ KAYITLARI (MST_MUSTERI) - 15 Adet Müşteri (10 Bireysel, 5 Tüzel)
+-- ============================================================
+
+-- Bireysel Müşteriler (MUSTERI_TIPI = 1)
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Ahmet', 'Yılmaz', 1, '11111111111', 'ahmet.yilmaz@gmail.com', '05321112233', 1, SYSDATE - 120);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Ayşe', 'Kaya', 1, '22222222222', 'ayse.kaya@hotmail.com', '05332223344', 1, SYSDATE - 100);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Mehmet', 'Demir', 1, '33333333333', 'mehmet.demir@yahoo.com', '05343334455', 1, SYSDATE - 90);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Fatma', 'Şahin', 1, '44444444444', 'fatma.sahin@outlook.com', '05354445566', 1, SYSDATE - 80);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Mustafa', 'Çelik', 1, '55555555555', 'mustafa.celik@gmail.com', '05365556677', 1, SYSDATE - 70);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Zeynep', 'Öztürk', 1, '66666666666', 'zeynep.ozturk@gmail.com', '05376667788', 1, SYSDATE - 60);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Ali', 'Yıldız', 1, '77777777777', 'ali.yildiz@icloud.com', '05387778899', 1, SYSDATE - 50);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Elif', 'Arslan', 1, '88888888888', 'elif.arslan@gmail.com', '05398889900', 1, SYSDATE - 40);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Murat', 'Doğan', 1, '99999999999', 'murat.dogan@gmail.com', '05409990011', 2, SYSDATE - 30); -- Pasif müşteri
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Seda', 'Koç', 1, '10101010101', 'seda.koc@gmail.com', '05410101122', 1, SYSDATE - 20);
+
+-- Tüzel Müşteriler (MUSTERI_TIPI = 2, SOYAD NULL/Şirket Ünvanı AD alanında)
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Anadolu Teknoloji A.Ş.', NULL, 2, '12345678901', 'info@anadolutech.com', '02123456789', 1, SYSDATE - 150);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Marmara Lojistik Ltd. Şti.', NULL, 2, '23456789012', 'iletisim@marmaralojistik.com', '02164567890', 1, SYSDATE - 130);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Ege Gıda Sanayi Tic. A.Ş.', NULL, 2, '34567890123', 'muhasebe@egegida.com.tr', '02325678901', 1, SYSDATE - 110);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Başkent Enerji A.Ş.', NULL, 2, '45678901234', 'finans@baskentenerji.com', '03126789012', 1, SYSDATE - 85);
+
+INSERT INTO MST_MUSTERI (AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI, OLUSTURMA_TARIHI)
+VALUES ('Karadeniz İnşaat Ltd.', NULL, 2, '56789012345', 'destek@karadenizinsaat.com', '04627890123', 1, SYSDATE - 45);
+
+COMMIT;
+DBMS_OUTPUT.PUT_LINE('15 Müşteri başarıyla eklendi.');
+
+-- ============================================================
+-- 3. MÜŞTERİ ADRESLERİ (MST_MUSTERIADRES)
 -- ============================================================
 
 DECLARE
-    v_musteri_id MST_MUSTERI.MUSTERI_ID%TYPE;
+    v_m1 NUMBER; v_m2 NUMBER; v_m3 NUMBER; v_m4 NUMBER; v_m5 NUMBER;
+    v_m11 NUMBER; v_m12 NUMBER;
 BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 2: Musteri Guncelleme ---');
+    SELECT MUSTERI_ID INTO v_m1  FROM MST_MUSTERI WHERE KIMLIK_NO = '11111111111';
+    SELECT MUSTERI_ID INTO v_m2  FROM MST_MUSTERI WHERE KIMLIK_NO = '22222222222';
+    SELECT MUSTERI_ID INTO v_m3  FROM MST_MUSTERI WHERE KIMLIK_NO = '33333333333';
+    SELECT MUSTERI_ID INTO v_m4  FROM MST_MUSTERI WHERE KIMLIK_NO = '44444444444';
+    SELECT MUSTERI_ID INTO v_m5  FROM MST_MUSTERI WHERE KIMLIK_NO = '55555555555';
+    SELECT MUSTERI_ID INTO v_m11 FROM MST_MUSTERI WHERE KIMLIK_NO = '12345678901';
+    SELECT MUSTERI_ID INTO v_m12 FROM MST_MUSTERI WHERE KIMLIK_NO = '23456789012';
 
-    SELECT MAX(MUSTERI_ID) INTO v_musteri_id FROM MST_MUSTERI;
+    -- Ahmet Yılmaz Adresleri
+    INSERT INTO MST_MUSTERIADRES (MUSTERI_ID, ADRES_BASLIK, ULKE, SEHIR, ILCE, POSTA_KODU, ACIK_ADRES)
+    VALUES (v_m1, 'Ev Adresi', 'Türkiye', 'İstanbul', 'Kadıköy', '34710', 'Moda Cad. No:15 D:4');
 
-    PKG_MUSTERI.PRC_MUSTERI_GUNCELLE(
-        P_MUSTERI_ID   => v_musteri_id,
-        P_AD           => 'Ahmet Fatih',
-        P_SOYAD        => 'Yilmaz',
-        P_MUSTERI_TIPI => 1,             -- 1: Bireysel, 2: Tuzel
-        P_KIMLIK_NO    => '11111111111', -- ayni musteri, ayni kimlik no
-        P_EMAIL        => 'ahmet.fatih@ornek.com',
-        P_TELEFON      => '05559876543',
-        P_AKTIF_MI     => 1
-    );
+    INSERT INTO MST_MUSTERIADRES (MUSTERI_ID, ADRES_BASLIK, ULKE, SEHIR, ILCE, POSTA_KODU, ACIK_ADRES)
+    VALUES (v_m1, 'İş Adresi', 'Türkiye', 'İstanbul', 'Ataşehir', '34758', 'Barbaros Mah. Şerifali Cad. No:88');
 
-    DBMS_OUTPUT.PUT_LINE('Musteri guncellendi. MUSTERI_ID: ' || v_musteri_id);
-END;
-/
+    -- Ayşe Kaya Adresleri
+    INSERT INTO MST_MUSTERIADRES (MUSTERI_ID, ADRES_BASLIK, ULKE, SEHIR, ILCE, POSTA_KODU, ACIK_ADRES)
+    VALUES (v_m2, 'Ev Adresi', 'Türkiye', 'Ankara', 'Çankaya', '06500', 'Atatürk Bulvarı No:120 D:12');
 
--- ============================================================
--- ÖRNEK 3: Adres Ekleme (PKG_MUSTERI.PRC_ADRES_EKLE)
--- ============================================================
+    -- Mehmet Demir Adresleri
+    INSERT INTO MST_MUSTERIADRES (MUSTERI_ID, ADRES_BASLIK, ULKE, SEHIR, ILCE, POSTA_KODU, ACIK_ADRES)
+    VALUES (v_m3, 'Ev Adresi', 'Türkiye', 'İzmir', 'Konak', '35220', 'Alsancak Mah. 1456 Sok. No:5');
 
-DECLARE
-    v_musteri_id MST_MUSTERI.MUSTERI_ID%TYPE;
-    v_adres_id   MST_MUSTERIADRES.ADRES_ID%TYPE;
-BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 3: Adres Ekleme ---');
+    -- Fatma Şahin Adresleri
+    INSERT INTO MST_MUSTERIADRES (MUSTERI_ID, ADRES_BASLIK, ULKE, SEHIR, ILCE, POSTA_KODU, ACIK_ADRES)
+    VALUES (v_m4, 'Ev Adresi', 'Türkiye', 'Bursa', 'Nilüfer', '16140', 'Fethiye Mah. Sanayi Cad. No:42');
 
-    SELECT MAX(MUSTERI_ID) INTO v_musteri_id FROM MST_MUSTERI;
+    -- Mustafa Çelik Adresleri
+    INSERT INTO MST_MUSTERIADRES (MUSTERI_ID, ADRES_BASLIK, ULKE, SEHIR, ILCE, POSTA_KODU, ACIK_ADRES)
+    VALUES (v_m5, 'Yazlık Adres', 'Türkiye', 'Antalya', 'Muratpaşa', '07100', 'Lara Cad. No:204');
 
-    PKG_MUSTERI.PRC_ADRES_EKLE(
-        P_MUSTERI_ID   => v_musteri_id,
-        P_ADRES_BASLIK => 'Ev',
-        P_ULKE         => 'Turkiye',
-        P_SEHIR        => 'Istanbul',
-        P_ILCE         => 'Kadikoy',
-        P_POSTA_KODU   => '34710',
-        P_ACIK_ADRES   => 'Moda Mahallesi No:10',
-        P_ADRES_ID     => v_adres_id
-    );
+    -- Şirket Merkez Adresleri
+    INSERT INTO MST_MUSTERIADRES (MUSTERI_ID, ADRES_BASLIK, ULKE, SEHIR, ILCE, POSTA_KODU, ACIK_ADRES)
+    VALUES (v_m11, 'Genel Merkez', 'Türkiye', 'İstanbul', 'Maslak', '34398', 'Büyükdere Cad. Maslak Plaza K:14');
 
-    DBMS_OUTPUT.PUT_LINE('Adres eklendi. ADRES_ID: ' || v_adres_id);
-END;
-/
-
--- ============================================================
--- ÖRNEK 4: Hesap Ekleme (PKG_HESAP.PRC_HESAP_EKLE)
--- NOT: DURUM tabloda NUMBER(1) olarak tanimlidir → 1: Aktif, 2: Pasif, 3: Kapali
---      (metin degerler ('AKTIF' vb.) gecersizdir, ORA-01722 hatasi verir)
--- ============================================================
-
-DECLARE
-    v_musteri_id MST_MUSTERI.MUSTERI_ID%TYPE;
-BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 4: Hesap Ekleme ---');
-
-    SELECT MAX(MUSTERI_ID) INTO v_musteri_id FROM MST_MUSTERI;
-
-    PKG_HESAP.PRC_HESAP_EKLE(
-        P_HESAP_NO    => 'TR01100001',
-        P_MUSTERI_ID  => v_musteri_id,
-        P_IBAN        => 'TR870006200000000010010001',
-        P_HESAP_TURU  => 'Vadesiz',
-        P_DOVIZ_CINSI => 'TRY',
-        P_BAKIYE      => 5000.00,
-        P_DURUM       => 1   -- Dogru: 1 (Aktif) / 2 (Pasif) / 3 (Kapali)
-    );
-
-    DBMS_OUTPUT.PUT_LINE('Hesap eklendi. HESAP_NO: TR01100001');
-END;
-/
-
--- ============================================================
--- ÖRNEK 5: Para Girişi — ISLEM_YONU = 'B' (sp_hesap_hareket_ekle)
--- ============================================================
-
-DECLARE
-BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 5: Para Girisi (B) ---');
-
-    PKG_HESAP.PRC_HAREKET_EKLE(
-        P_HESAP_NO     => 'TR01100001',
-        P_ISLEM_YONU   => 'B',       -- B = Para Girisi (Borc)
-        P_ISLEM_TUTARI => 1500.00,
-        P_DOVIZ_CINSI  => 'TRY',
-        P_ACIKLAMA     => 'EFT ile para girisi',
-        P_ISLEM_KODU   => 'EFT',
-        P_REFERANS_NO  => 'REF001'
-    );
-
-    DBMS_OUTPUT.PUT_LINE('Para girisi islendi. Yeni bakiye trigger tarafindan hesaplandi.');
-END;
-/
-
--- ============================================================
--- ÖRNEK 6: Para Çıkışı — ISLEM_YONU = 'C' (sp_hesap_hareket_ekle)
--- ============================================================
-
-DECLARE
-BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 6: Para Cikisi (C) ---');
-
-    PKG_HESAP.PRC_HAREKET_EKLE(
-        P_HESAP_NO     => 'TR01100001',
-        P_ISLEM_YONU   => 'C',       -- C = Para Cikisi (Cari)
-        P_ISLEM_TUTARI => 500.00,
-        P_DOVIZ_CINSI  => 'TRY',
-        P_ACIKLAMA     => 'ATM para cekimi',
-        P_ISLEM_KODU   => 'ATM',
-        P_REFERANS_NO  => 'REF002'
-    );
-
-    DBMS_OUTPUT.PUT_LINE('Para cikisi islendi. Yeni bakiye trigger tarafindan hesaplandi.');
-END;
-/
-
--- ============================================================
--- ÖRNEK 7: Hesap Durumu Güncelleme (Doğrudan UPDATE)
--- NOT: DURUM tabloda NUMBER(1) olarak tanimlidir → 1: Aktif, 2: Pasif, 3: Kapali
--- ============================================================
-
-DECLARE
-BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 7: Hesap Durumu Guncelleme ---');
-
-    UPDATE MVD_HESAP
-       SET DURUM = 2   -- 2: Pasif
-     WHERE HESAP_NO = 'TR01100001';
+    INSERT INTO MST_MUSTERIADRES (MUSTERI_ID, ADRES_BASLIK, ULKE, SEHIR, ILCE, POSTA_KODU, ACIK_ADRES)
+    VALUES (v_m12, 'Lojistik Depo Merkez', 'Türkiye', 'Kocaeli', 'Gebze', '41400', 'Organize Sanayi Bölgesi 4. Cad. No:10');
 
     COMMIT;
-    DBMS_OUTPUT.PUT_LINE('Hesap durumu PASIF yapildi.');
+    DBMS_OUTPUT.PUT_LINE('Müşteri adresleri eklendi.');
 END;
 /
 
 -- ============================================================
--- ÖRNEK 8: Adres Güncelleme (PKG_MUSTERI.PRC_ADRES_GUNCELLE)
+-- 4. BANKA HESAPLARI (MVD_HESAP) - 20+ Adet Hesap (TRY, USD, EUR, XAU)
 -- ============================================================
 
 DECLARE
-    v_adres_id MST_MUSTERIADRES.ADRES_ID%TYPE;
+    v_m1 NUMBER; v_m2 NUMBER; v_m3 NUMBER; v_m4 NUMBER; v_m5 NUMBER;
+    v_m6 NUMBER; v_m7 NUMBER; v_m8 NUMBER; v_m11 NUMBER; v_m12 NUMBER; v_m13 NUMBER;
 BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 8: Adres Guncelleme ---');
+    SELECT MUSTERI_ID INTO v_m1  FROM MST_MUSTERI WHERE KIMLIK_NO = '11111111111';
+    SELECT MUSTERI_ID INTO v_m2  FROM MST_MUSTERI WHERE KIMLIK_NO = '22222222222';
+    SELECT MUSTERI_ID INTO v_m3  FROM MST_MUSTERI WHERE KIMLIK_NO = '33333333333';
+    SELECT MUSTERI_ID INTO v_m4  FROM MST_MUSTERI WHERE KIMLIK_NO = '44444444444';
+    SELECT MUSTERI_ID INTO v_m5  FROM MST_MUSTERI WHERE KIMLIK_NO = '55555555555';
+    SELECT MUSTERI_ID INTO v_m6  FROM MST_MUSTERI WHERE KIMLIK_NO = '66666666666';
+    SELECT MUSTERI_ID INTO v_m7  FROM MST_MUSTERI WHERE KIMLIK_NO = '77777777777';
+    SELECT MUSTERI_ID INTO v_m8  FROM MST_MUSTERI WHERE KIMLIK_NO = '88888888888';
+    SELECT MUSTERI_ID INTO v_m11 FROM MST_MUSTERI WHERE KIMLIK_NO = '12345678901';
+    SELECT MUSTERI_ID INTO v_m12 FROM MST_MUSTERI WHERE KIMLIK_NO = '23456789012';
+    SELECT MUSTERI_ID INTO v_m13 FROM MST_MUSTERI WHERE KIMLIK_NO = '34567890123';
 
-    SELECT MAX(ADRES_ID) INTO v_adres_id FROM MST_MUSTERIADRES;
+    -- Ahmet Yılmaz Hesapları
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100001', v_m1, 'TR870001500011111111110001', 'Vadesiz', 'TRY', 125500.50, 1);
 
-    PKG_MUSTERI.PRC_ADRES_GUNCELLE(
-        P_ADRES_ID     => v_adres_id,
-        P_ADRES_BASLIK => 'Is Yeri',
-        P_ULKE         => 'Turkiye',
-        P_SEHIR        => 'Ankara',
-        P_ILCE         => 'Cankaya',
-        P_POSTA_KODU   => '06500',
-        P_ACIK_ADRES   => 'Ataturk Bulvari No:20'
-    );
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100002', v_m1, 'TR870001500011111111110002', 'Vadeli', 'TRY', 350000.00, 1);
 
-    DBMS_OUTPUT.PUT_LINE('Adres guncellendi. ADRES_ID: ' || v_adres_id);
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100003', v_m1, 'TR870001500011111111110003', 'Vadesiz', 'USD', 4200.00, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100004', v_m1, 'TR870001500011111111110004', 'Altın', 'XAU', 150.75, 1);
+
+    -- Ayşe Kaya Hesapları
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100005', v_m2, 'TR870001500022222222220001', 'Vadesiz', 'TRY', 64200.00, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100006', v_m2, 'TR870001500022222222220002', 'Vadesiz', 'EUR', 8500.00, 1);
+
+    -- Mehmet Demir Hesapları
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100007', v_m3, 'TR870001500033333333330001', 'Vadesiz', 'TRY', 18900.25, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100008', v_m3, 'TR870001500033333333330002', 'Altın', 'XAU', 45.00, 1);
+
+    -- Fatma Şahin Hesapları
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100009', v_m4, 'TR870001500044444444440001', 'Vadesiz', 'TRY', 98500.00, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100010', v_m4, 'TR870001500044444444440002', 'Vadeli', 'TRY', 200000.00, 1);
+
+    -- Mustafa Çelik Hesapları
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100011', v_m5, 'TR870001500055555555550001', 'Vadesiz', 'TRY', 4500.00, 1);
+
+    -- Zeynep Öztürk Hesapları
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100012', v_m6, 'TR870001500066666666660001', 'Vadesiz', 'TRY', 215000.00, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100013', v_m6, 'TR870001500066666666660002', 'Vadesiz', 'USD', 12000.00, 1);
+
+    -- Ali Yıldız Hesapları
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100014', v_m7, 'TR870001500077777777770001', 'Vadesiz', 'TRY', 31200.00, 1);
+
+    -- Elif Arslan Hesapları
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100015', v_m8, 'TR870001500088888888880001', 'Vadesiz', 'TRY', 14300.00, 1);
+
+    -- Şirket Hesapları (Tüzel)
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100016', v_m11, 'TR870001501234567890100001', 'Ticari Vadesiz', 'TRY', 1850000.00, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100017', v_m11, 'TR870001501234567890100002', 'Ticari Vadesiz', 'USD', 75000.00, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100018', v_m12, 'TR870001502345678901200001', 'Ticari Vadesiz', 'TRY', 940000.00, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100019', v_m12, 'TR870001502345678901200002', 'Ticari Vadesiz', 'EUR', 45000.00, 1);
+
+    INSERT INTO MVD_HESAP (HESAP_NO, MUSTERI_ID, IBAN, HESAP_TURU, DOVIZ_CINSI, BAKIYE, DURUM)
+    VALUES ('TR01100020', v_m13, 'TR870001503456789012300001', 'Ticari Vadesiz', 'TRY', 620000.00, 1);
+
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('20 Adet Hesap başarıyla eklendi.');
 END;
 /
 
 -- ============================================================
--- ÖRNEK 9: Temizlik — Silme işlemleri (doğru sırayla)
--- Sıra: Hareketler → Hesap → Adres → Müşteri
+-- 5. HESAP HAREKETLERİ (MVD_HESAPHAREKET) - 30+ Adet İşlem Hareket Kaydı
 -- ============================================================
 
-DECLARE
-    v_musteri_id MST_MUSTERI.MUSTERI_ID%TYPE;
 BEGIN
-    DBMS_OUTPUT.PUT_LINE('--- ÖRNEK 9: Temizlik (Silme) ---');
+    -- Ahmet Yılmaz İşlemleri (TR01100001)
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100001', 'B', 50000.00, 'TRY', 50000.00, SYSTIMESTAMP - INTERVAL '15' DAY, 'Aylık Maaş Yatırma', 'MAAS', 'REF2026070101');
 
-    SELECT MAX(MUSTERI_ID) INTO v_musteri_id FROM MST_MUSTERI;
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100001', 'C', 12500.00, 'TRY', 37500.00, SYSTIMESTAMP - INTERVAL '14' DAY, 'Kira Bedeli Ödemesi', 'HAVALE', 'REF2026070201');
 
-    -- 1) Hesap hareketlerini sil
-    DELETE FROM MVD_HESAPHAREKET
-     WHERE HESAP_NO IN (
-         SELECT HESAP_NO FROM MVD_HESAP WHERE MUSTERI_ID = v_musteri_id
-     );
-    DBMS_OUTPUT.PUT_LINE('Hareketler silindi.');
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100001', 'B', 100000.00, 'TRY', 137500.00, SYSTIMESTAMP - INTERVAL '10' DAY, 'Primen Ödemesi Geliri', 'EFT', 'REF2026070501');
 
-    -- 2) Hesapları sil
-    DELETE FROM MVD_HESAP
-     WHERE MUSTERI_ID = v_musteri_id;
-    DBMS_OUTPUT.PUT_LINE('Hesaplar silindi.');
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100001', 'C', 3500.00, 'TRY', 134000.00, SYSTIMESTAMP - INTERVAL '8' DAY, 'Market ve Mağaza Alışverişi', 'POS', 'REF2026070701');
 
-    -- 3) Adresleri sil (FK CASCADE ile otomatik silinir ama açıkça yazıldı)
-    DELETE FROM MST_MUSTERIADRES
-     WHERE MUSTERI_ID = v_musteri_id;
-    DBMS_OUTPUT.PUT_LINE('Adresler silindi.');
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100001', 'C', 8499.50, 'TRY', 125500.50, SYSTIMESTAMP - INTERVAL '2' DAY, 'Elektrik ve Doğalgaz Faturası', 'FATURA', 'REF2026071201');
 
-    -- 4) Müşteriyi sil
-    PKG_MUSTERI.PRC_MUSTERI_SIL(P_MUSTERI_ID => v_musteri_id);
-    DBMS_OUTPUT.PUT_LINE('Musteri silindi. MUSTERI_ID: ' || v_musteri_id);
+    -- Ahmet Yılmaz Dolar İşlemleri (TR01100003)
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100003', 'B', 5000.00, 'USD', 5000.00, SYSTIMESTAMP - INTERVAL '20' DAY, 'Döviz Alım İşlemi', 'DOVIZ', 'REF2026062501');
+
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100003', 'C', 800.00, 'USD', 4200.00, SYSTIMESTAMP - INTERVAL '5' DAY, 'Yurtdışı Harcama Ödemesi', 'EFT', 'REF2026071001');
+
+    -- Ayşe Kaya İşlemleri (TR01100005)
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100005', 'B', 70000.00, 'TRY', 70000.00, SYSTIMESTAMP - INTERVAL '12' DAY, 'Maaş Ödemesi', 'MAAS', 'REF2026070301');
+
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100005', 'C', 5800.00, 'TRY', 64200.00, SYSTIMESTAMP - INTERVAL '3' DAY, 'ATM Para Çekme', 'ATM', 'REF2026071101');
+
+    -- Mehmet Demir İşlemleri (TR01100007)
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100007', 'B', 25000.00, 'TRY', 25000.00, SYSTIMESTAMP - INTERVAL '18' DAY, 'FAST Transfer Gelişi', 'FAST', 'REF2026062801');
+
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100007', 'C', 6099.75, 'TRY', 18900.25, SYSTIMESTAMP - INTERVAL '1' DAY, 'Kredi Kartı Hesap Ekstresi Ödemesi', 'POS', 'REF2026071301');
+
+    -- Fatma Şahin İşlemleri (TR01100009)
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100009', 'B', 100000.00, 'TRY', 100000.00, SYSTIMESTAMP - INTERVAL '7' DAY, 'Fon Satış Tutarı Aktarımı', 'YATIRIM', 'REF2026070801');
+
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100009', 'C', 1500.00, 'TRY', 98500.00, SYSTIMESTAMP - INTERVAL '4' DAY, 'Online Alışveriş Ödemesi', 'POS', 'REF2026071002');
+
+    -- Anadolu Teknoloji A.Ş. İşlemleri (TR01100016)
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100016', 'B', 2500000.00, 'TRY', 2500000.00, SYSTIMESTAMP - INTERVAL '10' DAY, 'Hakediş Fatura Tahsilatı', 'EFT', 'REF2026070502');
+
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100016', 'C', 650000.00, 'TRY', 1850000.00, SYSTIMESTAMP - INTERVAL '2' DAY, 'Tedarikçi Firma Fatura Ödemesi', 'HAVALE', 'REF2026071202');
+
+    -- Bugüne Ait İşlemler (SYSTIMESTAMP - Bugün)
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100001', 'B', 15000.00, 'TRY', 140500.50, SYSTIMESTAMP, 'Bugünkü FAST Geliri', 'FAST', 'REF2026072301');
+
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100016', 'B', 450000.00, 'TRY', 2300000.00, SYSTIMESTAMP, 'Bugün Alınan Şirket Hakedişi', 'EFT', 'REF2026072302');
+
+    INSERT INTO MVD_HESAPHAREKET (HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO)
+    VALUES ('TR01100005', 'C', 2500.00, 'TRY', 61700.00, SYSTIMESTAMP, 'Bugünkü Market Harcaması', 'POS', 'REF2026072303');
+
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('30+ Hesap Hareketi başarıyla eklendi.');
 END;
 /
 
+
 -- ============================================================
--- ÖRNEK 10: SELECT — Güncel bakiye sorgulama
+-- 6. DOĞRULAMA KONTROLLERİ (SELECT)
 -- ============================================================
 
-SELECT
-    H.HESAP_NO,
-    H.HESAP_TURU,
-    H.DOVIZ_CINSI,
-    H.BAKIYE,
-    H.DURUM,
-    M.AD || ' ' || M.SOYAD AS MUSTERI_ADI,
-    M.EMAIL
-FROM
-    MVD_HESAP      H
-    JOIN MST_MUSTERI M ON M.MUSTERI_ID = H.MUSTERI_ID
-ORDER BY
-    H.HESAP_NO;
+DBMS_OUTPUT.PUT_LINE('=== ÖRNEK VERİ SETİ ÖZETİ ===');
+
+SELECT 'MST_MUSTERI' AS TABLO_ADI, COUNT(1) AS KAYIT_SAYISI FROM MST_MUSTERI
+UNION ALL
+SELECT 'MST_MUSTERIADRES', COUNT(1) FROM MST_MUSTERIADRES
+UNION ALL
+SELECT 'MVD_HESAP', COUNT(1) FROM MVD_HESAP
+UNION ALL
+SELECT 'MVD_HESAPHAREKET', COUNT(1) FROM MVD_HESAPHAREKET
+UNION ALL
+SELECT 'MVD_ADMIN', COUNT(1) FROM MVD_ADMIN;

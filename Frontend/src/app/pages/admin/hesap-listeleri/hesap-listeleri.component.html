@@ -61,56 +61,71 @@
 </div>
 
 <ng-container *ngIf="!isLoading && (filteredData | sort:sortColumn:sortDirection) as result">
-<table class="data-table">
-    <thead>
-        <tr class="table-header-row">
-            <th class="p-12 sortable" (click)="sortBy('hesapNo')">Hesap No <span *ngIf="sortColumn === 'hesapNo'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-            <th class="p-12 sortable" (click)="sortBy('musteriId')">Müşteri Adı <span *ngIf="sortColumn === 'musteriId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-            <th class="p-12 sortable" (click)="sortBy('iban')">IBAN <span *ngIf="sortColumn === 'iban'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-            <th class="p-12 sortable" (click)="sortBy('hesapTuru')">Hesap Türü <span *ngIf="sortColumn === 'hesapTuru'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-            <th class="p-12 sortable" (click)="sortBy('dovizCinsi')">Döviz <span *ngIf="sortColumn === 'dovizCinsi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-            <th class="p-12 sortable" (click)="sortBy('bakiye')">Bakiye <span *ngIf="sortColumn === 'bakiye'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-            <th class="p-12 sortable" (click)="sortBy('durum')">Durum <span *ngIf="sortColumn === 'durum'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-            <th class="p-12" style="text-align: center;">Detay</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let hesap of result | slice:(currentPage-1)*pageSize : currentPage*pageSize" class="table-row">
-            <td class="p-12" style="font-weight: 600;">{{ hesap.hesapNo }}</td>
-            <td class="p-12">
-                <a [routerLink]="['/admin/musteri-detayi', hesap.musteriId]" style="color: inherit; text-decoration: none; font-weight: 500;">
-                    {{ getMusteriAdi(hesap.musteriId) }}
-                </a>
-            </td>
-            <td class="p-12" style="font-family: monospace;">{{ hesap.iban }}</td>
-            <td class="p-12">{{ hesap.hesapTuru }}</td>
-            <td class="p-12">{{ hesap.dovizCinsi }}</td>
-            <td class="p-12" style="font-weight: 600;">{{ hesap.bakiye | number:'1.2-2' }} {{ hesap.dovizCinsi }}</td>
-            <td class="p-12">
-                <span [style.background-color]="hesap.durum === 1 ? '#e6f4ea' : (hesap.durum === 2 ? '#fef7e0' : '#fce8e6')"
-                      [style.color]="hesap.durum === 1 ? '#137333' : (hesap.durum === 2 ? '#b06000' : '#c5221f')"
-                      style="padding: 4px 8px; border-radius: 4px; font-weight: 500; font-size: 12px; display: inline-block;">
-                    {{ hesap.durum === 1 ? 'Aktif' : (hesap.durum === 2 ? 'Pasif' : 'Kapalı') }}
-                </span>
-            </td>
-            <td class="p-12" style="text-align: center;">
-                <button class="info-btn" [routerLink]="['/admin/hesaplar', hesap.hesapNo]" title="Hesap Detayı">i</button>
-            </td>
-        </tr>
-        <tr *ngIf="result.length === 0">
-            <td colspan="8" style="text-align: center; padding: 24px; color: #707070;">
-                Kriterlere uygun hesap bulunamadı.
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr class="table-header-row">
+                <th class="p-12 sortable" (click)="sortBy('hesapNo')">Hesap No <span *ngIf="sortColumn === 'hesapNo'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                <th class="p-12 sortable" (click)="sortBy('musteriId')">Müşteri Adı <span *ngIf="sortColumn === 'musteriId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                <th class="p-12 sortable" (click)="sortBy('iban')">IBAN <span *ngIf="sortColumn === 'iban'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                <th class="p-12 sortable" (click)="sortBy('hesapTuru')">Hesap Türü <span *ngIf="sortColumn === 'hesapTuru'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                <th class="p-12 sortable" (click)="sortBy('dovizCinsi')">Döviz <span *ngIf="sortColumn === 'dovizCinsi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                <th class="p-12 sortable" (click)="sortBy('bakiye')">Bakiye <span *ngIf="sortColumn === 'bakiye'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                <th class="p-12 sortable" (click)="sortBy('durum')">Durum <span *ngIf="sortColumn === 'durum'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                <th class="p-12" style="text-align: center;">Detay</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let hesap of result | slice:(currentPage-1)*pageSize : currentPage*pageSize" class="table-row">
+                <td class="p-12" style="font-weight: 600;">{{ hesap.hesapNo }}</td>
+                <td class="p-12">
+                    <a [routerLink]="['/admin/musteri-detayi', hesap.musteriId]" style="color: inherit; text-decoration: none; font-weight: 500;">
+                        {{ getMusteriAdi(hesap.musteriId) }}
+                    </a>
+                </td>
+                <td class="p-12" style="font-family: monospace;">{{ hesap.iban }}</td>
+                <td class="p-12">{{ hesap.hesapTuru }}</td>
+                <td class="p-12">{{ hesap.dovizCinsi }}</td>
+                <td class="p-12" style="font-weight: 600;">{{ hesap.bakiye | number:'1.2-2' }} {{ hesap.dovizCinsi }}</td>
+                <td class="p-12">
+                    <span [style.background-color]="hesap.durum === 1 ? '#e6f4ea' : (hesap.durum === 2 ? '#fef7e0' : '#fce8e6')"
+                          [style.color]="hesap.durum === 1 ? '#137333' : (hesap.durum === 2 ? '#b06000' : '#c5221f')"
+                          style="padding: 4px 8px; border-radius: 4px; font-weight: 500; font-size: 12px; display: inline-block;">
+                        {{ hesap.durum === 1 ? 'Aktif' : (hesap.durum === 2 ? 'Pasif' : 'Kapalı') }}
+                    </span>
+                </td>
+                <td class="p-12" style="text-align: center;">
+                    <button class="info-btn" [routerLink]="['/admin/hesaplar', hesap.hesapNo]" title="Hesap Detayı">i</button>
+                </td>
+            </tr>
+            <tr *ngIf="result.length === 0">
+                <td colspan="8" style="text-align: center; padding: 24px; color: #707070;">
+                    Kriterlere uygun hesap bulunamadı.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-<div class="pagination-controls" *ngIf="result.length > pageSize">
-    <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">Önceki</button>
-    <span class="page-info">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) }}</span>
-    <button class="btn-page" (click)="currentPage = currentPage + 1" [disabled]="currentPage * pageSize >= result.length">Sonraki</button>
+<div class="pagination-controls" *ngIf="result.length > 0">
+    <span class="page-info">
+        Toplam <strong>{{ result.length }}</strong> kayıttan 
+        <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - 
+        <strong>{{ Math.min(currentPage * pageSize, result.length) }}</strong> arası gösteriliyor
+    </span>
+
+    <div class="pagination-actions">
+        <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
+            ‹ Önceki
+        </button>
+        <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1 }}</span>
+        <button class="btn-page" (click)="currentPage = currentPage + 1" [disabled]="currentPage * pageSize >= result.length">
+            Sonraki ›
+        </button>
+    </div>
 </div>
 </ng-container>
+
 
 
 

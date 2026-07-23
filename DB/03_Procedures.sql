@@ -584,7 +584,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_DASHBOARD AS
         WHERE DURUM = 1
         GROUP BY DOVIZ_CINSI;
 
-        -- 3. Günlük İşlem Hacmi (Bugün yapılan Para Girişi/Çıkışı)
+        -- 3. Toplam İşlem Hacmi (Tüm hesap hareketlerinin döviz ve işlem yönü bazlı hacmi)
         OPEN P_HACIM_STATS FOR
         SELECT 
             DOVIZ_CINSI,
@@ -592,8 +592,8 @@ CREATE OR REPLACE PACKAGE BODY PKG_DASHBOARD AS
             SUM(ISLEM_TUTARI) AS TOPLAM_HACIM,
             COUNT(1) AS ISLEM_SAYISI
         FROM MVD_HESAPHAREKET
-        WHERE TRUNC(ISLEM_TARIHI) = TRUNC(SYSTIMESTAMP)
         GROUP BY DOVIZ_CINSI, ISLEM_YONU;
+
 
         -- 4. Son 10 İşlem
         OPEN P_SON_ISLEMLER FOR
