@@ -41,14 +41,8 @@ namespace BankAPI.Controllers
                 return BadRequest("Kullanıcı adı ve şifre boş olamaz.");
             }
 
-            // MEYCUT SERVİS METODUNU ÇAĞIRIYORUZ: Tüm listeyi çek
-            List<Admin> tumAdminler = _adminService.AdminleriGetir();
-
-            // C# LINQ ile liste içinde kullanıcı adı ve şifre eşleşen var mı diye bakıyoruz
-            Admin eslesenAdmin = tumAdminler.FirstOrDefault(a => 
-                a.AdminKullaniciAdi == girisYapanAdmin.AdminKullaniciAdi && 
-                a.AdminSifre == girisYapanAdmin.AdminSifre
-            );
+            // Veritabanında kullanıcı adı ve şifre eşleşmesini servis üzerinden kontrol ediyoruz
+            Admin eslesenAdmin = _adminService.AdminGirisYap(girisYapanAdmin.AdminKullaniciAdi, girisYapanAdmin.AdminSifre);
 
             // Eşleşen kayıt yoksa (Giriş Başarısız)
             if (eslesenAdmin == null)

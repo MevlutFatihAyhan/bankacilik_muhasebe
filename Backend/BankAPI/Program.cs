@@ -17,6 +17,7 @@ builder.Services.AddScoped<BankAPI.Services.AdresService>();
 builder.Services.AddScoped<BankAPI.Services.HesapService>();
 builder.Services.AddScoped<BankAPI.Services.HesapHareketService>();
 builder.Services.AddScoped<BankAPI.Services.DashboardService>();
+builder.Services.AddScoped<BankAPI.Services.AdminService>();
 
 // YENİ: Controller (MusteriController vb.) sınıflarını okuma yeteneğini açıyoruz
 builder.Services.AddControllers(); 

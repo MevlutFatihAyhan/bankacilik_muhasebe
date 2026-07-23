@@ -1,45 +1,53 @@
 import { Injectable, signal, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private apiUrl = environment.apiUrl + '/Admin';
   isLoggedIn = signal<boolean>(false);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
+      const user = localStorage.getItem('admin_user');
+      if (user) {
         this.isLoggedIn.set(true);
       }
     }
   }
 
-  login(username: string, pass: string): boolean {
-    // Gelecekte burası: return this.http.post('/api/auth/login', { username, pass }) şeklinde API'ye bağlanacak
-    // Şimdilik Mock Doğrulama Yapısı (admin / 123456 veya herhangi dolu bilgi)
-    const validUser = (username.trim().toLowerCase() === 'admin' && pass.trim() === '123456') || (username.trim() !== '' && pass.trim() !== '');
+  login(username: string, pass: string): Observable<any> {
+    const payload = {
+      adminKullaniciAdi: username,
+      adminSifre: pass
+    };
 
-    if (validUser) {
-      if (isPlatformBrowser(this.platformId)) {
-        localStorage.setItem('auth_token', 'mock-jwt-token-12345');
-        localStorage.setItem('auth_user', username);
-      }
-      this.isLoggedIn.set(true);
-      return true;
-    }
-    return false;
+    return this.http.post<any>(`${this.apiUrl}/login`, payload).pipe(
+      tap((res) => {
+        if (isPlatformBrowser(this.platformId)) {
+          // Token kullanmadan sadece giriş yapan kullanıcı bilgisini saklıyoruz
+          localStorage.setItem('admin_user', JSON.stringify({
+            id: res.adminId || res.AdminId,
+            kullaniciAdi: res.kullaniciAdi || res.KullaniciAdi || username
+          }));
+        }
+        this.isLoggedIn.set(true);
+      })
+    );
   }
 
   logout() {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
+      localStorage.removeItem('admin_user');
     }
     this.isLoggedIn.set(false);
     this.router.navigate(['/login']);
@@ -47,8 +55,9 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     if (isPlatformBrowser(this.platformId)) {
-      return !!localStorage.getItem('auth_token');
+      return !!localStorage.getItem('admin_user');
     }
     return this.isLoggedIn();
   }
 }
+

@@ -28,20 +28,32 @@ export class MusteriListesiComponent implements OnInit {
   filterDurum: string = 'Tümü';
 
   musteriler: Musteri[] = [];
+  isLoading: boolean = false;
 
   constructor(private musteriService: MusteriService) {}
 
   ngOnInit(): void {
-    this.musteriService.getMusteriler().subscribe({
+    this.loadMusteriler();
+  }
+
+  loadMusteriler(forceRefresh: boolean = false): void {
+    this.isLoading = true;
+    this.musteriService.getMusteriler(forceRefresh).subscribe({
       next: (data) => {
         if (data && data.length > 0) {
           this.musteriler = data;
         }
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('API hatası, veriler çekilemedi.', err);
+        this.isLoading = false;
       }
     });
+  }
+
+  refreshData(): void {
+    this.loadMusteriler(true);
   }
 
   sortBy(column: string) {

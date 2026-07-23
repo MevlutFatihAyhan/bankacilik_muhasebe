@@ -36,11 +36,14 @@ export class LoginComponent {
       return;
     }
 
-    const success = this.authService.login(this.username, this.pass);
-    if (success) {
-      this.router.navigate(['/admin']);
-    } else {
-      this.errorMessage = 'LOGIN.ERROR_INVALID';
-    }
+    this.authService.login(this.username, this.pass).subscribe({
+      next: () => {
+        this.router.navigate(['/admin']);
+      },
+      error: (err) => {
+        console.error('Giriş hatası:', err);
+        this.errorMessage = 'LOGIN.ERROR_INVALID';
+      }
+    });
   }
 }

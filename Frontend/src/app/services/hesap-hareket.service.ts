@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay, tap } from 'rxjs';
 import { HesapHareket } from '../models/hesap-hareket.model';
 import { environment } from '../../environments/environments';
 
@@ -9,11 +9,21 @@ import { environment } from '../../environments/environments';
 })
 export class HesapHareketService {
     private apiUrl = environment.apiUrl + '/HesapHareket';
+    private hareketlerCache$: Observable<HesapHareket[]> | null = null;
 
     constructor(private http: HttpClient) { }
 
-    getAllHareketler(): Observable<HesapHareket[]> {
-        return this.http.get<HesapHareket[]>(this.apiUrl);
+    getAllHareketler(forceRefresh: boolean = false): Observable<HesapHareket[]> {
+        if (!this.hareketlerCache$ || forceRefresh) {
+            this.hareketlerCache$ = this.http.get<HesapHareket[]>(this.apiUrl).pipe(
+                shareReplay(1)
+            );
+        }
+        return this.hareketlerCache$;
+    }
+
+    clearCache(): void {
+        this.hareketlerCache$ = null;
     }
 
     getHareketler(hesapNo: string): Observable<HesapHareket[]> {
@@ -25,6 +35,9 @@ export class HesapHareketService {
     }
 
     addHareket(hareket: HesapHareket): Observable<any> {
-        return this.http.post(this.apiUrl, hareket);
+        return this.http.post(this.apiUrl, hareket).pipe(
+            tap(() => this.clearCache())
+        );
     }
 }
+
