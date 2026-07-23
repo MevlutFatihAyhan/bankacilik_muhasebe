@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { FilterPipe } from '../../../pipes/filter.pipe';
 import { SortPipe } from '../../../pipes/sort.pipe';
 import { HesapService } from '../../../services/hesap.service';
+import { MusteriService } from '../../../services/musteri.service';
 import { Hesap } from '../../../models/hesap.model';
+import { Musteri } from '../../../models/musteri.model';
 
 @Component({
   selector: 'app-hesap-listeleri',
@@ -18,25 +20,67 @@ export class HesapListeleriComponent implements OnInit {
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
 
+  currentPage: number = 1;
+  pageSize: number = 10;
+  Math = Math;
+
   // Advanced Filters
   isFilterOpen: boolean = false;
   filterMusteriTipi: string = 'Tümü';
   filterHesapTuru: string = 'Tümü';
   filterDoviz: string = 'Tümü';
+  filterDurum: string = 'Tümü';
+  filterMinBakiye: number | null = null;
+  filterMaxBakiye: number | null = null;
 
   hesaplar: Hesap[] = [];
+  musterilerMap: Map<number, Musteri> = new Map();
+  isLoading: boolean = true;
 
-  constructor(private hesapService: HesapService) {}
+  constructor(
+    private hesapService: HesapService,
+    private musteriService: MusteriService
+  ) { }
 
   ngOnInit(): void {
-    this.hesapService.getAllHesaplar().subscribe({
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.isLoading = true;
+    this.hesapService.getAllHesaplar(true).subscribe({
       next: (data) => {
-        this.hesaplar = data;
+        this.hesaplar = data || [];
+        this.isLoading = false;
       },
       error: (err) => {
-        console.error('Hesaplar alınamadı', err);
+        console.error('Hesaplar yüklenirken hata oluştu:', err);
+        this.isLoading = false;
       }
     });
+
+    this.musteriService.getMusteriler().subscribe({
+      next: (musteriler) => {
+        this.musterilerMap.clear();
+        (musteriler || []).forEach(m => {
+          this.musterilerMap.set(m.musteriId, m);
+        });
+      },
+      error: (err) => {
+        console.warn('Müşteriler yüklenemedi:', err);
+      }
+    });
+  }
+
+  getMusteriAdi(musteriId: number): string {
+    const musteri = this.musterilerMap.get(musteriId);
+    if (!musteri) return `Müşteri #${musteriId}`;
+    return musteri.soyad ? `${musteri.ad} ${musteri.soyad}` : musteri.ad;
+  }
+
+  getMusteriTipi(musteriId: number): number {
+    const musteri = this.musterilerMap.get(musteriId);
+    return (musteri && musteri.musteriTipi) ? musteri.musteriTipi : 0;
   }
 
   sortBy(column: string) {
@@ -46,6 +90,11 @@ export class HesapListeleriComponent implements OnInit {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
+    this.currentPage = 1;
+  }
+
+  onSearchChange() {
+    this.currentPage = 1;
   }
 
   toggleFilter() {
@@ -57,20 +106,49 @@ export class HesapListeleriComponent implements OnInit {
     this.filterMusteriTipi = 'Tümü';
     this.filterHesapTuru = 'Tümü';
     this.filterDoviz = 'Tümü';
+    this.filterDurum = 'Tümü';
+    this.filterMinBakiye = null;
+    this.filterMaxBakiye = null;
+    this.currentPage = 1;
   }
 
-  get filteredData() {
+  durumGuncelle(hesap: Hesap, yeniDurum: number): void {
+    if (hesap.durum === yeniDurum) return;
+    this.hesapService.updateHesapDurum(hesap.hesapNo, yeniDurum).subscribe({
+      next: () => {
+        hesap.durum = yeniDurum;
+      },
+      error: (err) => {
+        console.error('Hesap durumu güncellenemedi:', err);
+        alert('Hesap durumu güncellenirken hata oluştu.');
+      }
+    });
+  }
+
+  get filteredData(): Hesap[] {
     return this.hesaplar.filter(h => {
       // 1. Text Search
       let matchesSearch = true;
       if (this.searchTerm) {
         const term = this.searchTerm.toLowerCase();
-        matchesSearch = Object.values(h).some(val => String(val).toLowerCase().includes(term));
+        const musteriAdi = this.getMusteriAdi(h.musteriId).toLowerCase();
+        matchesSearch = (
+          (h.hesapNo && h.hesapNo.toLowerCase().includes(term)) ||
+          (h.iban && h.iban.toLowerCase().includes(term)) ||
+          (h.hesapTuru && h.hesapTuru.toLowerCase().includes(term)) ||
+          (h.dovizCinsi && h.dovizCinsi.toLowerCase().includes(term)) ||
+          musteriAdi.includes(term) ||
+          String(h.bakiye).includes(term)
+        );
       }
 
-      // 2. Müşteri Tipi Filtresi (Şimdilik mock, API'den tam gelene kadar es geçebiliriz veya musteriId bazlı bir şey yapılabilir. Ancak filtrede Bireysel/Tüzel vardı)
+      // 2. Müşteri Tipi Filtresi (1: Bireysel, 2: Tüzel)
       let matchesMusteri = true;
-      // if (this.filterMusteriTipi !== 'Tümü') matchesMusteri = (api'den tip gelmediği için şimdilik atlanıyor);
+      if (this.filterMusteriTipi !== 'Tümü') {
+        const tip = this.getMusteriTipi(h.musteriId);
+        if (this.filterMusteriTipi === 'Bireysel') matchesMusteri = tip === 1;
+        else if (this.filterMusteriTipi === 'Tüzel') matchesMusteri = tip === 2;
+      }
 
       // 3. Hesap Türü Filtresi
       let matchesTur = true;
@@ -80,7 +158,20 @@ export class HesapListeleriComponent implements OnInit {
       let matchesDoviz = true;
       if (this.filterDoviz !== 'Tümü') matchesDoviz = h.dovizCinsi === this.filterDoviz;
 
-      return matchesSearch && matchesMusteri && matchesTur && matchesDoviz;
+      // 5. Durum Filtresi (1: Aktif, 2: Pasif, 3: Kapalı)
+      let matchesDurum = true;
+      if (this.filterDurum !== 'Tümü') {
+        if (this.filterDurum === 'Aktif') matchesDurum = h.durum === 1;
+        else if (this.filterDurum === 'Pasif') matchesDurum = h.durum === 2;
+        else if (this.filterDurum === 'Kapalı') matchesDurum = h.durum === 3;
+      }
+
+      // 6. Bakiye Aralığı Filtresi
+      let matchesBakiye = true;
+      if (this.filterMinBakiye !== null && h.bakiye < this.filterMinBakiye) matchesBakiye = false;
+      if (this.filterMaxBakiye !== null && h.bakiye > this.filterMaxBakiye) matchesBakiye = false;
+
+      return matchesSearch && matchesMusteri && matchesTur && matchesDoviz && matchesDurum && matchesBakiye;
     });
   }
 }

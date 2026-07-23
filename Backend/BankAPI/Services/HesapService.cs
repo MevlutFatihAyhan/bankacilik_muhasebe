@@ -117,6 +117,8 @@ namespace BankAPI.Services
             return hesapListesi;
         }
 
+
+
         // Bir müşterinin tüm hesaplarını getir — PKG_HESAP.PRC_MUSTERI_HESAPLARI (Inline SQL kaldırıldı)
         public List<Hesap> MusteriHesaplariGetir(decimal musteriId)
         {

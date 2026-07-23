@@ -1,37 +1,60 @@
 <div class="hesap-detayi-header">
-    <span class="hesap-detayi-title">Hesap Detayı: {{ hesapDetay?.no }}</span>
+    <span class="hesap-detayi-title">Hesap Detayı: {{ hesapNo }}</span>
     <button routerLink="/admin/hesap-listeleri" class="btn-back">Geri Dön</button>
 </div>
 
-<div class="hesap-card">
+<div *ngIf="isLoading" style="padding: 24px; text-align: center;">
+    Hesap detayları yükleniyor...
+</div>
+
+<div *ngIf="errorMessage" style="padding: 24px; color: red;">
+    {{ errorMessage }}
+</div>
+
+<div class="hesap-card" *ngIf="!isLoading && hesap">
     <div class="detail-list">
         <div class="detail-row">
+            <span class="detail-label">Hesap No:</span>
+            <span class="detail-value" style="font-weight: 600;">{{ hesap.hesapNo }}</span>
+        </div>
+        <div class="detail-row">
             <span class="detail-label">Müşteri Adı:</span>
-            <span class="detail-value">{{ hesapDetay?.ad }}</span>
+            <span class="detail-value">
+                <a [routerLink]="['/admin/musteri-detayi', hesap.musteriId]" style="color: inherit; text-decoration: underline; font-weight: 500;">
+                    {{ musteri ? (musteri.soyad ? musteri.ad + ' ' + musteri.soyad : musteri.ad) : ('Müşteri #' + hesap.musteriId) }}
+                </a>
+            </span>
         </div>
         <div class="detail-row">
             <span class="detail-label">IBAN:</span>
-            <span class="detail-value">{{ hesapDetay?.iban }}</span>
+            <span class="detail-value" style="font-family: monospace;">{{ hesap.iban }}</span>
         </div>
         <div class="detail-row">
             <span class="detail-label">Hesap Türü:</span>
-            <span class="detail-value">{{ hesapDetay?.tur }}</span>
+            <span class="detail-value">{{ hesap.hesapTuru }}</span>
         </div>
         <div class="detail-row">
             <span class="detail-label">Döviz Cinsi:</span>
-            <span class="detail-value">{{ hesapDetay?.doviz }}</span>
+            <span class="detail-value">{{ hesap.dovizCinsi }}</span>
         </div>
         <div class="detail-row">
             <span class="detail-label">Bakiye:</span>
-            <span class="detail-value bakiye">{{ hesapDetay?.bakiye | number:'1.2-2' }} {{ hesapDetay?.doviz === 'TL' ? '₺' : '$' }}</span>
+            <span class="detail-value bakiye">{{ hesap.bakiye | number:'1.2-2' }} {{ hesap.dovizCinsi }}</span>
         </div>
         <div class="detail-row">
-            <span class="detail-label">Şube:</span>
-            <span class="detail-value">{{ hesapDetay?.sube }}</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-label">Açılış Tarihi:</span>
-            <span class="detail-value">{{ hesapDetay?.acilisTarihi }}</span>
+            <span class="detail-label">Hesap Durumu:</span>
+            <span class="detail-value">
+                <span [style.background-color]="hesap.durum === 1 ? '#e6f4ea' : (hesap.durum === 2 ? '#fef7e0' : '#fce8e6')"
+                      [style.color]="hesap.durum === 1 ? '#137333' : (hesap.durum === 2 ? '#b06000' : '#c5221f')"
+                      style="padding: 4px 10px; border-radius: 4px; font-weight: 600; font-size: 13px; margin-right: 12px; display: inline-block;">
+                    {{ hesap.durum === 1 ? 'Aktif' : (hesap.durum === 2 ? 'Pasif' : 'Kapalı') }}
+                </span>
+                
+                <button (click)="durumGuncelle(1)" *ngIf="hesap.durum !== 1" style="margin-right: 6px; padding: 4px 10px; cursor: pointer; border-radius: 4px; border: 1px solid #137333; background: #e6f4ea; color: #137333; font-weight: 500;">Aktif Yap</button>
+                <button (click)="durumGuncelle(2)" *ngIf="hesap.durum !== 2" style="margin-right: 6px; padding: 4px 10px; cursor: pointer; border-radius: 4px; border: 1px solid #b06000; background: #fef7e0; color: #b06000; font-weight: 500;">Pasif Yap</button>
+                <button (click)="durumGuncelle(3)" *ngIf="hesap.durum !== 3" style="padding: 4px 10px; cursor: pointer; border-radius: 4px; border: 1px solid #c5221f; background: #fce8e6; color: #c5221f; font-weight: 500;">Kapat</button>
+            </span>
         </div>
     </div>
 </div>
+

@@ -39,5 +39,12 @@ export class HesapService {
             tap(() => this.clearCache())
         );
     }
+
+    updateHesapDurum(hesapNo: string, durum: number): Observable<any> {
+        return this.http.put(`${this.apiUrl}/${hesapNo}/durum`, { durum }).pipe(
+            tap(() => this.clearCache())
+        );
+    }
 }
+
 
