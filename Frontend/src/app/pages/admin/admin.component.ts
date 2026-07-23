@@ -13,11 +13,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent {
-  isMusteriMenuOpen = true;
-  isMusteriEkleMenuOpen = true;
-  isHesapMenuOpen = true;
+  isMusteriMenuOpen = false;
+  isMusteriEkleMenuOpen = false;
+  isHesapMenuOpen = false;
   isProfileMenuOpen = false;
   isUserMenuOpen: boolean = false;
+
 
   constructor(
     private router: Router,

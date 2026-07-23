@@ -1,73 +1,12 @@
 <div class="dashboard-container">
-  <aside class="sidebar">
-    <div class="sidebar-logo">
+  <!-- ÜST HEADER (Tam Genişlik: Sol tarafta VaqıvBank logosu, Sağ tarafta Admin & Dil seçici) -->
+  <header class="top-header">
+    <div class="top-logo">
       <img src="images/star1.jpeg" alt="Logo" width="40" height="40">
       <span>VaqıvBank</span>
     </div>
 
-    <nav class="sidebar-nav">
-      <!-- Anasayfa -->
-      <button class="nav-item box" routerLink="anasayfa" routerLinkActive="active">
-        {{ 'NAV.HOME' | translate }}
-      </button>
-
-      <!-- Müşteri -->
-      <div class="nav-group">
-        <button class="nav-item box" (click)="toggleMusteriMenu()" [class.active]="isMusteriMenuOpen">
-          <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriMenuOpen ? '▼' : '▶' }}</span>
-          <span style="flex:1; text-align:left; padding-left: 10px;">{{ 'NAV.CUSTOMER' | translate }}</span>
-        </button>
-
-        <div class="sub-menu" *ngIf="isMusteriMenuOpen" style="display: flex; flex-direction: column;">
-
-          <button class="sub-item" routerLink="musteri-listesi" routerLinkActive="active" style="padding-left: 45px;">
-            {{ 'NAV.CUSTOMER_LIST' | translate }}
-          </button>
-
-          <button class="sub-item" (click)="toggleMusteriEkleMenu()" style="gap: 8px; padding-left: 21px;">
-            <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriEkleMenuOpen ? '▼' : '▶' }}</span>
-            {{ 'NAV.ADD_CUSTOMER' | translate }}
-          </button>
-
-          <div *ngIf="isMusteriEkleMenuOpen" style="display: flex; flex-direction: column;">
-            <button class="sub-item" routerLink="bireysel-musteri-ekle" routerLinkActive="active"
-              style="padding-left: 65px; font-size: 15px;">
-              {{ 'NAV.ADD_INDIVIDUAL_CUSTOMER' | translate }}
-            </button>
-            <button class="sub-item" routerLink="tuzel-musteri-ekle" routerLinkActive="active"
-              style="padding-left: 65px; font-size: 15px;">
-              {{ 'NAV.ADD_CORPORATE_CUSTOMER' | translate }}
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Hesaplar -->
-      <div class="nav-group">
-        <button class="nav-item box" (click)="toggleHesapMenu()" [class.active]="isHesapMenuOpen">
-          <span style="width: 16px; display: inline-block; text-align: center;">{{ isHesapMenuOpen ? '▼' : '▶' }}</span>
-          <span style="flex:1; text-align:left; padding-left: 10px;">{{ 'NAV.ACCOUNTS' | translate }}</span>
-        </button>
-        <div class="sub-menu" *ngIf="isHesapMenuOpen" style="display: flex; flex-direction: column;">
-          <button class="sub-item" routerLink="hesap-listeleri" routerLinkActive="active" style="padding-left: 45px;">
-            {{ 'NAV.ACCOUNT_LISTS' | translate }}
-          </button>
-          <button class="sub-item" routerLink="hesap-hareketleri" routerLinkActive="active" style="padding-left: 45px;">
-            {{ 'NAV.ACCOUNT_TRANSACTIONS' | translate }}
-          </button>
-          <button class="sub-item" routerLink="hesap-ekle" routerLinkActive="active" style="padding-left: 45px;">
-            {{ 'NAV.ADD_ACCOUNT' | translate }}
-          </button>
-        </div>
-      </div>
-
-    </nav>
-  </aside>
-
-  <!-- SAĞ İÇERİK (MAIN CONTENT) -->
-  <main class="main-content">
-    <header class="top-header">
+    <div class="header-right">
       <!-- Language Switcher -->
       <div class="lang-switcher">
         <button 
@@ -86,6 +25,7 @@
         </button>
       </div>
 
+      <!-- Admin User Profile -->
       <div class="user-profile-container">
         <div class="user-profile" (click)="toggleUserMenu()">
           <span>{{ 'COMMON.ADMIN' | translate }}</span>
@@ -99,10 +39,74 @@
           </button>
         </div>
       </div>
-    </header>
-
-    <div class="content-body">
-      <router-outlet></router-outlet>
     </div>
-  </main>
+  </header>
+
+  <!-- GÖVDE KONTEYNERİ (Sol Sidebar + Sağ İçerik) -->
+  <div class="body-container">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <!-- Anasayfa -->
+        <button class="nav-item box" routerLink="anasayfa" routerLinkActive="active">
+          {{ 'NAV.HOME' | translate }}
+        </button>
+
+        <!-- Müşteri -->
+        <div class="nav-group">
+          <button class="nav-item box" (click)="toggleMusteriMenu()" [class.active]="isMusteriMenuOpen">
+            <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriMenuOpen ? '▼' : '▶' }}</span>
+            <span style="flex:1; text-align:left; padding-left: 10px;">{{ 'NAV.CUSTOMER' | translate }}</span>
+          </button>
+
+          <div class="sub-menu" *ngIf="isMusteriMenuOpen" style="display: flex; flex-direction: column;">
+            <button class="sub-item" routerLink="musteri-listesi" routerLinkActive="active" style="padding-left: 45px;">
+              {{ 'NAV.CUSTOMER_LIST' | translate }}
+            </button>
+
+            <button class="sub-item" (click)="toggleMusteriEkleMenu()" style="gap: 8px; padding-left: 21px;">
+              <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriEkleMenuOpen ? '▼' : '▶' }}</span>
+              {{ 'NAV.ADD_CUSTOMER' | translate }}
+            </button>
+
+            <div *ngIf="isMusteriEkleMenuOpen" style="display: flex; flex-direction: column;">
+              <button class="sub-item" routerLink="bireysel-musteri-ekle" routerLinkActive="active"
+                style="padding-left: 65px; font-size: 15px;">
+                {{ 'NAV.ADD_INDIVIDUAL_CUSTOMER' | translate }}
+              </button>
+              <button class="sub-item" routerLink="tuzel-musteri-ekle" routerLinkActive="active"
+                style="padding-left: 65px; font-size: 15px;">
+                {{ 'NAV.ADD_CORPORATE_CUSTOMER' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hesaplar -->
+        <div class="nav-group">
+          <button class="nav-item box" (click)="toggleHesapMenu()" [class.active]="isHesapMenuOpen">
+            <span style="width: 16px; display: inline-block; text-align: center;">{{ isHesapMenuOpen ? '▼' : '▶' }}</span>
+            <span style="flex:1; text-align:left; padding-left: 10px;">{{ 'NAV.ACCOUNTS' | translate }}</span>
+          </button>
+          <div class="sub-menu" *ngIf="isHesapMenuOpen" style="display: flex; flex-direction: column;">
+            <button class="sub-item" routerLink="hesap-listeleri" routerLinkActive="active" style="padding-left: 45px;">
+              {{ 'NAV.ACCOUNT_LISTS' | translate }}
+            </button>
+            <button class="sub-item" routerLink="hesap-hareketleri" routerLinkActive="active" style="padding-left: 45px;">
+              {{ 'NAV.ACCOUNT_TRANSACTIONS' | translate }}
+            </button>
+            <button class="sub-item" routerLink="hesap-ekle" routerLinkActive="active" style="padding-left: 45px;">
+              {{ 'NAV.ADD_ACCOUNT' | translate }}
+            </button>
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- SAĞ İÇERİK (MAIN CONTENT) -->
+    <main class="main-content">
+      <div class="content-body">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
 </div>

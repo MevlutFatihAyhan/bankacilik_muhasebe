@@ -1,34 +1,61 @@
 .dashboard-container {
     display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100%;
     min-width: 1024px;
-    overflow: auto;
+    overflow: hidden;
     background-color: #f2f2f2;
     font-family: 'Elms Sans', sans-serif;
     color: #000;
 }
 
-/* SIDEBAR */
-.sidebar {
-    width: 260px;
-    background-color: #f2f2f2;
-    border-right: 1px solid #000;
+/* TOP HEADER - Sabit Üst Bar (Tam Genişlik, Logo ve Admin Bilgisi Aynı Bar İçinde) */
+.top-header {
+    height: 80px;
+    min-height: 80px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #000;
+    background-color: #f2f2f2;
+    z-index: 10;
 }
 
-.sidebar-logo {
+.top-logo {
     display: flex;
     align-items: center;
-    padding: 0 30px;
     gap: 15px;
     font-size: 28px;
     font-weight: 500;
     color: #333;
-    height: 80px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #000;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* GÖVDE KONTEYNERİ */
+.body-container {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 80px);
+    overflow: hidden;
+}
+
+/* SIDEBAR (Sol Menü) */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: #f2f2f2;
+    border-right: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 .sidebar-nav {
@@ -91,7 +118,7 @@
     color: #DA0037;
 }
 
-/* MAIN CONTENT */
+/* MAIN CONTENT (Sağ İçerik - Sayfa Scroll Yapıldığında Sadece Burası Kayar, Header Çizgisi Sabit Kalır) */
 .main-content {
     flex: 1;
     display: flex;
@@ -99,16 +126,6 @@
     overflow-y: auto;
 }
 
-.top-header {
-    height: 80px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 20px;
-    padding: 0 40px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #000;
-}
 
 .lang-switcher {
     display: flex;
