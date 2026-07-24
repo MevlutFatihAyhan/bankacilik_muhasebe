@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
 using BankAPI.Models;
 
+using BankAPI.Helpers;
+
 namespace BankAPI.Services
 {
     public class HesapService
@@ -19,6 +21,22 @@ namespace BankAPI.Services
         // Yeni hesap aç — PKG_HESAP üzerinden ve transaction yönetimiyle
         public void HesapEkle(Hesap hesap)
         {
+            // 1. Döviz Cinsi Normalizasyonu (VARCHAR2(3) hatasını önlemek için EUR, USD, TRY, XAU dönüşümü)
+            hesap.DOVIZ_CINSI = IbanHelper.NormalizeDovizCinsi(hesap.DOVIZ_CINSI);
+
+            // 2. Hesap No Otomatik Oluşturma (Boş veya geçici ise)
+            if (string.IsNullOrWhiteSpace(hesap.HESAP_NO) || hesap.HESAP_NO.StartsWith("ACC", StringComparison.OrdinalIgnoreCase))
+            {
+                hesap.HESAP_NO = IbanHelper.GenerateAccountNo();
+            }
+
+            // 3. IBAN Otomatik Oluşturma ve Doğrulama (Boş, geçici 'TR0000...' ise veya geçersiz ise)
+            if (string.IsNullOrWhiteSpace(hesap.IBAN) || 
+                hesap.IBAN == "TR000000000000000000000000" || 
+                !IbanHelper.ValidateTrIban(hesap.IBAN))
+            {
+                hesap.IBAN = IbanHelper.GenerateTrIban(hesap.HESAP_NO);
+            }
             using (OracleConnection connection = new OracleConnection(_connectionString))
             {
                 connection.Open();

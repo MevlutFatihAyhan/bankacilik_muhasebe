@@ -88,6 +88,14 @@ namespace BankAPI.Controllers
                 return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
             }
         }
+
+        [HttpGet("generate-iban")]
+        public IActionResult GenerateIban([FromQuery] string accountNo = null)
+        {
+            var accNo = string.IsNullOrWhiteSpace(accountNo) ? BankAPI.Helpers.IbanHelper.GenerateAccountNo() : accountNo;
+            var iban = BankAPI.Helpers.IbanHelper.GenerateTrIban(accNo);
+            return Ok(new { hesapNo = accNo, iban = iban });
+        }
     }
 
     public class DurumGuncelleRequest

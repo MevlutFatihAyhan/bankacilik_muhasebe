@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HesapService } from '../../../services/hesap.service';
 import { Router } from '@angular/router';
+import { IbanUtil } from '../../../utils/iban.util';
 
 @Component({
   selector: 'app-hesap-ekle',
@@ -11,21 +12,41 @@ import { Router } from '@angular/router';
   templateUrl: './hesap-ekle.component.html',
   styleUrls: ['../tuzel-musteri-ekle/tuzel-musteri-ekle.component.css']
 })
-export class HesapEkleComponent {
+export class HesapEkleComponent implements OnInit {
   musteriId: number = 0;
   hesapTuru: string = 'Vadesiz';
-  dovizCinsi: string = 'TL';
+  dovizCinsi: string = 'TRY';
+  generatedIban: string = '';
+  generatedHesapNo: string = '';
 
   constructor(
     private hesapService: HesapService,
     private router: Router
   ) { }
 
+  ngOnInit() {
+    this.yeniIbanUret();
+  }
+
+  yeniIbanUret() {
+    this.generatedHesapNo = IbanUtil.generateAccountNo();
+    this.generatedIban = IbanUtil.generateTrIban(this.generatedHesapNo);
+  }
+
   kaydet() {
+    if (!this.musteriId || this.musteriId <= 0) {
+      alert('Lütfen geçerli bir Müşteri ID girin!');
+      return;
+    }
+
+    if (!this.generatedHesapNo || !this.generatedIban) {
+      this.yeniIbanUret();
+    }
+
     this.hesapService.addHesap({
-      hesapNo: 'ACC' + Math.floor(Math.random() * 1000000),
+      hesapNo: this.generatedHesapNo,
       musteriId: this.musteriId,
-      iban: 'TR000000000000000000000000',
+      iban: this.generatedIban,
       hesapTuru: this.hesapTuru,
       dovizCinsi: this.dovizCinsi,
       bakiye: 0,

@@ -16,11 +16,15 @@
         <div class="form-group">
             <label class="form-label">Döviz Cinsi</label>
             <select class="form-control shadow-input" [(ngModel)]="dovizCinsi">
-                <option value="TL">TL</option>
-                <option value="Dolar">Dolar</option>
-                <option value="Euro">Euro</option>
-                <option value="Altin">Altın</option>
+                <option value="TRY">TL (TRY)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="USD">Dolar (USD)</option>
+                <option value="XAU">Altın (XAU)</option>
             </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Atanacak IBAN (Otomatik)</label>
+            <input type="text" class="form-control shadow-input" [value]="generatedIban" readonly style="background-color: #f3f4f6; cursor: not-allowed; font-family: monospace; font-weight: 600;">
         </div>
     </div>
 
