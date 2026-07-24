@@ -17,4 +17,3 @@
 @@03_Procedures.sql
 
 -- 4. Ornek calistirma adimlari
-@@04_Examples.sql
