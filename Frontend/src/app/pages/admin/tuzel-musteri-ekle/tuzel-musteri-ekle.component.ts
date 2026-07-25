@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MusteriService } from '../../../services/musteri.service';
 import { AdresService } from '../../../services/adres.service';
+import { ToastService } from '../../../services/toast.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -26,6 +27,7 @@ export class TuzelMusteriEkleComponent {
   constructor(
     private musteriService: MusteriService,
     private adresService: AdresService,
+    private toastService: ToastService,
     private router: Router
   ) { }
 
@@ -41,8 +43,6 @@ export class TuzelMusteriEkleComponent {
       kimlikNo: this.vkn
     }).subscribe({
       next: (response) => {
-        // Backend returns a simple text string on success.
-        // We need to fetch the customer list to find the ID of the new customer by VKN
         this.musteriService.getMusteriler().subscribe({
           next: (musteriler) => {
             const yeniMusteri = musteriler.find(m => m.kimlikNo === this.vkn);
@@ -58,7 +58,7 @@ export class TuzelMusteriEkleComponent {
                 acikAdres: this.adres
               }).subscribe();
             }
-            alert('Tüzel Müşteri eklendi!');
+            this.toastService.showSuccess('Tüzel Müşteri eklendi!');
             this.router.navigate(['/admin/musteri-listesi']);
           }
         });
@@ -66,7 +66,7 @@ export class TuzelMusteriEkleComponent {
       error: (err) => {
         console.error(err);
         const errorMsg = err.error?.message || err.message || 'Bilinmeyen bir hata oluştu!';
-        alert('Hata: ' + errorMsg);
+        this.toastService.showError('Hata: ' + errorMsg);
       }
     });
   }

@@ -22,8 +22,10 @@ export class HesapHareketleriComponent implements OnInit {
   pageSize: number = 10;
   Math = Math;
   
-  // Advanced Filters
-  isFilterOpen: boolean = false;
+  // Advanced Filters (Sayfaya girince varsayılan olarak AÇIK)
+  isFilterOpen: boolean = true;
+  hasAppliedFilters: boolean = false; // Bilgiler ilk etapta direkt listelenmeyecek
+
   filterYon: string = 'Tümü';
   filterDoviz: string = 'Tümü';
   filterStartDate: string = '';
@@ -53,15 +55,16 @@ export class HesapHareketleriComponent implements OnInit {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
-    this.currentPage = 1; // Sıralama değiştiğinde ilk sayfaya dön
-  }
-
-  onSearchChange() {
-    this.currentPage = 1; // Arama değiştiğinde ilk sayfaya dön
+    this.currentPage = 1;
   }
 
   toggleFilter() {
     this.isFilterOpen = !this.isFilterOpen;
+  }
+
+  applyFilters() {
+    this.hasAppliedFilters = true;
+    this.currentPage = 1;
   }
 
   resetFilters() {
@@ -72,10 +75,15 @@ export class HesapHareketleriComponent implements OnInit {
     this.filterEndDate = '';
     this.filterMinTutar = null;
     this.filterMaxTutar = null;
+    this.hasAppliedFilters = false;
     this.currentPage = 1;
   }
 
   get filteredData(): HesapHareket[] {
+    if (!this.hasAppliedFilters) {
+      return [];
+    }
+
     return this.hareketler.filter(h => {
       // 1. Text Search
       let matchesSearch = true;
@@ -86,12 +94,12 @@ export class HesapHareketleriComponent implements OnInit {
 
       // 2. İşlem Yönü
       let matchesYon = true;
-      if (this.filterYon === 'Geliş (Gelir)') matchesYon = h.islemYonu === 'B';
-      if (this.filterYon === 'Gidiş (Gider)') matchesYon = h.islemYonu === 'C';
+      if (this.filterYon === 'Geliş (Gelir)') matchesYon = (h.islemYonu === 'A' || h.islemYonu === 'B');
+      if (this.filterYon === 'Gidiş (Gider)') matchesYon = (h.islemYonu === 'C' || h.islemYonu === 'G');
 
       // 3. Döviz
       let matchesDoviz = true;
-      if (this.filterDoviz !== 'Tümü') matchesDoviz = h.dovizCinsi === this.filterDoviz;
+      if (this.filterDoviz !== 'Tümü') matchesDoviz = (h.dovizCinsi === this.filterDoviz || (this.filterDoviz === 'TRY' && h.dovizCinsi === 'TL'));
 
       // 4. Tarih Aralığı
       let matchesDate = true;
@@ -101,7 +109,6 @@ export class HesapHareketleriComponent implements OnInit {
         if (islemDate < start) matchesDate = false;
       }
       if (this.filterEndDate) {
-        // Son günün sonuna kadar dahil etmek için
         const end = new Date(this.filterEndDate).getTime() + 86400000;
         if (islemDate > end) matchesDate = false;
       }

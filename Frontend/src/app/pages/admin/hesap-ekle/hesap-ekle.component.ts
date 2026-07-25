@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HesapService } from '../../../services/hesap.service';
+import { ToastService } from '../../../services/toast.service';
 import { Router } from '@angular/router';
 import { IbanUtil } from '../../../utils/iban.util';
 
@@ -21,6 +22,7 @@ export class HesapEkleComponent implements OnInit {
 
   constructor(
     private hesapService: HesapService,
+    private toastService: ToastService,
     private router: Router
   ) { }
 
@@ -35,7 +37,7 @@ export class HesapEkleComponent implements OnInit {
 
   kaydet() {
     if (!this.musteriId || this.musteriId <= 0) {
-      alert('Lütfen geçerli bir Müşteri ID girin!');
+      this.toastService.showWarning('Lütfen geçerli bir Müşteri ID girin!');
       return;
     }
 
@@ -53,13 +55,13 @@ export class HesapEkleComponent implements OnInit {
       durum: 1
     }).subscribe({
       next: () => {
-        alert('Hesap başarıyla açıldı!');
+        this.toastService.showSuccess('Hesap başarıyla açıldı!');
         this.router.navigate(['/admin/hesap-listeleri']);
       },
       error: (err) => { 
         console.error(err);
         const errorMsg = err.error?.message || err.message || 'Bilinmeyen bir hata oluştu!';
-        alert('Hata: ' + errorMsg); 
+        this.toastService.showError('Hata: ' + errorMsg); 
       }
     });
   }

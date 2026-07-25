@@ -24,8 +24,10 @@ export class HesapListeleriComponent implements OnInit {
   pageSize: number = 10;
   Math = Math;
 
-  // Advanced Filters
-  isFilterOpen: boolean = false;
+  // Advanced Filters (Sayfaya girince varsayılan olarak AÇIK)
+  isFilterOpen: boolean = true;
+  hasAppliedFilters: boolean = false; // Bilgiler ilk etapta direkt listelenmeyecek
+
   filterMusteriTipi: string = 'Tümü';
   filterHesapTuru: string = 'Tümü';
   filterDoviz: string = 'Tümü';
@@ -93,12 +95,13 @@ export class HesapListeleriComponent implements OnInit {
     this.currentPage = 1;
   }
 
-  onSearchChange() {
-    this.currentPage = 1;
-  }
-
   toggleFilter() {
     this.isFilterOpen = !this.isFilterOpen;
+  }
+
+  applyFilters() {
+    this.hasAppliedFilters = true;
+    this.currentPage = 1;
   }
 
   resetFilters() {
@@ -109,6 +112,7 @@ export class HesapListeleriComponent implements OnInit {
     this.filterDurum = 'Tümü';
     this.filterMinBakiye = null;
     this.filterMaxBakiye = null;
+    this.hasAppliedFilters = false;
     this.currentPage = 1;
   }
 
@@ -126,6 +130,10 @@ export class HesapListeleriComponent implements OnInit {
   }
 
   get filteredData(): Hesap[] {
+    if (!this.hasAppliedFilters) {
+      return [];
+    }
+
     return this.hesaplar.filter(h => {
       // 1. Text Search
       let matchesSearch = true;
@@ -156,7 +164,7 @@ export class HesapListeleriComponent implements OnInit {
 
       // 4. Döviz Filtresi
       let matchesDoviz = true;
-      if (this.filterDoviz !== 'Tümü') matchesDoviz = h.dovizCinsi === this.filterDoviz;
+      if (this.filterDoviz !== 'Tümü') matchesDoviz = (h.dovizCinsi === this.filterDoviz || (this.filterDoviz === 'TRY' && h.dovizCinsi === 'TL'));
 
       // 5. Durum Filtresi (1: Aktif, 2: Pasif, 3: Kapalı)
       let matchesDurum = true;

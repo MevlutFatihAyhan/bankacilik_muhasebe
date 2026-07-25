@@ -28,3 +28,4 @@ C:\Users\fatih\OneDrive\Documents\vscode\scratch\OracleTest\obj\Debug\net10.0\re
 C:\Users\fatih\OneDrive\Documents\vscode\scratch\OracleTest\obj\Debug\net10.0\OracleTest.pdb
 C:\Users\fatih\OneDrive\Documents\vscode\scratch\OracleTest\obj\Debug\net10.0\OracleTest.genruntimeconfig.cache
 C:\Users\fatih\OneDrive\Documents\vscode\scratch\OracleTest\obj\Debug\net10.0\ref\OracleTest.dll
+C:\Users\fatih\OneDrive\Documents\vscode\scratch\OracleTest\obj\Debug\net10.0\OracleTest.sourcelink.json

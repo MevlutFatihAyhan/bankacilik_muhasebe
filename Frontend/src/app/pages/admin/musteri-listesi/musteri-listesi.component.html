@@ -2,7 +2,7 @@
     <button class="filter-btn" (click)="toggleFilter()">
         <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> Filtrele
     </button>
-    <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" class="search-input shadow-input"
+    <input type="text" [(ngModel)]="searchTerm" class="search-input shadow-input"
         placeholder="Müşteri ara..." style="background-color: transparent;">
 </div>
 
@@ -10,7 +10,7 @@
     <div class="filter-row">
         <div class="filter-item">
             <label>Müşteri Tipi</label>
-            <select [(ngModel)]="filterMusteriTipi" (ngModelChange)="onSearchChange()">
+            <select [(ngModel)]="filterMusteriTipi">
                 <option value="Tümü">Tümü</option>
                 <option value="Bireysel">Bireysel</option>
                 <option value="Tüzel">Tüzel</option>
@@ -18,13 +18,14 @@
         </div>
         <div class="filter-item">
             <label>Durum</label>
-            <select [(ngModel)]="filterDurum" (ngModelChange)="onSearchChange()">
+            <select [(ngModel)]="filterDurum">
                 <option value="Tümü">Tümü</option>
                 <option value="Aktif">Aktif</option>
                 <option value="Pasif">Pasif</option>
             </select>
         </div>
         <div class="filter-actions">
+            <button class="btn-primary" (click)="applyFilters()">Uygula</button>
             <button class="btn-secondary" (click)="resetFilters()">Temizle</button>
         </div>
     </div>
@@ -49,8 +50,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let musteri of result | slice:(currentPage-1)*pageSize : currentPage*pageSize"
-                    class="table-row">
+                <tr *ngIf="!hasAppliedFilters">
+                    <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
+                        🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna tıklayınız.
+                    </td>
+                </tr>
+
+                <tr *ngIf="hasAppliedFilters && result.length === 0">
+                    <td colspan="6" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
+                        Kriterlere uygun müşteri bulunamadı.
+                    </td>
+                </tr>
+
+                <tr *ngFor="let musteri of result | slice:(currentPage-1)*pageSize : currentPage*pageSize" class="table-row">
                     <td class="p-12">{{ musteri.musteriId }}</td>
                     <td class="p-12">{{ musteri.ad }} {{ musteri.soyad }}</td>
                     <td class="p-12">{{ musteri.email }}</td>
@@ -62,16 +74,11 @@
                             title="Müşteri Detaylarını Gör">i</button>
                     </td>
                 </tr>
-                <tr *ngIf="result.length === 0">
-                    <td colspan="6" style="text-align: center; padding: 24px; color: #707070;">
-                        Müşteri bulunamadı.
-                    </td>
-                </tr>
             </tbody>
         </table>
     </div>
 
-    <div class="pagination-controls" *ngIf="result.length > 0">
+    <div class="pagination-controls" *ngIf="hasAppliedFilters && result.length > 0">
         <span class="page-info">
             Toplam <strong>{{ result.length }}</strong> kayıttan 
             <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - 

@@ -22,8 +22,10 @@ export class MusteriListesiComponent implements OnInit {
   pageSize: number = 5;
   Math = Math;
 
-  // Advanced Filters
-  isFilterOpen: boolean = false;
+  // Advanced Filters (Sayfaya girince varsayılan olarak AÇIK)
+  isFilterOpen: boolean = true;
+  hasAppliedFilters: boolean = false; // Bilgiler ilk etapta direkt listelenmeyecek
+
   filterMusteriTipi: string = 'Tümü';
   filterDurum: string = 'Tümü';
 
@@ -66,22 +68,28 @@ export class MusteriListesiComponent implements OnInit {
     this.currentPage = 1;
   }
 
-  onSearchChange() {
-    this.currentPage = 1;
-  }
-
   toggleFilter() {
     this.isFilterOpen = !this.isFilterOpen;
+  }
+
+  applyFilters() {
+    this.hasAppliedFilters = true;
+    this.currentPage = 1;
   }
 
   resetFilters() {
     this.searchTerm = '';
     this.filterMusteriTipi = 'Tümü';
     this.filterDurum = 'Tümü';
+    this.hasAppliedFilters = false;
     this.currentPage = 1;
   }
 
   get filteredData(): Musteri[] {
+    if (!this.hasAppliedFilters) {
+      return [];
+    }
+
     return this.musteriler.filter(m => {
       // 1. Text Search (searchTerm)
       let matchesSearch = true;
@@ -95,10 +103,10 @@ export class MusteriListesiComponent implements OnInit {
       if (this.filterMusteriTipi === 'Bireysel') matchesTipi = m.musteriTipi === 1;
       if (this.filterMusteriTipi === 'Tüzel') matchesTipi = m.musteriTipi === 2;
 
-      // 3. Durum Filtresi (1: Aktif, 2: Pasif)
+      // 3. Durum Filtresi (1: Aktif, 0 veya 2: Pasif)
       let matchesDurum = true;
       if (this.filterDurum === 'Aktif') matchesDurum = m.aktifMi === 1;
-      if (this.filterDurum === 'Pasif') matchesDurum = m.aktifMi === 2;
+      if (this.filterDurum === 'Pasif') matchesDurum = m.aktifMi !== 1;
 
       return matchesSearch && matchesTipi && matchesDurum;
     });

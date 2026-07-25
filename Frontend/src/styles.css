@@ -54,51 +54,54 @@ html, body {
 
 /* Advanced Filter Panel Styles */
 .filter-panel {
-  background: #fdfdfd;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 12px;
+  padding: 22px;
   margin-top: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   font-family: 'Elms Sans', sans-serif;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.25s ease-out;
 }
 
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 18px;
   align-items: flex-end;
 }
 
 .filter-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   min-width: 150px;
 }
 
 .filter-item label {
-  font-size: 13px;
-  color: #555;
-  font-weight: 600;
+  font-size: 12px;
+  color: #333333;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .filter-item select, .filter-item input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  padding: 9px 12px;
+  border: 1px solid #000000;
+  border-radius: 8px;
   font-family: 'Elms Sans', sans-serif;
   font-size: 14px;
+  background-color: #f9f9f9;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .filter-item select:focus, .filter-item input:focus {
   border-color: #DA0037;
+  box-shadow: 0 0 0 3px rgba(218, 0, 55, 0.15);
+  background-color: #ffffff;
 }
 
 .filter-actions {
@@ -110,24 +113,47 @@ html, body {
 
 .filter-actions .btn-primary {
   background-color: #DA0037;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
+  color: #ffffff;
+  border: 1px solid #DA0037;
+  border-radius: 8px;
+  padding: 9px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Elms Sans', sans-serif;
   cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(218, 0, 55, 0.25);
+  margin-top: 0;
+}
+
+.filter-actions .btn-primary:hover {
+  background-color: #b8002e;
+  border-color: #b8002e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(218, 0, 55, 0.35);
 }
 
 .filter-actions .btn-secondary {
-  background-color: transparent;
-  color: #555;
-  border: 1px solid #ccc;
-  padding: 10px 20px;
-  border-radius: 6px;
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Elms Sans', sans-serif;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-actions .btn-secondary:hover {
+  background-color: #f5f5f5;
+  border-color: #000000;
+  color: #000000;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
+  from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
