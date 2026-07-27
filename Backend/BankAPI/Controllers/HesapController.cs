@@ -119,10 +119,40 @@ namespace BankAPI.Controllers
             var iban = BankAPI.Helpers.IbanHelper.GenerateTrIban(accNo);
             return Ok(new { hesapNo = accNo, iban = iban });
         }
+
+        [HttpPost("transfer")]
+        public IActionResult ParaTransferi([FromBody] ParaTransferiRequest request)
+        {
+            try
+            {
+                var sonuc = _hesapService.ParaTransferi(request.SenderIban, request.ReceiverIban, request.Amount, request.Description);
+                
+                if (sonuc.IslemKodu == "0")
+                {
+                    return Ok(new { message = sonuc.HataMesaji });
+                }
+                else
+                {
+                    return BadRequest(new { code = sonuc.IslemKodu, message = sonuc.HataMesaji });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Transfer sırasında hata oluştu: {ex.Message}" });
+            }
+        }
     }
 
     public class DurumGuncelleRequest
     {
         public int Durum { get; set; }
+    }
+
+    public class ParaTransferiRequest
+    {
+        public string SenderIban { get; set; }
+        public string ReceiverIban { get; set; }
+        public decimal Amount { get; set; }
+        public string Description { get; set; }
     }
 }

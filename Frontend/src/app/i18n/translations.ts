@@ -23,7 +23,7 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'NAV.ACCOUNT_LISTS': 'Hesap Listeleri',
     'NAV.ACCOUNT_TRANSACTIONS': 'Hesap Hareketleri',
     'NAV.ADD_ACCOUNT': 'Hesap Ekle',
-    
+
     // User menu & Common
     'COMMON.ADMIN': 'Admin',
     'COMMON.LOGOUT': 'Çıkış Yap',
@@ -64,7 +64,18 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'DASHBOARD.WEEK_1': '1. Hafta',
     'DASHBOARD.WEEK_2': '2. Hafta',
     'DASHBOARD.WEEK_3': '3. Hafta',
-    'DASHBOARD.WEEK_4': '4. Hafta'
+    'DASHBOARD.WEEK_4': '4. Hafta',
+
+    'NAV.ACCOUNT_TRANSFER': 'Hesap Transferi',
+    'TRANSFER.TITLE': 'Hesap Transferi',
+    'TRANSFER.SENDER_IBAN': 'Giden IBAN',
+    'TRANSFER.RECEIVER_IBAN': 'Gelen IBAN',
+    'TRANSFER.DESCRIPTION': 'Açıklama',
+    'TRANSFER.AMOUNT': 'Tutar',
+    'TRANSFER.SUBMIT': 'Onaylama',
+    'TRANSFER.RECEIPT_SENDER': 'Gönderen İşlem Dekontu',
+    'TRANSFER.RECEIPT_RECEIVER': 'Alan İşlem Dekontu',
+    'TRANSFER.TRANSACTION_DETAIL': 'Hareket Detayına Git'
   },
   en: {
     // Login
@@ -88,7 +99,7 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'NAV.ACCOUNT_LISTS': 'Account Lists',
     'NAV.ACCOUNT_TRANSACTIONS': 'Account Transactions',
     'NAV.ADD_ACCOUNT': 'Add Account',
-    
+
     // User menu & Common
     'COMMON.ADMIN': 'Admin',
     'COMMON.LOGOUT': 'Log Out',
@@ -129,6 +140,17 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'DASHBOARD.WEEK_1': 'Week 1',
     'DASHBOARD.WEEK_2': 'Week 2',
     'DASHBOARD.WEEK_3': 'Week 3',
-    'DASHBOARD.WEEK_4': 'Week 4'
+    'DASHBOARD.WEEK_4': 'Week 4',
+
+    'NAV.ACCOUNT_TRANSFER': 'Account Transfer',
+    'TRANSFER.TITLE': 'Account Transfer',
+    'TRANSFER.SENDER_IBAN': 'Sender IBAN',
+    'TRANSFER.RECEIVER_IBAN': 'Receiver IBAN',
+    'TRANSFER.DESCRIPTION': 'Description',
+    'TRANSFER.AMOUNT': 'Amount',
+    'TRANSFER.SUBMIT': 'Submit',
+    'TRANSFER.RECEIPT_SENDER': 'Sender Receipt',
+    'TRANSFER.RECEIPT_RECEIVER': 'Receiver Receipt',
+    'TRANSFER.TRANSACTION_DETAIL': 'Go to Transaction Detail'
   }
 };

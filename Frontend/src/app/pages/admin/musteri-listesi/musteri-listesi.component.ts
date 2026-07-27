@@ -17,7 +17,7 @@ export class MusteriListesiComponent implements OnInit {
   searchTerm: string = '';
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
-  
+
   currentPage: number = 1;
   pageSize: number = 5;
   Math = Math;
@@ -32,7 +32,7 @@ export class MusteriListesiComponent implements OnInit {
   musteriler: Musteri[] = [];
   isLoading: boolean = false;
 
-  constructor(private musteriService: MusteriService) {}
+  constructor(private musteriService: MusteriService) { }
 
   ngOnInit(): void {
     this.loadMusteriler();

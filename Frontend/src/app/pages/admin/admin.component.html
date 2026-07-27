@@ -9,17 +9,11 @@
     <div class="header-right">
       <!-- Language Switcher -->
       <div class="lang-switcher">
-        <button 
-          class="lang-btn" 
-          [class.active]="langService.currentLang() === 'tr'" 
-          (click)="setLanguage('tr')" 
+        <button class="lang-btn" [class.active]="langService.currentLang() === 'tr'" (click)="setLanguage('tr')"
           title="Türkçe">
           <span class="flag">🇹🇷</span> TR
         </button>
-        <button 
-          class="lang-btn" 
-          [class.active]="langService.currentLang() === 'en'" 
-          (click)="setLanguage('en')" 
+        <button class="lang-btn" [class.active]="langService.currentLang() === 'en'" (click)="setLanguage('en')"
           title="English">
           <span class="flag">🇬🇧</span> EN
         </button>
@@ -54,7 +48,8 @@
         <!-- Müşteri -->
         <div class="nav-group">
           <button class="nav-item box" (click)="toggleMusteriMenu()" [class.active]="isMusteriMenuOpen">
-            <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriMenuOpen ? '▼' : '▶' }}</span>
+            <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriMenuOpen ? '▼' : '▶'
+              }}</span>
             <span style="flex:1; text-align:left; padding-left: 10px;">{{ 'NAV.CUSTOMER' | translate }}</span>
           </button>
 
@@ -64,7 +59,8 @@
             </button>
 
             <button class="sub-item" (click)="toggleMusteriEkleMenu()" style="gap: 8px; padding-left: 21px;">
-              <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriEkleMenuOpen ? '▼' : '▶' }}</span>
+              <span style="width: 16px; display: inline-block; text-align: center;">{{ isMusteriEkleMenuOpen ? '▼' : '▶'
+                }}</span>
               {{ 'NAV.ADD_CUSTOMER' | translate }}
             </button>
 
@@ -84,14 +80,16 @@
         <!-- Hesaplar -->
         <div class="nav-group">
           <button class="nav-item box" (click)="toggleHesapMenu()" [class.active]="isHesapMenuOpen">
-            <span style="width: 16px; display: inline-block; text-align: center;">{{ isHesapMenuOpen ? '▼' : '▶' }}</span>
+            <span style="width: 16px; display: inline-block; text-align: center;">{{ isHesapMenuOpen ? '▼' : '▶'
+              }}</span>
             <span style="flex:1; text-align:left; padding-left: 10px;">{{ 'NAV.ACCOUNTS' | translate }}</span>
           </button>
           <div class="sub-menu" *ngIf="isHesapMenuOpen" style="display: flex; flex-direction: column;">
             <button class="sub-item" routerLink="hesap-listeleri" routerLinkActive="active" style="padding-left: 45px;">
               {{ 'NAV.ACCOUNT_LISTS' | translate }}
             </button>
-            <button class="sub-item" routerLink="hesap-hareketleri" routerLinkActive="active" style="padding-left: 45px;">
+            <button class="sub-item" routerLink="hesap-hareketleri" routerLinkActive="active"
+              style="padding-left: 45px;">
               {{ 'NAV.ACCOUNT_TRANSACTIONS' | translate }}
             </button>
             <button class="sub-item" routerLink="hesap-ekle" routerLinkActive="active" style="padding-left: 45px;">
@@ -99,6 +97,9 @@
             </button>
           </div>
         </div>
+        <button class="nav-item box" routerLink="hesap-transferi" routerLinkActive="active">
+          {{ 'NAV.ACCOUNT_TRANSFER' | translate }}
+        </button>
       </nav>
     </aside>
 

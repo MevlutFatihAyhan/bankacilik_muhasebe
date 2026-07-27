@@ -691,3 +691,123 @@ CREATE OR REPLACE PACKAGE BODY PKG_DASHBOARD AS
     END PRC_GET_SUMMARY;
 END PKG_DASHBOARD;
 /
+CREATE OR REPLACE PROCEDURE PRC_PARA_TRANSFERI (
+    p_gonderen_iban IN VARCHAR2,
+    p_alici_iban IN VARCHAR2,
+    p_tutar IN NUMBER,
+    p_aciklama IN VARCHAR2,
+    p_islem_kodu OUT VARCHAR2,
+    p_hata_mesaji OUT VARCHAR2
+)
+IS
+    -- Değişken Tanımlamaları
+    v_gonderen_hesap_no VARCHAR2(20);
+    v_gonderen_bakiye NUMBER;
+    v_gonderen_durum NUMBER;
+    v_gonderen_doviz VARCHAR2(3);
+    
+    v_alici_hesap_no VARCHAR2(20);
+    v_alici_bakiye NUMBER;
+    v_alici_durum NUMBER;
+    v_alici_doviz VARCHAR2(3);
+    
+    v_referans_no VARCHAR2(50);
+    
+BEGIN
+    p_islem_kodu := '0';
+    p_hata_mesaji := 'Islem Basarili';
+    
+    -- KURAL 1: Gönderen ve Alıcı IBAN Aynı Olamaz
+    IF p_gonderen_iban = p_alici_iban THEN
+        p_islem_kodu := '101';
+        p_hata_mesaji := 'Gonderen ve alici IBAN ayni olamaz.';
+        RETURN;
+    END IF;
+    -- KURAL 2: Tutar Sıfırdan Büyük Olmalı
+    IF p_tutar <= 0 THEN
+        p_islem_kodu := '102';
+        p_hata_mesaji := 'Transfer tutari 0 dan buyuk olmalidir.';
+        RETURN;
+    END IF;
+    -- KURAL 3: Gönderen Hesap Bilgilerini Al
+    BEGIN
+        SELECT HESAP_NO, BAKIYE, DURUM, DOVIZ_CINSI 
+        INTO v_gonderen_hesap_no, v_gonderen_bakiye, v_gonderen_durum, v_gonderen_doviz
+        FROM MVD_HESAP 
+        WHERE IBAN = p_gonderen_iban;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            p_islem_kodu := '103';
+            p_hata_mesaji := 'Gonderen IBAN bulunamadi.';
+            RETURN;
+    END;
+    -- KURAL 4: Alıcı Hesap Bilgilerini Al
+    BEGIN
+        SELECT HESAP_NO, BAKIYE, DURUM, DOVIZ_CINSI 
+        INTO v_alici_hesap_no, v_alici_bakiye, v_alici_durum, v_alici_doviz
+        FROM MVD_HESAP 
+        WHERE IBAN = p_alici_iban;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            p_islem_kodu := '104';
+            p_hata_mesaji := 'Alici IBAN bulunamadi.';
+            RETURN;
+    END;
+    -- KURAL 5: Hesapların Durumu Aktif Olmalı (DURUM = 1 Aktif)
+    IF v_gonderen_durum != 1 THEN
+        p_islem_kodu := '105';
+        p_hata_mesaji := 'Gonderen hesap aktif degil.';
+        RETURN;
+    END IF;
+    
+    IF v_alici_durum != 1 THEN
+        p_islem_kodu := '106';
+        p_hata_mesaji := 'Alici hesap aktif degil.';
+        RETURN;
+    END IF;
+    -- KURAL 6: Aynı Döviz Cinsleri Arasında Transfer (Kur çevrimi yoksa)
+    IF v_gonderen_doviz != v_alici_doviz THEN
+        p_islem_kodu := '107';
+        p_hata_mesaji := 'Farkli doviz cinsleri arasinda transfer yapilamaz.';
+        RETURN;
+    END IF;
+    -- KURAL 7: Bakiye Kontrolü 
+    IF v_gonderen_bakiye < p_tutar THEN
+        p_islem_kodu := '108';
+        p_hata_mesaji := 'Gonderen hesap bakiyesi yetersiz.';
+        RETURN;
+    END IF;
+    -- ==========================================
+    -- TÜM KONTROLLER BAŞARILI. TRANSACTION BAŞLAR.
+    -- ==========================================
+    
+    -- Benzersiz bir Referans No oluşturuyoruz (Örn: TRF202310241530221234)
+    v_referans_no := 'TRF' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') || TRUNC(DBMS_RANDOM.VALUE(1000, 9999));
+    -- A) Gönderenden bakiyeyi düş
+    UPDATE MVD_HESAP 
+    SET BAKIYE = BAKIYE - p_tutar
+    WHERE HESAP_NO = v_gonderen_hesap_no;
+    -- B) Alıcıya bakiyeyi ekle
+    UPDATE MVD_HESAP 
+    SET BAKIYE = BAKIYE + p_tutar
+    WHERE HESAP_NO = v_alici_hesap_no;
+    -- C) Hesap Hareketleri: Gönderen için Para Çıkışı Kaydı (ISLEM_YONU = 'C')
+    INSERT INTO MVD_HESAPHAREKET (
+        HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO
+    ) VALUES (
+        v_gonderen_hesap_no, 'C', p_tutar, v_gonderen_doviz, v_gonderen_bakiye - p_tutar, SYSTIMESTAMP, p_aciklama, 'TRF_CIKIS', v_referans_no
+    );
+    -- D) Hesap Hareketleri: Alıcı için Para Girişi Kaydı (ISLEM_YONU = 'B') -- DB'de (B: Borç/Giriş, C: Alacak/Çıkış gibi görünüyor, veya 'B' ve 'C' yönleri var, MVD_HESAPHAREKET.ISLEM_YONU IN ('B', 'C'))
+    -- Not: Genelde G=Giriş, C=Çıkış olur ama DB kısıtlamasında ('B', 'C') diyor, bu yüzden B=Borç(Giriş/Alacaklı) ve C=Alacak(Çıkış/Borçlu) olarak B ve C kullanıyoruz. Alıcı için B kullanıyoruz.
+    INSERT INTO MVD_HESAPHAREKET (
+        HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI, YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO
+    ) VALUES (
+        v_alici_hesap_no, 'B', p_tutar, v_alici_doviz, v_alici_bakiye + p_tutar, SYSTIMESTAMP, p_aciklama, 'TRF_GIRIS', v_referans_no
+    );
+EXCEPTION
+    WHEN OTHERS THEN
+        p_islem_kodu := '500';
+        p_hata_mesaji := 'Veritabani hatasi: ' || SQLERRM;
+        ROLLBACK;
+END;
+/

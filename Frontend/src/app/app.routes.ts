@@ -21,6 +21,7 @@ export const routes: Routes = [
       { path: 'islem-detayi/:islemId', loadComponent: () => import('./pages/admin/islem-detayi/islem-detayi.component').then(m => m.IslemDetayiComponent) },
       { path: 'hesap-ekle', loadComponent: () => import('./pages/admin/hesap-ekle/hesap-ekle.component').then(m => m.HesapEkleComponent) },
       { path: 'hesaplar/:id', loadComponent: () => import('./pages/admin/hesap-detayi/hesap-detayi.component').then(m => m.HesapDetayiComponent) },
+      { path: 'hesap-transferi', loadComponent: () => import('./pages/admin/hesap-transferi/hesap-transferi.component').then(m => m.HesapTransferiComponent) },
       { path: '', redirectTo: 'anasayfa', pathMatch: 'full' }
     ]
   },

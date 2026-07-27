@@ -213,6 +213,69 @@ namespace BankAPI.Services
             return hesapListesi;
         }
 
+        // Para Transferi İşlemi — PRC_PARA_TRANSFERI (Stored Procedure çağrısı)
+        public (string IslemKodu, string HataMesaji) ParaTransferi(string gonderenIban, string aliciIban, decimal tutar, string aciklama)
+        {
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                // Transfer işlemi kendi içinde tutarlı olmalı, bu yüzden Transaction başlatıyoruz.
+                // Gerçi SP içinde de transaction yapılabilirdi ama best practice olarak C# yönetir.
+                using (OracleTransaction transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        string islemKodu = "";
+                        string hataMesaji = "";
+
+                        using (OracleCommand cmd = new OracleCommand("PRC_PARA_TRANSFERI", connection))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.BindByName = true;
+                            
+                            // IN parametreleri
+                            cmd.Parameters.Add("p_gonderen_iban", OracleDbType.Varchar2).Value = gonderenIban;
+                            cmd.Parameters.Add("p_alici_iban", OracleDbType.Varchar2).Value = aliciIban;
+                            cmd.Parameters.Add("p_tutar", OracleDbType.Decimal).Value = tutar;
+                            cmd.Parameters.Add("p_aciklama", OracleDbType.Varchar2).Value = aciklama;
+                            
+                            // OUT parametreleri (Boyut belirtmek önemlidir)
+                            var outKodu = new OracleParameter("p_islem_kodu", OracleDbType.Varchar2, 10);
+                            outKodu.Direction = ParameterDirection.Output;
+                            cmd.Parameters.Add(outKodu);
+                            
+                            var outMesaj = new OracleParameter("p_hata_mesaji", OracleDbType.Varchar2, 255);
+                            outMesaj.Direction = ParameterDirection.Output;
+                            cmd.Parameters.Add(outMesaj);
+                            
+                            cmd.ExecuteNonQuery();
+                            
+                            // OUT değerlerini oku
+                            islemKodu = outKodu.Value?.ToString();
+                            hataMesaji = outMesaj.Value?.ToString();
+                        }
+                        
+                        // Kodu 0 ise işlem başarılıdır, Commit atarız.
+                        if (islemKodu == "0")
+                        {
+                            transaction.Commit();
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                        }
+
+                        return (islemKodu, hataMesaji);
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception($"Transfer işlemi veritabanında gerçekleştirilemedi: {ex.Message}");
+                    }
+                }
+            }
+        }
+
         private static Hesap MapHesap(OracleDataReader reader)
         {
             return new Hesap

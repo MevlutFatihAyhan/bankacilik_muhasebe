@@ -61,6 +61,12 @@ export class HesapService {
             tap(() => this.clearCache())
         );
     }
+
+    paraTransferi(payload: { senderIban: string, receiverIban: string, amount: number, description: string }): Observable<any> {
+        return this.http.post(`${this.apiUrl}/transfer`, payload).pipe(
+            tap(() => this.clearCache())
+        );
+    }
 }
 
 

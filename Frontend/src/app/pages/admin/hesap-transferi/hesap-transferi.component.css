@@ -1,0 +1,80 @@
+
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+    background-color: #e5e5e5;
+    font-family: 'Elms Sans', sans-serif;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.shadow-input {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05), 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.shadow-btn {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* İşlem başarılı olduğunda aşağı doğru açılan dekontların kapsayıcısı */
+.receipt-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 35px;
+    animation: slideDown 0.4s ease-out;
+}
+
+/* Dekont Kartları */
+.receipt-card {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #000000;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.receipt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.receipt-header h4 {
+    margin: 0;
+    color: #000;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.receipt-body p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.amount-text {
+    font-size: 16px !important;
+    margin-top: 15px !important;
+    padding-top: 10px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+/* Animasyon */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
