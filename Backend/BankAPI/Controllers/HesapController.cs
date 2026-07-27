@@ -120,21 +120,29 @@ namespace BankAPI.Controllers
             return Ok(new { hesapNo = accNo, iban = iban });
         }
 
+        // Para transferi — iş kuralları PKG_HESAP.PRC_PARA_TRANSFERI içinde çalışır.
+        // İş kuralı ihlalinde (IBAN yok, hesap pasif, bakiye yetersiz vb.) 400 ve
+        // islemKodu ile birlikte açıklayıcı mesaj döner.
         [HttpPost("transfer")]
         public IActionResult ParaTransferi([FromBody] ParaTransferiRequest request)
         {
+            if (request == null)
+            {
+                return BadRequest(new { message = "Transfer bilgileri gönderilmedi." });
+            }
+
+            // Model doğrulaması [ApiController] tarafından bu noktadan önce yapılır;
+            // hata biçimi Program.cs'teki InvalidModelStateResponseFactory ile ayarlanır.
             try
             {
-                var sonuc = _hesapService.ParaTransferi(request.SenderIban, request.ReceiverIban, request.Amount, request.Description);
-                
-                if (sonuc.IslemKodu == "0")
+                var sonuc = _hesapService.ParaTransferi(request);
+
+                if (sonuc.Basarili)
                 {
-                    return Ok(new { message = sonuc.HataMesaji });
+                    return Ok(sonuc);
                 }
-                else
-                {
-                    return BadRequest(new { code = sonuc.IslemKodu, message = sonuc.HataMesaji });
-                }
+
+                return BadRequest(sonuc);
             }
             catch (Exception ex)
             {
@@ -146,13 +154,5 @@ namespace BankAPI.Controllers
     public class DurumGuncelleRequest
     {
         public int Durum { get; set; }
-    }
-
-    public class ParaTransferiRequest
-    {
-        public string SenderIban { get; set; }
-        public string ReceiverIban { get; set; }
-        public decimal Amount { get; set; }
-        public string Description { get; set; }
     }
 }

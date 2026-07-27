@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, shareReplay, tap } from 'rxjs';
-import { Hesap, HesapFiltre } from '../models/hesap.model';
+import { Hesap, HesapFiltre, ParaTransferiIstek, ParaTransferiSonuc } from '../models/hesap.model';
 import { environment } from '../../environments/environments';
 
 @Injectable({
@@ -62,8 +62,9 @@ export class HesapService {
         );
     }
 
-    paraTransferi(payload: { senderIban: string, receiverIban: string, amount: number, description: string }): Observable<any> {
-        return this.http.post(`${this.apiUrl}/transfer`, payload).pipe(
+    // Transfer sonrası iki hesabın bakiyesi değiştiği için hesap cache'i temizlenir.
+    paraTransferi(payload: ParaTransferiIstek): Observable<ParaTransferiSonuc> {
+        return this.http.post<ParaTransferiSonuc>(`${this.apiUrl}/transfer`, payload).pipe(
             tap(() => this.clearCache())
         );
     }

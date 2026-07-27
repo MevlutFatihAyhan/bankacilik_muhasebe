@@ -87,6 +87,20 @@ BEGIN
             END IF;
     END;
 
+    -- 7. Bagimsiz PRC_PARA_TRANSFERI prosedurunun silinmesi
+    -- (PKG_HESAP.PRC_PARA_TRANSFERI'ye tasindi; ayni isimde iki nesne kalmasin)
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP PROCEDURE PRC_PARA_TRANSFERI';
+        DBMS_OUTPUT.PUT_LINE('PRC_PARA_TRANSFERI (bagimsiz) silindi.');
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -4043 THEN
+                RAISE;
+            ELSE
+                DBMS_OUTPUT.PUT_LINE('PRC_PARA_TRANSFERI (bagimsiz) zaten yok.');
+            END IF;
+    END;
+
     -- NOT: TRG_AUD_* trigger'lari, MST_MUSTERI_H / MST_MUSTERIADRES_H / MVD_HESAP_H /
     -- MVD_HESAPHAREKET_H history tablolari ve SEQ_ISLEM_H_ID sequence'i BURADAN
     -- KASITLI OLARAK CIKARILDI. Bunlar "kullanilmayan eski nesneler" degil,

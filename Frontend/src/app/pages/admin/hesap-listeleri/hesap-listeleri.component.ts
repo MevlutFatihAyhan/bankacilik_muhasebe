@@ -8,6 +8,7 @@ import { HesapService } from '../../../services/hesap.service';
 import { MusteriService } from '../../../services/musteri.service';
 import { Hesap, HesapFiltre } from '../../../models/hesap.model';
 import { Musteri } from '../../../models/musteri.model';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-hesap-listeleri',
@@ -41,7 +42,8 @@ export class HesapListeleriComponent {
 
   constructor(
     private hesapService: HesapService,
-    private musteriService: MusteriService
+    private musteriService: MusteriService,
+    private toastService: ToastService
   ) { }
 
   // Sayfa açılışında hiçbir listeleme yapılmaz; veri yalnızca "Uygula" ile
@@ -141,7 +143,7 @@ export class HesapListeleriComponent {
       },
       error: (err) => {
         console.error('Hesap durumu güncellenemedi:', err);
-        alert('Hesap durumu güncellenirken hata oluştu.');
+        this.toastService.showError('Hesap durumu güncellenirken hata oluştu.');
       }
     });
   }

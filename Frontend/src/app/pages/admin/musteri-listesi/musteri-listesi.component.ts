@@ -6,6 +6,7 @@ import { FilterPipe } from '../../../pipes/filter.pipe';
 import { SortPipe } from '../../../pipes/sort.pipe';
 import { MusteriService } from '../../../services/musteri.service';
 import { Musteri } from '../../../models/musteri.model';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-musteri-listesi',
@@ -32,7 +33,10 @@ export class MusteriListesiComponent implements OnInit {
   musteriler: Musteri[] = [];
   isLoading: boolean = false;
 
-  constructor(private musteriService: MusteriService) { }
+  constructor(
+    private musteriService: MusteriService,
+    private toastService: ToastService
+  ) { }
 
   ngOnInit(): void {
     this.loadMusteriler();
@@ -113,6 +117,16 @@ export class MusteriListesiComponent implements OnInit {
   }
 
   showInfo(musteri: Musteri) {
-    alert(`MÜŞTERİ DETAYLARI\n\nID: ${musteri.musteriId}\nAd / Unvan: ${musteri.ad} ${musteri.soyad}\nTCKN/VKN: ${musteri.kimlikNo}\nEmail: ${musteri.email}\nTelefon: ${musteri.telefon}\nDurum: ${musteri.aktifMi === 1 ? 'Aktif' : 'Pasif'}`);
+    // Okunacak bilgi fazla olduğu için varsayılan süre yerine daha uzun bir süre veriliyor.
+    const detay = [
+      `ID: ${musteri.musteriId}`,
+      `Ad / Unvan: ${musteri.ad} ${musteri.soyad}`,
+      `TCKN/VKN: ${musteri.kimlikNo}`,
+      `Email: ${musteri.email}`,
+      `Telefon: ${musteri.telefon}`,
+      `Durum: ${musteri.aktifMi === 1 ? 'Aktif' : 'Pasif'}`
+    ].join('\n');
+
+    this.toastService.show(detay, 'info', 'Müşteri Detayları', 8000);
   }
 }

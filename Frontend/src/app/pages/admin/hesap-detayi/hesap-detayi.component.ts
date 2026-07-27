@@ -5,6 +5,7 @@ import { HesapService } from '../../../services/hesap.service';
 import { MusteriService } from '../../../services/musteri.service';
 import { Hesap } from '../../../models/hesap.model';
 import { Musteri } from '../../../models/musteri.model';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-hesap-detayi',
@@ -23,7 +24,8 @@ export class HesapDetayiComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private hesapService: HesapService,
-    private musteriService: MusteriService
+    private musteriService: MusteriService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -68,7 +70,7 @@ export class HesapDetayiComponent implements OnInit {
       },
       error: (err) => {
         console.error('Durum güncellenemedi:', err);
-        alert('Hesap durumu güncellenirken hata oluştu.');
+        this.toastService.showError('Hesap durumu güncellenirken hata oluştu.');
       }
     });
   }

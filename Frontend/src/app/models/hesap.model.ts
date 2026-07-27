@@ -8,6 +8,25 @@ export interface Hesap {
     durum: number;
 }
 
+// Para transferi isteği — POST /api/Hesap/transfer gövdesi
+export interface ParaTransferiIstek {
+    senderIban: string;
+    receiverIban: string;
+    amount: number;
+    description: string;
+}
+
+// PKG_HESAP.PRC_PARA_TRANSFERI sonucu.
+// islemKodu '0' başarılı; 100–108 iş kuralı ihlali, 500 veritabanı hatası.
+export interface ParaTransferiSonuc {
+    islemKodu: string;
+    message: string;
+    referansNo: string | null;
+    gonderenIslemId: number | null;
+    aliciIslemId: number | null;
+    basarili: boolean;
+}
+
 // Hesap listeleme filtresi — PKG_HESAP.PRC_HESAP_LISTE parametreleriyle birebir eşleşir
 export interface HesapFiltre {
     searchTerm?: string | null;

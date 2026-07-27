@@ -6,6 +6,7 @@ import { MusteriService } from '../../../services/musteri.service';
 import { AdresService } from '../../../services/adres.service';
 import { Musteri } from '../../../models/musteri.model';
 import { MusteriAdres } from '../../../models/musteri-adres.model';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-musteri-detayi',
@@ -30,7 +31,8 @@ export class MusteriDetayiComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private musteriService: MusteriService,
-    private adresService: AdresService
+    private adresService: AdresService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -72,7 +74,7 @@ export class MusteriDetayiComponent implements OnInit {
     if (!this.musteriId) return;
 
     if (!this.yeniSehir || !this.yeniAcikAdres) {
-      alert('Lütfen şehir ve açık adres alanlarını doldurun.');
+      this.toastService.showWarning('Lütfen şehir ve açık adres alanlarını doldurun.');
       return;
     }
 
@@ -89,7 +91,7 @@ export class MusteriDetayiComponent implements OnInit {
 
     this.adresService.addAdres(yeniAdres).subscribe({
       next: () => {
-        alert('Yeni adres başarıyla eklendi!');
+        this.toastService.showSuccess('Yeni adres başarıyla eklendi!');
         this.yeniAdresFormSifirla();
         this.yeniAdresFormAcik = false;
         this.adresleriYukle();
@@ -97,7 +99,7 @@ export class MusteriDetayiComponent implements OnInit {
       error: (err) => {
         console.error(err);
         const errorMsg = err.error?.message || err.message || 'Adres eklenirken bir hata oluştu!';
-        alert('Hata: ' + errorMsg);
+        this.toastService.showError(errorMsg);
       }
     });
   }
@@ -106,12 +108,12 @@ export class MusteriDetayiComponent implements OnInit {
     if (confirm('Bu adresi silmek istediğinize emin misiniz?')) {
       this.adresService.deleteAdres(adresId).subscribe({
         next: () => {
-          alert('Adres silindi.');
+          this.toastService.showSuccess('Adres silindi.');
           this.adresleriYukle();
         },
         error: (err) => {
           console.error(err);
-          alert('Adres silinirken bir hata oluştu.');
+          this.toastService.showError('Adres silinirken bir hata oluştu.');
         }
       });
     }

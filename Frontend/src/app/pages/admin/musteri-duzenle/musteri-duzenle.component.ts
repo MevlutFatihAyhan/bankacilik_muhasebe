@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MusteriService } from '../../../services/musteri.service';
 import { Musteri } from '../../../models/musteri.model';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-musteri-duzenle',
@@ -26,7 +27,8 @@ export class MusteriDuzenleComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private musteriService: MusteriService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -46,7 +48,7 @@ export class MusteriDuzenleComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          alert('Müşteri bilgileri yüklenemedi!');
+          this.toastService.showError('Müşteri bilgileri yüklenemedi!');
           this.loading = false;
         }
       });
@@ -67,13 +69,13 @@ export class MusteriDuzenleComponent implements OnInit {
 
     this.musteriService.updateMusteri(guncelMusteri).subscribe({
       next: () => {
-        alert('Müşteri başarıyla güncellendi!');
+        this.toastService.showSuccess('Müşteri başarıyla güncellendi!');
         this.router.navigate(['/admin/musteri-detayi', this.musteriId]);
       },
       error: (err) => {
         console.error(err);
         const errorMsg = err.error?.message || err.message || 'Güncelleme sırasında bir hata oluştu!';
-        alert('Hata: ' + errorMsg);
+        this.toastService.showError(errorMsg);
       }
     });
   }

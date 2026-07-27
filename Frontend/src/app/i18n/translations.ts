@@ -66,16 +66,17 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'DASHBOARD.WEEK_3': '3. Hafta',
     'DASHBOARD.WEEK_4': '4. Hafta',
 
-    'NAV.ACCOUNT_TRANSFER': 'Hesap Transferi',
-    'TRANSFER.TITLE': 'Hesap Transferi',
-    'TRANSFER.SENDER_IBAN': 'Giden IBAN',
-    'TRANSFER.RECEIVER_IBAN': 'Gelen IBAN',
+    'NAV.ACCOUNT_TRANSFER': 'Para Transferi',
+    'TRANSFER.TITLE': 'Para Transferi',
+    'TRANSFER.SENDER_IBAN': 'Gönderen IBAN',
+    'TRANSFER.RECEIVER_IBAN': 'Alıcı IBAN',
     'TRANSFER.DESCRIPTION': 'Açıklama',
     'TRANSFER.AMOUNT': 'Tutar',
     'TRANSFER.SUBMIT': 'Onaylama',
     'TRANSFER.RECEIPT_SENDER': 'Gönderen İşlem Dekontu',
-    'TRANSFER.RECEIPT_RECEIVER': 'Alan İşlem Dekontu',
-    'TRANSFER.TRANSACTION_DETAIL': 'Hareket Detayına Git'
+    'TRANSFER.RECEIPT_RECEIVER': 'Alıcı İşlem Dekontu',
+    'TRANSFER.TRANSACTION_DETAIL': 'Hareket Detayına Git',
+    'TRANSFER.REFERENCE_NO': 'Referans No'
   },
   en: {
     // Login
@@ -142,8 +143,8 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'DASHBOARD.WEEK_3': 'Week 3',
     'DASHBOARD.WEEK_4': 'Week 4',
 
-    'NAV.ACCOUNT_TRANSFER': 'Account Transfer',
-    'TRANSFER.TITLE': 'Account Transfer',
+    'NAV.ACCOUNT_TRANSFER': 'Money Transfer',
+    'TRANSFER.TITLE': 'Money Transfer',
     'TRANSFER.SENDER_IBAN': 'Sender IBAN',
     'TRANSFER.RECEIVER_IBAN': 'Receiver IBAN',
     'TRANSFER.DESCRIPTION': 'Description',
@@ -151,6 +152,7 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'TRANSFER.SUBMIT': 'Submit',
     'TRANSFER.RECEIPT_SENDER': 'Sender Receipt',
     'TRANSFER.RECEIPT_RECEIVER': 'Receiver Receipt',
-    'TRANSFER.TRANSACTION_DETAIL': 'Go to Transaction Detail'
+    'TRANSFER.TRANSACTION_DETAIL': 'Go to Transaction Detail',
+    'TRANSFER.REFERENCE_NO': 'Reference No'
   }
 };

@@ -1,4 +1,5 @@
 using BankAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,21 @@ builder.Services.AddScoped<BankAPI.Services.DashboardService>();
 builder.Services.AddScoped<BankAPI.Services.AdminService>();
 
 // YENİ: Controller (MusteriController vb.) sınıflarını okuma yeteneğini açıyoruz
-builder.Services.AddControllers(); 
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // [ApiController] model doğrulama hatalarını varsayılan olarak ProblemDetails
+        // formatında döndürüyor; Angular tarafı ise her hatada "message" alanını
+        // okuduğu için diğer uçlarla aynı { message } biçimine çeviriyoruz.
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var mesaj = string.Join(" ", context.ModelState.Values
+                .SelectMany(deger => deger.Errors)
+                .Select(hata => hata.ErrorMessage));
+
+            return new BadRequestObjectResult(new { message = mesaj });
+        };
+    });
 
 // YENİ: Swagger görsel arayüzünü oluşturacak sistemi ekliyoruz
 builder.Services.AddEndpointsApiExplorer();

@@ -76,6 +76,8 @@
   font-size: 13px;
   color: #cbd5e1;
   line-height: 1.4;
+  /* Çok satırlı mesajlar (örn. müşteri detayı) satır sonlarını korusun */
+  white-space: pre-line;
 }
 
 .toast-close {

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { HesapService } from '../../../services/hesap.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
     selector: 'app-hesap-transferi',
@@ -16,11 +17,16 @@ export class HesapTransferiComponent {
     transferForm: FormGroup;
     isTransferSuccessful: boolean = false;
 
-    // Frontend simülasyonu için rastgele işlem ID'leri (Dekonttaki Info butonu için)
-    senderTxId: number = 0;
-    receiverTxId: number = 0;
+    // Transferden dönen gerçek hareket ID'leri (dekonttaki "i" butonu bunları kullanır)
+    senderTxId: number | null = null;
+    receiverTxId: number | null = null;
+    referansNo: string | null = null;
 
-    constructor(private fb: FormBuilder, private hesapService: HesapService) {
+    constructor(
+        private fb: FormBuilder,
+        private hesapService: HesapService,
+        private toastService: ToastService
+    ) {
         this.transferForm = this.fb.group({
             senderIban: ['', [Validators.required, Validators.minLength(26), Validators.maxLength(26)]],
             receiverIban: ['', [Validators.required, Validators.minLength(26), Validators.maxLength(26)]],
@@ -41,14 +47,21 @@ export class HesapTransferiComponent {
             this.hesapService.paraTransferi(payload).subscribe({
                 next: (res) => {
                     this.isTransferSuccessful = true;
-                    // Başarılı olduğunda, gerçekte dönen ID'leri de gösterebiliriz, şimdilik rastgele gösteriyoruz.
-                    this.senderTxId = Math.floor(Math.random() * 10000) + 1000;
-                    this.receiverTxId = this.senderTxId + 1;
-                    alert("Transfer Başarılı: " + res.message);
+                    // Dekont kartları DB'de oluşan iki hareketin ISLEM_ID'sine bağlanır.
+                    this.senderTxId = res.gonderenIslemId;
+                    this.receiverTxId = res.aliciIslemId;
+                    this.referansNo = res.referansNo;
+                    this.toastService.showSuccess(res.message, 'Transfer Başarılı');
                 },
                 error: (err) => {
                     this.isTransferSuccessful = false;
-                    alert("Transfer Hatası: " + (err.error?.message || err.message));
+                    this.senderTxId = null;
+                    this.receiverTxId = null;
+                    this.referansNo = null;
+                    this.toastService.showError(
+                        err.error?.message || err.message || 'Transfer gerçekleştirilemedi.',
+                        'Transfer Hatası'
+                    );
                 }
             });
         }

@@ -42,11 +42,12 @@
     <div class="receipt-card">
       <div class="receipt-header">
         <h4>{{ 'TRANSFER.RECEIPT_SENDER' | translate }}</h4>
-        <button type="button" class="info-btn" [routerLink]="['/admin/islem-detayi', senderTxId]" [title]="'TRANSFER.TRANSACTION_DETAIL' | translate">i</button>
+        <button *ngIf="senderTxId" type="button" class="info-btn" [routerLink]="['/admin/islem-detayi', senderTxId]" [title]="'TRANSFER.TRANSACTION_DETAIL' | translate">i</button>
       </div>
       <div class="receipt-body">
         <p><strong>{{ 'TRANSFER.SENDER_IBAN' | translate }}:</strong> <span style="font-family: monospace;">{{ transferForm.value.senderIban | uppercase }}</span></p>
         <p><strong>{{ 'TRANSFER.DESCRIPTION' | translate }}:</strong> {{ transferForm.value.description }}</p>
+        <p *ngIf="referansNo"><strong>{{ 'TRANSFER.REFERENCE_NO' | translate }}:</strong> <span style="font-family: monospace;">{{ referansNo }}</span></p>
         <p class="amount-text" style="color: #ef4444;"><strong>{{ 'TRANSFER.AMOUNT' | translate }}:</strong> -{{ transferForm.value.amount | number:'1.2-2' }}</p>
       </div>
     </div>
@@ -55,11 +56,12 @@
     <div class="receipt-card">
       <div class="receipt-header">
         <h4>{{ 'TRANSFER.RECEIPT_RECEIVER' | translate }}</h4>
-        <button type="button" class="info-btn" [routerLink]="['/admin/islem-detayi', receiverTxId]" [title]="'TRANSFER.TRANSACTION_DETAIL' | translate">i</button>
+        <button *ngIf="receiverTxId" type="button" class="info-btn" [routerLink]="['/admin/islem-detayi', receiverTxId]" [title]="'TRANSFER.TRANSACTION_DETAIL' | translate">i</button>
       </div>
       <div class="receipt-body">
         <p><strong>{{ 'TRANSFER.RECEIVER_IBAN' | translate }}:</strong> <span style="font-family: monospace;">{{ transferForm.value.receiverIban | uppercase }}</span></p>
         <p><strong>{{ 'TRANSFER.DESCRIPTION' | translate }}:</strong> {{ transferForm.value.description }}</p>
+        <p *ngIf="referansNo"><strong>{{ 'TRANSFER.REFERENCE_NO' | translate }}:</strong> <span style="font-family: monospace;">{{ referansNo }}</span></p>
         <p class="amount-text" style="color: #10b981;"><strong>{{ 'TRANSFER.AMOUNT' | translate }}:</strong> +{{ transferForm.value.amount | number:'1.2-2' }}</p>
       </div>
     </div>
