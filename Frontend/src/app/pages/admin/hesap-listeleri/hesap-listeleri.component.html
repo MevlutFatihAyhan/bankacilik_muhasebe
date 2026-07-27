@@ -2,7 +2,7 @@
     <button class="filter-btn" (click)="toggleFilter()">
         <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> Filtrele
     </button>
-    <input type="text" [(ngModel)]="searchTerm" class="search-input shadow-input"
+    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" class="search-input shadow-input"
         placeholder="Hesap No, Müşteri, IBAN veya Tür Ara..." style="background-color: transparent;">
 </div>
 
@@ -52,13 +52,13 @@
             <input type="number" [(ngModel)]="filterMaxBakiye" placeholder="Limit yok">
         </div>
         <div class="filter-actions">
-            <button class="btn-primary" (click)="applyFilters()">Uygula</button>
-            <button class="btn-secondary" (click)="resetFilters()">Temizle</button>
+            <button class="btn-primary" (click)="applyFilters()" [disabled]="isLoading">Uygula</button>
+            <button class="btn-secondary" (click)="resetFilters()" [disabled]="isLoading">Temizle</button>
         </div>
     </div>
 </div>
 
-<ng-container *ngIf="!isLoading && (filteredData | sort:sortColumn:sortDirection) as result">
+<ng-container *ngIf="(filteredData | sort:sortColumn:sortDirection) as result">
     <div class="table-container">
         <table class="data-table">
             <thead>
@@ -81,13 +81,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngIf="!hasAppliedFilters">
+                <tr *ngIf="isLoading">
+                    <td colspan="8" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
+                        Kayıtlar getiriliyor...
+                    </td>
+                </tr>
+
+                <tr *ngIf="!isLoading && !hasAppliedFilters">
                     <td colspan="8" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
                         🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna tıklayınız.
                     </td>
                 </tr>
 
-                <tr *ngIf="hasAppliedFilters && result.length === 0">
+                <tr *ngIf="!isLoading && hasAppliedFilters && result.length === 0">
                     <td colspan="8" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
                         Kriterlere uygun hesap bulunamadı.
                     </td>

@@ -43,6 +43,29 @@ namespace BankAPI.Controllers
             }
         }
 
+        // Filtreye bağlı listeleme — arayüzde "Uygula" butonuna basılmadan çağrılmaz
+        [HttpGet("filtre")]
+        public IActionResult HareketleriFiltrele(
+            [FromQuery] string searchTerm = null,
+            [FromQuery] string islemYonu = null,
+            [FromQuery] string dovizCinsi = null,
+            [FromQuery] DateTime? baslangicTarihi = null,
+            [FromQuery] DateTime? bitisTarihi = null,
+            [FromQuery] decimal? minTutar = null,
+            [FromQuery] decimal? maxTutar = null)
+        {
+            try
+            {
+                var hareketListesi = _hareketService.HareketleriFiltrele(
+                    searchTerm, islemYonu, dovizCinsi, baslangicTarihi, bitisTarihi, minTutar, maxTutar);
+                return Ok(hareketListesi);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
         [HttpGet("hesap/{hesapNo}")]
         public IActionResult HesapHareketleriGetir(string hesapNo)
         {

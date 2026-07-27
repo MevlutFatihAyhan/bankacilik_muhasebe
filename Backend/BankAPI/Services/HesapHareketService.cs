@@ -123,6 +123,57 @@ namespace BankAPI.Services
         }
 
 
+        // Filtreye bağlı hareket listesi — PKG_HESAP.PRC_HAREKET_LISTE
+        // Tüm kriterler DB tarafında değerlendirilir; boş gelen kriterler NULL olarak
+        // gönderilir ve prosedürde "o kriter yok" anlamına gelir.
+        public List<HesapHareket> HareketleriFiltrele(
+            string searchTerm,
+            string islemYonu,
+            string dovizCinsi,
+            DateTime? baslangicTarihi,
+            DateTime? bitisTarihi,
+            decimal? minTutar,
+            decimal? maxTutar)
+        {
+            List<HesapHareket> hareketListesi = new List<HesapHareket>();
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_HESAP.PRC_HAREKET_LISTE", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("p_search_term", OracleDbType.Varchar2).Value = NullIfEmpty(searchTerm);
+                    cmd.Parameters.Add("p_islem_yonu", OracleDbType.Varchar2).Value = NullIfEmpty(islemYonu);
+                    cmd.Parameters.Add("p_doviz_cinsi", OracleDbType.Varchar2).Value = NullIfEmpty(dovizCinsi);
+                    cmd.Parameters.Add("p_baslangic_tarihi", OracleDbType.Date).Value = NullIfEmpty(baslangicTarihi);
+                    cmd.Parameters.Add("p_bitis_tarihi", OracleDbType.Date).Value = NullIfEmpty(bitisTarihi);
+                    cmd.Parameters.Add("p_min_tutar", OracleDbType.Decimal).Value = NullIfEmpty(minTutar);
+                    cmd.Parameters.Add("p_max_tutar", OracleDbType.Decimal).Value = NullIfEmpty(maxTutar);
+                    cmd.Parameters.Add("p_result", OracleDbType.RefCursor, ParameterDirection.Output);
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            hareketListesi.Add(MapHareket(reader));
+                        }
+                    }
+                }
+            }
+            return hareketListesi;
+        }
+
+        private static object NullIfEmpty(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? (object)DBNull.Value : value.Trim();
+        }
+
+        private static object NullIfEmpty<T>(T? value) where T : struct
+        {
+            return value.HasValue ? (object)value.Value : DBNull.Value;
+        }
+
         // Tek bir hareketi ISLEM_ID ile getir — PKG_HESAP.PRC_HAREKET_GETIR
         public HesapHareket HareketGetir(decimal islemId)
         {

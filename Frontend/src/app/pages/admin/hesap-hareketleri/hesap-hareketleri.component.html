@@ -2,7 +2,8 @@
     <button class="filter-btn" (click)="toggleFilter()">
         <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> Filtrele
     </button>
-    <input type="text" [(ngModel)]="searchTerm" placeholder="İşlem veya Açıklama ara..." class="search-input">
+    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()"
+        placeholder="İşlem veya Açıklama ara..." class="search-input">
 </div>
 
 <div class="filter-panel" *ngIf="isFilterOpen">
@@ -11,8 +12,8 @@
             <label>İşlem Yönü</label>
             <select [(ngModel)]="filterYon">
                 <option value="Tümü">Tümü</option>
-                <option value="Geliş (Gelir)">Geliş (Gelir)</option>
-                <option value="Gidiş (Gider)">Gidiş (Gider)</option>
+                <option value="B">Geliş (Gelir)</option>
+                <option value="C">Gidiş (Gider)</option>
             </select>
         </div>
         <div class="filter-item">
@@ -42,8 +43,8 @@
             <input type="number" [(ngModel)]="filterMaxTutar" placeholder="Limit yok">
         </div>
         <div class="filter-actions">
-            <button class="btn-primary" (click)="applyFilters()">Uygula</button>
-            <button class="btn-secondary" (click)="resetFilters()">Temizle</button>
+            <button class="btn-primary" (click)="applyFilters()" [disabled]="isLoading">Uygula</button>
+            <button class="btn-secondary" (click)="resetFilters()" [disabled]="isLoading">Temizle</button>
         </div>
     </div>
 </div>
@@ -62,13 +63,19 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngIf="!hasAppliedFilters">
+            <tr *ngIf="isLoading">
+                <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
+                    Kayıtlar getiriliyor...
+                </td>
+            </tr>
+
+            <tr *ngIf="!isLoading && !hasAppliedFilters">
                 <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
                     🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna tıklayınız.
                 </td>
             </tr>
 
-            <tr *ngIf="hasAppliedFilters && result.length === 0">
+            <tr *ngIf="!isLoading && hasAppliedFilters && result.length === 0">
                 <td colspan="6" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
                     Kriterlere uygun işlem hareketi bulunamadı.
                 </td>

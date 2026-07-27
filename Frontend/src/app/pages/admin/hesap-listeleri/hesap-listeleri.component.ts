@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +6,7 @@ import { FilterPipe } from '../../../pipes/filter.pipe';
 import { SortPipe } from '../../../pipes/sort.pipe';
 import { HesapService } from '../../../services/hesap.service';
 import { MusteriService } from '../../../services/musteri.service';
-import { Hesap } from '../../../models/hesap.model';
+import { Hesap, HesapFiltre } from '../../../models/hesap.model';
 import { Musteri } from '../../../models/musteri.model';
 
 @Component({
@@ -15,7 +15,7 @@ import { Musteri } from '../../../models/musteri.model';
   imports: [CommonModule, RouterModule, FormsModule, FilterPipe, SortPipe],
   templateUrl: './hesap-listeleri.component.html'
 })
-export class HesapListeleriComponent implements OnInit {
+export class HesapListeleriComponent {
   searchTerm: string = '';
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -37,30 +37,16 @@ export class HesapListeleriComponent implements OnInit {
 
   hesaplar: Hesap[] = [];
   musterilerMap: Map<number, Musteri> = new Map();
-  isLoading: boolean = true;
+  isLoading: boolean = false;
 
   constructor(
     private hesapService: HesapService,
     private musteriService: MusteriService
   ) { }
 
-  ngOnInit(): void {
-    this.loadData();
-  }
-
-  loadData(): void {
-    this.isLoading = true;
-    this.hesapService.getAllHesaplar(true).subscribe({
-      next: (data) => {
-        this.hesaplar = data || [];
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Hesaplar yüklenirken hata oluştu:', err);
-        this.isLoading = false;
-      }
-    });
-
+  // Sayfa açılışında hiçbir listeleme yapılmaz; veri yalnızca "Uygula" ile
+  // seçilen kriterlere göre DB'den (PKG_HESAP.PRC_HESAP_LISTE) çekilir.
+  private loadMusteriMap(): void {
     this.musteriService.getMusteriler().subscribe({
       next: (musteriler) => {
         this.musterilerMap.clear();
@@ -80,11 +66,6 @@ export class HesapListeleriComponent implements OnInit {
     return musteri.soyad ? `${musteri.ad} ${musteri.soyad}` : musteri.ad;
   }
 
-  getMusteriTipi(musteriId: number): number {
-    const musteri = this.musterilerMap.get(musteriId);
-    return (musteri && musteri.musteriTipi) ? musteri.musteriTipi : 0;
-  }
-
   sortBy(column: string) {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -99,9 +80,44 @@ export class HesapListeleriComponent implements OnInit {
     this.isFilterOpen = !this.isFilterOpen;
   }
 
+  // Ekrandaki seçimleri DB prosedürünün beklediği kodlara çevirir
+  private buildFiltre(): HesapFiltre {
+    return {
+      searchTerm: this.searchTerm ? this.searchTerm.trim() : null,
+      musteriTipi: this.filterMusteriTipi === 'Bireysel' ? 1
+        : (this.filterMusteriTipi === 'Tüzel' ? 2 : null),
+      hesapTuru: this.filterHesapTuru === 'Tümü' ? null : this.filterHesapTuru,
+      dovizCinsi: this.filterDoviz === 'Tümü' ? null : this.filterDoviz,
+      durum: this.filterDurum === 'Aktif' ? 1
+        : (this.filterDurum === 'Pasif' ? 2 : (this.filterDurum === 'Kapalı' ? 3 : null)),
+      minBakiye: this.filterMinBakiye,
+      maxBakiye: this.filterMaxBakiye
+    };
+  }
+
   applyFilters() {
-    this.hasAppliedFilters = true;
     this.currentPage = 1;
+    this.isLoading = true;
+    this.hesaplar = [];
+
+    // Müşteri adlarını gösterebilmek için eşleştirme tablosunu bir kez yükle
+    if (this.musterilerMap.size === 0) {
+      this.loadMusteriMap();
+    }
+
+    this.hesapService.getHesaplarByFilter(this.buildFiltre()).subscribe({
+      next: (data) => {
+        this.hesaplar = data || [];
+        this.hasAppliedFilters = true;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Hesaplar filtrelenirken hata oluştu:', err);
+        this.hesaplar = [];
+        this.hasAppliedFilters = true;
+        this.isLoading = false;
+      }
+    });
   }
 
   resetFilters() {
@@ -113,6 +129,7 @@ export class HesapListeleriComponent implements OnInit {
     this.filterMinBakiye = null;
     this.filterMaxBakiye = null;
     this.hasAppliedFilters = false;
+    this.hesaplar = [];
     this.currentPage = 1;
   }
 
@@ -129,57 +146,9 @@ export class HesapListeleriComponent implements OnInit {
     });
   }
 
+  // Filtreleme DB tarafında yapıldığı için burada ek bir eleme yoktur;
+  // "Uygula" öncesinde liste boş kalır.
   get filteredData(): Hesap[] {
-    if (!this.hasAppliedFilters) {
-      return [];
-    }
-
-    return this.hesaplar.filter(h => {
-      // 1. Text Search
-      let matchesSearch = true;
-      if (this.searchTerm) {
-        const term = this.searchTerm.toLowerCase();
-        const musteriAdi = this.getMusteriAdi(h.musteriId).toLowerCase();
-        matchesSearch = (
-          (h.hesapNo && h.hesapNo.toLowerCase().includes(term)) ||
-          (h.iban && h.iban.toLowerCase().includes(term)) ||
-          (h.hesapTuru && h.hesapTuru.toLowerCase().includes(term)) ||
-          (h.dovizCinsi && h.dovizCinsi.toLowerCase().includes(term)) ||
-          musteriAdi.includes(term) ||
-          String(h.bakiye).includes(term)
-        );
-      }
-
-      // 2. Müşteri Tipi Filtresi (1: Bireysel, 2: Tüzel)
-      let matchesMusteri = true;
-      if (this.filterMusteriTipi !== 'Tümü') {
-        const tip = this.getMusteriTipi(h.musteriId);
-        if (this.filterMusteriTipi === 'Bireysel') matchesMusteri = tip === 1;
-        else if (this.filterMusteriTipi === 'Tüzel') matchesMusteri = tip === 2;
-      }
-
-      // 3. Hesap Türü Filtresi
-      let matchesTur = true;
-      if (this.filterHesapTuru !== 'Tümü') matchesTur = h.hesapTuru === this.filterHesapTuru;
-
-      // 4. Döviz Filtresi
-      let matchesDoviz = true;
-      if (this.filterDoviz !== 'Tümü') matchesDoviz = (h.dovizCinsi === this.filterDoviz || (this.filterDoviz === 'TRY' && h.dovizCinsi === 'TL'));
-
-      // 5. Durum Filtresi (1: Aktif, 2: Pasif, 3: Kapalı)
-      let matchesDurum = true;
-      if (this.filterDurum !== 'Tümü') {
-        if (this.filterDurum === 'Aktif') matchesDurum = h.durum === 1;
-        else if (this.filterDurum === 'Pasif') matchesDurum = h.durum === 2;
-        else if (this.filterDurum === 'Kapalı') matchesDurum = h.durum === 3;
-      }
-
-      // 6. Bakiye Aralığı Filtresi
-      let matchesBakiye = true;
-      if (this.filterMinBakiye !== null && h.bakiye < this.filterMinBakiye) matchesBakiye = false;
-      if (this.filterMaxBakiye !== null && h.bakiye > this.filterMaxBakiye) matchesBakiye = false;
-
-      return matchesSearch && matchesMusteri && matchesTur && matchesDoviz && matchesDurum && matchesBakiye;
-    });
+    return this.hasAppliedFilters ? this.hesaplar : [];
   }
 }

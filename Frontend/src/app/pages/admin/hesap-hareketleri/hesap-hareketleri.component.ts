@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FilterPipe } from '../../../pipes/filter.pipe';
 import { SortPipe } from '../../../pipes/sort.pipe';
 import { HesapHareketService } from '../../../services/hesap-hareket.service';
-import { HesapHareket } from '../../../models/hesap-hareket.model';
+import { HesapHareket, HesapHareketFiltre } from '../../../models/hesap-hareket.model';
 
 @Component({
   selector: 'app-hesap-hareketleri',
@@ -13,7 +13,7 @@ import { HesapHareket } from '../../../models/hesap-hareket.model';
   imports: [CommonModule, FormsModule, RouterModule, FilterPipe, SortPipe],
   templateUrl: './hesap-hareketleri.component.html'
 })
-export class HesapHareketleriComponent implements OnInit {
+export class HesapHareketleriComponent {
   searchTerm: string = '';
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -34,19 +34,11 @@ export class HesapHareketleriComponent implements OnInit {
   filterMaxTutar: number | null = null;
 
   hareketler: HesapHareket[] = [];
+  isLoading: boolean = false;
 
+  // Sayfa açılışında hiçbir listeleme yapılmaz; veri yalnızca "Uygula" ile
+  // seçilen kriterlere göre DB'den (PKG_HESAP.PRC_HAREKET_LISTE) çekilir.
   constructor(private hesapHareketService: HesapHareketService) {}
-
-  ngOnInit(): void {
-    this.hesapHareketService.getAllHareketler().subscribe({
-      next: (data) => {
-        this.hareketler = data;
-      },
-      error: (err) => {
-        console.error('Hesap hareketleri çekilemedi', err);
-      }
-    });
-  }
 
   sortBy(column: string) {
     if (this.sortColumn === column) {
@@ -62,9 +54,38 @@ export class HesapHareketleriComponent implements OnInit {
     this.isFilterOpen = !this.isFilterOpen;
   }
 
+  // Ekrandaki seçimleri DB prosedürünün beklediği kodlara çevirir
+  // (ISLEM_YONU → 'B': para girişi, 'C': para çıkışı)
+  private buildFiltre(): HesapHareketFiltre {
+    return {
+      searchTerm: this.searchTerm ? this.searchTerm.trim() : null,
+      islemYonu: this.filterYon === 'Tümü' ? null : this.filterYon,
+      dovizCinsi: this.filterDoviz === 'Tümü' ? null : this.filterDoviz,
+      baslangicTarihi: this.filterStartDate || null,
+      bitisTarihi: this.filterEndDate || null,
+      minTutar: this.filterMinTutar,
+      maxTutar: this.filterMaxTutar
+    };
+  }
+
   applyFilters() {
-    this.hasAppliedFilters = true;
     this.currentPage = 1;
+    this.isLoading = true;
+    this.hareketler = [];
+
+    this.hesapHareketService.getHareketlerByFilter(this.buildFiltre()).subscribe({
+      next: (data) => {
+        this.hareketler = data || [];
+        this.hasAppliedFilters = true;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Hesap hareketleri filtrelenirken hata oluştu:', err);
+        this.hareketler = [];
+        this.hasAppliedFilters = true;
+        this.isLoading = false;
+      }
+    });
   }
 
   resetFilters() {
@@ -76,49 +97,13 @@ export class HesapHareketleriComponent implements OnInit {
     this.filterMinTutar = null;
     this.filterMaxTutar = null;
     this.hasAppliedFilters = false;
+    this.hareketler = [];
     this.currentPage = 1;
   }
 
+  // Filtreleme DB tarafında yapıldığı için burada ek bir eleme yoktur;
+  // "Uygula" öncesinde liste boş kalır.
   get filteredData(): HesapHareket[] {
-    if (!this.hasAppliedFilters) {
-      return [];
-    }
-
-    return this.hareketler.filter(h => {
-      // 1. Text Search
-      let matchesSearch = true;
-      if (this.searchTerm) {
-        const term = this.searchTerm.toLowerCase();
-        matchesSearch = Object.values(h).some(val => String(val).toLowerCase().includes(term));
-      }
-
-      // 2. İşlem Yönü
-      let matchesYon = true;
-      if (this.filterYon === 'Geliş (Gelir)') matchesYon = (h.islemYonu === 'A' || h.islemYonu === 'B');
-      if (this.filterYon === 'Gidiş (Gider)') matchesYon = (h.islemYonu === 'C' || h.islemYonu === 'G');
-
-      // 3. Döviz
-      let matchesDoviz = true;
-      if (this.filterDoviz !== 'Tümü') matchesDoviz = (h.dovizCinsi === this.filterDoviz || (this.filterDoviz === 'TRY' && h.dovizCinsi === 'TL'));
-
-      // 4. Tarih Aralığı
-      let matchesDate = true;
-      const islemDate = new Date(h.islemTarihi).getTime();
-      if (this.filterStartDate) {
-        const start = new Date(this.filterStartDate).getTime();
-        if (islemDate < start) matchesDate = false;
-      }
-      if (this.filterEndDate) {
-        const end = new Date(this.filterEndDate).getTime() + 86400000;
-        if (islemDate > end) matchesDate = false;
-      }
-
-      // 5. Tutar Aralığı
-      let matchesTutar = true;
-      if (this.filterMinTutar !== null && h.islemTutari < this.filterMinTutar) matchesTutar = false;
-      if (this.filterMaxTutar !== null && h.islemTutari > this.filterMaxTutar) matchesTutar = false;
-
-      return matchesSearch && matchesYon && matchesDoviz && matchesDate && matchesTutar;
-    });
+    return this.hasAppliedFilters ? this.hareketler : [];
   }
 }

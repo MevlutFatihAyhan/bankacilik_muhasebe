@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, shareReplay, tap } from 'rxjs';
-import { HesapHareket } from '../models/hesap-hareket.model';
+import { HesapHareket, HesapHareketFiltre } from '../models/hesap-hareket.model';
 import { environment } from '../../environments/environments';
 
 @Injectable({
@@ -24,6 +24,22 @@ export class HesapHareketService {
 
     clearCache(): void {
         this.hareketlerCache$ = null;
+    }
+
+    // Filtreye bağlı listeleme — sorgu DB'de (PKG_HESAP.PRC_HAREKET_LISTE) çalışır,
+    // sadece "Uygula" butonuna basıldığında çağrılır. Cache kullanılmaz.
+    getHareketlerByFilter(filtre: HesapHareketFiltre): Observable<HesapHareket[]> {
+        let params = new HttpParams();
+
+        if (filtre.searchTerm) params = params.set('searchTerm', filtre.searchTerm.trim());
+        if (filtre.islemYonu) params = params.set('islemYonu', filtre.islemYonu);
+        if (filtre.dovizCinsi) params = params.set('dovizCinsi', filtre.dovizCinsi);
+        if (filtre.baslangicTarihi) params = params.set('baslangicTarihi', filtre.baslangicTarihi);
+        if (filtre.bitisTarihi) params = params.set('bitisTarihi', filtre.bitisTarihi);
+        if (filtre.minTutar != null) params = params.set('minTutar', filtre.minTutar);
+        if (filtre.maxTutar != null) params = params.set('maxTutar', filtre.maxTutar);
+
+        return this.http.get<HesapHareket[]>(`${this.apiUrl}/filtre`, { params });
     }
 
     getHareketler(hesapNo: string): Observable<HesapHareket[]> {

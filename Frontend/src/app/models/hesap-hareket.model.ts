@@ -10,3 +10,14 @@ export interface HesapHareket {
     islemKodu: string;
     referansNo: string;
 }
+
+// Hareket listeleme filtresi — PKG_HESAP.PRC_HAREKET_LISTE parametreleriyle birebir eşleşir
+export interface HesapHareketFiltre {
+    searchTerm?: string | null;
+    islemYonu?: string | null;      // 'B': para girişi, 'C': para çıkışı
+    dovizCinsi?: string | null;     // TRY / USD / EUR / XAU
+    baslangicTarihi?: string | null; // yyyy-MM-dd
+    bitisTarihi?: string | null;     // yyyy-MM-dd
+    minTutar?: number | null;
+    maxTutar?: number | null;
+}

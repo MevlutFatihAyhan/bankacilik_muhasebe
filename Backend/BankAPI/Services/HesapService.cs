@@ -135,7 +135,57 @@ namespace BankAPI.Services
             return hesapListesi;
         }
 
+        // Filtreye bağlı hesap listesi — PKG_HESAP.PRC_HESAP_LISTE
+        // Tüm kriterler DB tarafında değerlendirilir; boş gelen kriterler NULL olarak
+        // gönderilir ve prosedürde "o kriter yok" anlamına gelir.
+        public List<Hesap> HesaplariFiltrele(
+            string searchTerm,
+            int? musteriTipi,
+            string hesapTuru,
+            string dovizCinsi,
+            int? durum,
+            decimal? minBakiye,
+            decimal? maxBakiye)
+        {
+            List<Hesap> hesapListesi = new List<Hesap>();
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_HESAP.PRC_HESAP_LISTE", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("p_search_term", OracleDbType.Varchar2).Value = NullIfEmpty(searchTerm);
+                    cmd.Parameters.Add("p_musteri_tipi", OracleDbType.Int32).Value = NullIfEmpty(musteriTipi);
+                    cmd.Parameters.Add("p_hesap_turu", OracleDbType.Varchar2).Value = NullIfEmpty(hesapTuru);
+                    cmd.Parameters.Add("p_doviz_cinsi", OracleDbType.Varchar2).Value =
+                        string.IsNullOrWhiteSpace(dovizCinsi) ? (object)DBNull.Value : IbanHelper.NormalizeDovizCinsi(dovizCinsi);
+                    cmd.Parameters.Add("p_durum", OracleDbType.Int32).Value = NullIfEmpty(durum);
+                    cmd.Parameters.Add("p_min_bakiye", OracleDbType.Decimal).Value = NullIfEmpty(minBakiye);
+                    cmd.Parameters.Add("p_max_bakiye", OracleDbType.Decimal).Value = NullIfEmpty(maxBakiye);
+                    cmd.Parameters.Add("p_result", OracleDbType.RefCursor, ParameterDirection.Output);
 
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            hesapListesi.Add(MapHesap(reader));
+                        }
+                    }
+                }
+            }
+            return hesapListesi;
+        }
+
+        private static object NullIfEmpty(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? (object)DBNull.Value : value.Trim();
+        }
+
+        private static object NullIfEmpty<T>(T? value) where T : struct
+        {
+            return value.HasValue ? (object)value.Value : DBNull.Value;
+        }
 
         // Bir müşterinin tüm hesaplarını getir — PKG_HESAP.PRC_MUSTERI_HESAPLARI (Inline SQL kaldırıldı)
         public List<Hesap> MusteriHesaplariGetir(decimal musteriId)
