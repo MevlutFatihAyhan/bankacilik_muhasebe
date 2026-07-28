@@ -131,6 +131,8 @@ END TRG_MST_MUSTERIADRES_BI;
 CREATE OR REPLACE TRIGGER TRG_MVD_HESAP_BI
 BEFORE INSERT OR UPDATE ON MVD_HESAP
 FOR EACH ROW
+DECLARE
+    v_musteri_tipi NUMBER(1);
 BEGIN
     IF :NEW.IBAN IS NOT NULL THEN
         :NEW.IBAN := UPPER(TRIM(:NEW.IBAN));
@@ -152,6 +154,14 @@ BEGIN
 
     IF :NEW.DURUM NOT IN (1, 2, 3) THEN
         RAISE_APPLICATION_ERROR(-20040, 'Hesap durumu 1 (Aktif), 2 (Pasif) veya 3 (Kapali) olmalidir.');
+    END IF;
+    
+    -- YENI KURAL: Tuzel musteriler (Ticari hesaplar) Vadeli hesap acamaz
+    IF :NEW.HESAP_TURU = 'Vadeli' THEN
+        SELECT MUSTERI_TIPI INTO v_musteri_tipi FROM MST_MUSTERI WHERE MUSTERI_ID = :NEW.MUSTERI_ID;
+        IF v_musteri_tipi = 2 THEN
+            RAISE_APPLICATION_ERROR(-20060, 'Tuzel musteriler Vadeli hesap acamaz!');
+        END IF;
     END IF;
 END TRG_MVD_HESAP_BI;
 /

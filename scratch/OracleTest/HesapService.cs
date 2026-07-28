@@ -24,25 +24,22 @@ namespace BankAPI.Services
             // 1. Döviz Cinsi Normalizasyonu (VARCHAR2(3) hatasını önlemek için EUR, USD, TRY, XAU dönüşümü)
             hesap.DOVIZ_CINSI = IbanHelper.NormalizeDovizCinsi(hesap.DOVIZ_CINSI);
 
+            // 2. Hesap No Otomatik Oluşturma (Boş veya geçici ise)
+            if (string.IsNullOrWhiteSpace(hesap.HESAP_NO) || hesap.HESAP_NO.StartsWith("ACC", StringComparison.OrdinalIgnoreCase))
+            {
+                hesap.HESAP_NO = IbanHelper.GenerateAccountNo();
+            }
+
+            // 3. IBAN Otomatik Oluşturma ve Doğrulama (Boş, geçici 'TR0000...' ise veya geçersiz ise)
+            if (string.IsNullOrWhiteSpace(hesap.IBAN) || 
+                hesap.IBAN == "TR000000000000000000000000" || 
+                !IbanHelper.ValidateTrIban(hesap.IBAN))
+            {
+                hesap.IBAN = IbanHelper.GenerateTrIban(hesap.HESAP_NO);
+            }
             using (OracleConnection connection = new OracleConnection(_connectionString))
             {
                 connection.Open();
-                
-                // 2. Hesap No Otomatik Oluşturma (Boş veya geçici ise)
-                if (string.IsNullOrWhiteSpace(hesap.HESAP_NO) || hesap.HESAP_NO.StartsWith("ACC", StringComparison.OrdinalIgnoreCase))
-                {
-                    int musteriTipi = GetMusteriTipi(hesap.MUSTERI_ID, connection);
-                    hesap.HESAP_NO = IbanHelper.GenerateAccountNo(musteriTipi);
-                }
-
-                // 3. IBAN Otomatik Oluşturma ve Doğrulama (Boş, geçici 'TR0000...' ise veya geçersiz ise)
-                if (string.IsNullOrWhiteSpace(hesap.IBAN) || 
-                    hesap.IBAN == "TR000000000000000000000000" || 
-                    !IbanHelper.ValidateTrIban(hesap.IBAN))
-                {
-                    hesap.IBAN = IbanHelper.GenerateTrIban(hesap.HESAP_NO);
-                }
-
                 using (OracleTransaction transaction = connection.BeginTransaction())
                 {
                     try
@@ -216,87 +213,50 @@ namespace BankAPI.Services
             return hesapListesi;
         }
 
-        // Para transferi — PKG_HESAP.PRC_PARA_TRANSFERI
-        // Tüm iş kuralları (IBAN kontrolü, hesap durumu, döviz uyumu, bakiye yeterliliği)
-        // ve bakiye güncellemesi DB tarafındadır; burada sadece parametre hazırlığı,
-        // transaction yönetimi ve OUT parametrelerinin okunması yapılır.
-        public ParaTransferiSonuc ParaTransferi(ParaTransferiRequest request)
+        // Para Transferi İşlemi — PRC_PARA_TRANSFERI (Stored Procedure çağrısı)
+        public (string IslemKodu, string HataMesaji) ParaTransferi(string gonderenIban, string aliciIban, decimal tutar, string aciklama)
         {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            // IBAN'lar boşluklardan arındırılıp büyük harfe çevrilir; kullanıcı
-            // "TR12 3456 ..." şeklinde yazdığında da hesap bulunabilsin diye.
-            string gonderenIban = NormalizeIban(request.GonderenIban);
-            string aliciIban = NormalizeIban(request.AliciIban);
-
-            var sonuc = new ParaTransferiSonuc();
-
             using (OracleConnection connection = new OracleConnection(_connectionString))
             {
                 connection.Open();
-                // İki hesap hareketi tek bir bütün olarak yazılmalı: prosedür COMMIT/ROLLBACK
-                // yapmaz, kararı işlem koduna bakarak buradaki transaction verir.
+                // Transfer işlemi kendi içinde tutarlı olmalı, bu yüzden Transaction başlatıyoruz.
+                // Gerçi SP içinde de transaction yapılabilirdi ama best practice olarak C# yönetir.
                 using (OracleTransaction transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        using (OracleCommand cmd = new OracleCommand("PKG_HESAP.PRC_PARA_TRANSFERI", connection))
+                        string islemKodu = "";
+                        string hataMesaji = "";
+
+                        using (OracleCommand cmd = new OracleCommand("PRC_PARA_TRANSFERI", connection))
                         {
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.BindByName = true;
-
+                            
                             // IN parametreleri
                             cmd.Parameters.Add("p_gonderen_iban", OracleDbType.Varchar2).Value = gonderenIban;
                             cmd.Parameters.Add("p_alici_iban", OracleDbType.Varchar2).Value = aliciIban;
-                            cmd.Parameters.Add("p_tutar", OracleDbType.Decimal).Value = request.Tutar;
-                            cmd.Parameters.Add("p_aciklama", OracleDbType.Varchar2).Value = NullIfEmpty(request.Aciklama);
-
-                            // OUT parametreleri (Varchar2 için boyut belirtmek zorunlu)
-                            var outKodu = new OracleParameter("p_islem_kodu", OracleDbType.Varchar2, 10)
-                            {
-                                Direction = ParameterDirection.Output
-                            };
+                            cmd.Parameters.Add("p_tutar", OracleDbType.Decimal).Value = tutar;
+                            cmd.Parameters.Add("p_aciklama", OracleDbType.Varchar2).Value = aciklama;
+                            
+                            // OUT parametreleri (Boyut belirtmek önemlidir)
+                            var outKodu = new OracleParameter("p_islem_kodu", OracleDbType.Varchar2, 10);
+                            outKodu.Direction = ParameterDirection.Output;
                             cmd.Parameters.Add(outKodu);
-
-                            var outMesaj = new OracleParameter("p_hata_mesaji", OracleDbType.Varchar2, 500)
-                            {
-                                Direction = ParameterDirection.Output
-                            };
+                            
+                            var outMesaj = new OracleParameter("p_hata_mesaji", OracleDbType.Varchar2, 255);
+                            outMesaj.Direction = ParameterDirection.Output;
                             cmd.Parameters.Add(outMesaj);
-
-                            var outReferans = new OracleParameter("p_referans_no", OracleDbType.Varchar2, 50)
-                            {
-                                Direction = ParameterDirection.Output
-                            };
-                            cmd.Parameters.Add(outReferans);
-
-                            var outGonderenIslemId = new OracleParameter("p_gonderen_islem_id", OracleDbType.Decimal)
-                            {
-                                Direction = ParameterDirection.Output
-                            };
-                            cmd.Parameters.Add(outGonderenIslemId);
-
-                            var outAliciIslemId = new OracleParameter("p_alici_islem_id", OracleDbType.Decimal)
-                            {
-                                Direction = ParameterDirection.Output
-                            };
-                            cmd.Parameters.Add(outAliciIslemId);
-
+                            
                             cmd.ExecuteNonQuery();
-
-                            sonuc.IslemKodu = OracleMetinDegeri(outKodu);
-                            sonuc.Mesaj = OracleMetinDegeri(outMesaj);
-                            sonuc.ReferansNo = OracleMetinDegeri(outReferans);
-                            sonuc.GonderenIslemId = OracleSayiDegeri(outGonderenIslemId);
-                            sonuc.AliciIslemId = OracleSayiDegeri(outAliciIslemId);
+                            
+                            // OUT değerlerini oku
+                            islemKodu = outKodu.Value?.ToString();
+                            hataMesaji = outMesaj.Value?.ToString();
                         }
-
-                        // Sadece işlem kodu '0' ise kalıcı hale getirilir; iş kuralı ihlalinde
-                        // veya DB hatasında (kod '500') hiçbir hareket yazılmamış olmalıdır.
-                        if (sonuc.Basarili)
+                        
+                        // Kodu 0 ise işlem başarılıdır, Commit atarız.
+                        if (islemKodu == "0")
                         {
                             transaction.Commit();
                         }
@@ -305,54 +265,15 @@ namespace BankAPI.Services
                             transaction.Rollback();
                         }
 
-                        return sonuc;
+                        return (islemKodu, hataMesaji);
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw new Exception($"Transfer işlemi veritabanında gerçekleştirilemedi: {ex.Message}", ex);
+                        throw new Exception($"Transfer işlemi veritabanında gerçekleştirilemedi: {ex.Message}");
                     }
                 }
             }
-        }
-
-        private static string NormalizeIban(string iban)
-        {
-            return string.IsNullOrWhiteSpace(iban)
-                ? null
-                : iban.Replace(" ", string.Empty).Trim().ToUpperInvariant();
-        }
-
-        // OracleString'in null hali ToString() ile "null" metnine dönüştüğü için
-        // OUT parametreleri her zaman tip kontrolüyle okunur.
-        private static string OracleMetinDegeri(OracleParameter parametre)
-        {
-            if (parametre.Value == null || parametre.Value is DBNull)
-            {
-                return null;
-            }
-
-            if (parametre.Value is Oracle.ManagedDataAccess.Types.OracleString oracleString)
-            {
-                return oracleString.IsNull ? null : oracleString.Value;
-            }
-
-            return parametre.Value.ToString();
-        }
-
-        private static decimal? OracleSayiDegeri(OracleParameter parametre)
-        {
-            if (parametre.Value == null || parametre.Value is DBNull)
-            {
-                return null;
-            }
-
-            if (parametre.Value is Oracle.ManagedDataAccess.Types.OracleDecimal oracleDecimal)
-            {
-                return oracleDecimal.IsNull ? (decimal?)null : oracleDecimal.Value;
-            }
-
-            return Convert.ToDecimal(parametre.Value);
         }
 
         private static Hesap MapHesap(OracleDataReader reader)
@@ -367,28 +288,6 @@ namespace BankAPI.Services
                 BAKIYE = Convert.ToDecimal(reader["BAKIYE"]),
                 DURUM = Convert.ToInt32(reader["DURUM"])
             };
-        }
-
-        private int GetMusteriTipi(decimal musteriId, OracleConnection connection)
-        {
-            try
-            {
-                using (OracleCommand cmd = new OracleCommand("SELECT MUSTERI_TIPI FROM MST_MUSTERI WHERE MUSTERI_ID = :p_musteri_id", connection))
-                {
-                    cmd.BindByName = true;
-                    cmd.Parameters.Add("p_musteri_id", OracleDbType.Decimal).Value = musteriId;
-                    object result = cmd.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
-                    {
-                        return Convert.ToInt32(result);
-                    }
-                }
-            }
-            catch
-            {
-                // Ignore DB errors and default to individual
-            }
-            return 1; // Default Bireysel
         }
     }
 }

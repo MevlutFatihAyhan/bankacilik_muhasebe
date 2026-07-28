@@ -25,15 +25,16 @@ namespace BankAPI.Helpers
             };
         }
 
-        public static string GenerateAccountNo()
+        public static string GenerateAccountNo(int musteriTipi = 1)
         {
+            string prefix = musteriTipi == 2 ? "TRT" : "TRB";
             Random random = new Random();
             string randomDigits = "";
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 13; i++)
             {
                 randomDigits += random.Next(0, 10).ToString();
             }
-            return "1000" + randomDigits;
+            return prefix + randomDigits;
         }
 
         public static string GenerateTrIban(string accountNo)
@@ -43,23 +44,35 @@ namespace BankAPI.Helpers
                 accountNo = GenerateAccountNo();
             }
 
-            string digitsOnly = Regex.Replace(accountNo, @"[^\d]", "");
-            if (string.IsNullOrEmpty(digitsOnly))
+            // Ensure accountNo is exactly 16 characters
+            if (accountNo.Length > 16)
             {
-                digitsOnly = "1000000000000001";
+                accountNo = accountNo.Substring(accountNo.Length - 16);
+            }
+            else if (accountNo.Length < 16)
+            {
+                accountNo = accountNo.PadLeft(16, '0');
             }
 
-            if (digitsOnly.Length > 16)
+            // The actual BBAN that will appear in the IBAN
+            string bban = BANK_CODE + "0" + accountNo;
+
+            // Convert BBAN letters to numbers for Mod 97 calculation
+            string numericBban = "";
+            foreach (char c in bban)
             {
-                digitsOnly = digitsOnly.Substring(digitsOnly.Length - 16);
-            }
-            else
-            {
-                digitsOnly = digitsOnly.PadLeft(16, '0');
+                if (char.IsDigit(c))
+                {
+                    numericBban += c;
+                }
+                else if (char.IsLetter(c))
+                {
+                    numericBban += (char.ToUpperInvariant(c) - 'A' + 10).ToString();
+                }
             }
 
-            string bban = BANK_CODE + "0" + digitsOnly;
-            string modString = bban + "292700";
+            // Add TR (2927) and 00 for check digit calculation
+            string modString = numericBban + "292700";
 
             int remainder = 0;
             foreach (char c in modString)
@@ -83,14 +96,29 @@ namespace BankAPI.Helpers
             if (cleanIban.Length != 26 || !cleanIban.StartsWith("TR"))
                 return false;
 
-            string numericPart = cleanIban.Substring(2);
-            if (!Regex.IsMatch(numericPart, @"^\d{24}$"))
-                return false;
-
-            string bban = cleanIban.Substring(4, 22);
+            // Extract parts
             string kk = cleanIban.Substring(2, 2);
+            string bban = cleanIban.Substring(4, 22);
 
-            string modString = bban + "2927" + kk;
+            // Convert BBAN letters to numbers
+            string numericBban = "";
+            foreach (char c in bban)
+            {
+                if (char.IsDigit(c))
+                {
+                    numericBban += c;
+                }
+                else if (char.IsLetter(c))
+                {
+                    numericBban += (char.ToUpperInvariant(c) - 'A' + 10).ToString();
+                }
+                else
+                {
+                    return false; // Invalid character
+                }
+            }
+
+            string modString = numericBban + "2927" + kk;
 
             int remainder = 0;
             foreach (char c in modString)

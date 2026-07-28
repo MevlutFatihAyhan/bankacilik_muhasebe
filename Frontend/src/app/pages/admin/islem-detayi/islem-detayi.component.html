@@ -1,25 +1,5 @@
 <div class="receipt-container" *ngIf="dekont">
-  <div class="receipt-card">
-    
-    <div class="receipt-header">
-      <div class="bank-logo">VaqıvBank İşlem Dekontu</div>
-      <div class="receipt-id">İşlem ID: #{{ islemId }}</div>
-    </div>
-
-    <div class="receipt-body">
-      
-      <!-- Tutar ve Yön Vurgusu -->
-      <div class="receipt-amount-box">
-        <p class="amount-label">İşlem Tutarı</p>
-        <h2 class="amount-val" [style.color]="dekont.islemYonu === 'A' ? '#2e7d32' : '#DA0037'">
-          {{ dekont.islemYonu === 'A' ? '+' : '-' }} {{ dekont.islemTutari | number:'1.2-2' }} {{ dekont.dovizCinsi }}
-        </h2>
-        <span class="status-badge" [class.success]="true">İşlem Başarılı</span>
-      </div>
-
-      <div class="receipt-details">
-<div class="receipt-container" *ngIf="dekont">
-  <div class="receipt-card">
+  <div class="receipt-card" id="receipt-content">
     
     <div class="receipt-header">
       <div class="bank-logo">VaqıvBank İşlem Dekontu</div>
@@ -77,9 +57,9 @@
       </div>
     </div>
 
-    <div class="receipt-footer">
+    <div class="receipt-footer" data-html2canvas-ignore="true">
       <button class="btn-secondary" [routerLink]="['/admin/hesap-hareketleri']">Geri Dön</button>
-      <button class="btn-primary" (click)="yazdir()">Dekontu Yazdır</button>
+      <button class="btn-primary" (click)="yazdir()">Dekontu İndir</button>
     </div>
   </div>
 </div>

@@ -4,5 +4,5 @@ dist/
 Backend/BankAPI/bin/
 Backend/BankAPI/obj/
 .env
-
+CLAUDE.md
 /.vscode 
