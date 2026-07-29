@@ -2,12 +2,22 @@
     <button class="filter-btn" (click)="toggleFilter()">
         <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> Filtrele
     </button>
-    <input type="text" [(ngModel)]="searchTerm" class="search-input shadow-input"
-        placeholder="Müşteri ara..." style="background-color: transparent;">
+    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" class="search-input shadow-input" placeholder="Müşteri ara..."
+        style="background-color: transparent;">
 </div>
 
 <div class="filter-panel" *ngIf="isFilterOpen">
     <div class="filter-row">
+
+        <div class="filter-item">
+            <label>Müşteri Adı</label>
+            <input type="text" [(ngModel)]="filterMusteriAdi" (keyup.enter)="applyFilters()" placeholder="Müşteri Adı">
+        </div>
+        <div class="filter-item">
+            <label>Müşteri Soyadı</label>
+            <input type="text" [(ngModel)]="filterMusteriSoyadi" (keyup.enter)="applyFilters()" placeholder="Müşteri Soyadı">
+        </div>
+
         <div class="filter-item">
             <label>Müşteri Tipi</label>
             <select [(ngModel)]="filterMusteriTipi">
@@ -52,7 +62,8 @@
             <tbody>
                 <tr *ngIf="!hasAppliedFilters">
                     <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
-                        🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna tıklayınız.
+                        🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna
+                        tıklayınız.
                     </td>
                 </tr>
 
@@ -62,14 +73,17 @@
                     </td>
                 </tr>
 
-                <tr *ngFor="let musteri of result | slice:(currentPage-1)*pageSize : currentPage*pageSize" class="table-row">
+                <tr *ngFor="let musteri of result | slice:(currentPage-1)*pageSize : currentPage*pageSize"
+                    class="table-row">
                     <td class="p-12">{{ musteri.musteriId }}</td>
                     <td class="p-12">{{ musteri.ad }} {{ musteri.soyad }}</td>
                     <td class="p-12">{{ musteri.email }}</td>
                     <td class="p-12">{{ musteri.telefon }}</td>
-                    <td class="p-12" style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                    <td class="p-12"
+                        style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;">
                         {{ musteri.aktifMi === 1 ? 'Aktif' : 'Pasif' }}</td>
-                    <td class="p-12" style="border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                    <td class="p-12"
+                        style="border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;">
                         <button class="info-btn" [routerLink]="['/admin/musteri-detayi', musteri.musteriId]"
                             title="Müşteri Detaylarını Gör">i</button>
                     </td>
@@ -80,8 +94,8 @@
 
     <div class="pagination-controls" *ngIf="hasAppliedFilters && result.length > 0">
         <span class="page-info">
-            Toplam <strong>{{ result.length }}</strong> kayıttan 
-            <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - 
+            Toplam <strong>{{ result.length }}</strong> kayıttan
+            <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> -
             <strong>{{ Math.min(currentPage * pageSize, result.length) }}</strong> arası gösteriliyor
         </span>
 
@@ -89,8 +103,10 @@
             <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
                 ‹ Önceki
             </button>
-            <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1 }}</span>
-            <button class="btn-page" (click)="currentPage = currentPage + 1" [disabled]="currentPage * pageSize >= result.length">
+            <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1
+                }}</span>
+            <button class="btn-page" (click)="currentPage = currentPage + 1"
+                [disabled]="currentPage * pageSize >= result.length">
                 Sonraki ›
             </button>
         </div>

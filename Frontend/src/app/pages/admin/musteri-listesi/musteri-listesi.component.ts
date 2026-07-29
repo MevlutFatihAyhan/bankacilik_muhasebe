@@ -27,6 +27,8 @@ export class MusteriListesiComponent implements OnInit {
   isFilterOpen: boolean = true;
   hasAppliedFilters: boolean = false; // Bilgiler ilk etapta direkt listelenmeyecek
 
+  filterMusteriAdi: string = '';
+  filterMusteriSoyadi: string = '';
   filterMusteriTipi: string = 'Tümü';
   filterDurum: string = 'Tümü';
 
@@ -83,6 +85,8 @@ export class MusteriListesiComponent implements OnInit {
 
   resetFilters() {
     this.searchTerm = '';
+    this.filterMusteriAdi = '';
+    this.filterMusteriSoyadi = '';
     this.filterMusteriTipi = 'Tümü';
     this.filterDurum = 'Tümü';
     this.hasAppliedFilters = false;
@@ -102,17 +106,31 @@ export class MusteriListesiComponent implements OnInit {
         matchesSearch = Object.values(m).some(val => String(val).toLowerCase().includes(term));
       }
 
-      // 2. Müşteri Tipi Filtresi (1: Bireysel, 2: Tüzel)
+      // 2. Müşteri Adı Filtresi (ad)
+      let matchesAd = true;
+      if (this.filterMusteriAdi && this.filterMusteriAdi.trim() !== '') {
+        const searchAd = this.filterMusteriAdi.trim().toLowerCase();
+        matchesAd = m.ad ? m.ad.toLowerCase().includes(searchAd) : false;
+      }
+
+      // 3. Müşteri Soyadı Filtresi (soyad)
+      let matchesSoyad = true;
+      if (this.filterMusteriSoyadi && this.filterMusteriSoyadi.trim() !== '') {
+        const searchSoyad = this.filterMusteriSoyadi.trim().toLowerCase();
+        matchesSoyad = m.soyad ? m.soyad.toLowerCase().includes(searchSoyad) : false;
+      }
+
+      // 4. Müşteri Tipi Filtresi (1: Bireysel, 2: Tüzel)
       let matchesTipi = true;
       if (this.filterMusteriTipi === 'Bireysel') matchesTipi = m.musteriTipi === 1;
       if (this.filterMusteriTipi === 'Tüzel') matchesTipi = m.musteriTipi === 2;
 
-      // 3. Durum Filtresi (1: Aktif, 0 veya 2: Pasif)
+      // 5. Durum Filtresi (1: Aktif, 0 veya 2: Pasif)
       let matchesDurum = true;
       if (this.filterDurum === 'Aktif') matchesDurum = m.aktifMi === 1;
       if (this.filterDurum === 'Pasif') matchesDurum = m.aktifMi !== 1;
 
-      return matchesSearch && matchesTipi && matchesDurum;
+      return matchesSearch && matchesAd && matchesSoyad && matchesTipi && matchesDurum;
     });
   }
 

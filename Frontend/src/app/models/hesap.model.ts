@@ -30,6 +30,9 @@ export interface ParaTransferiSonuc {
 // Hesap listeleme filtresi — PKG_HESAP.PRC_HESAP_LISTE parametreleriyle birebir eşleşir
 export interface HesapFiltre {
     searchTerm?: string | null;
+    id?: string | null;
+    musteriAdi?: string | null;
+    musteriSoyadi?: string | null;
     musteriTipi?: number | null;   // 1: Bireysel, 2: Tüzel
     hesapTuru?: string | null;     // Vadeli / Vadesiz
     dovizCinsi?: string | null;    // TRY / USD / EUR / XAU

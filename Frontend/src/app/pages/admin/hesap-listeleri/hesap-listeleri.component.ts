@@ -29,6 +29,9 @@ export class HesapListeleriComponent {
   isFilterOpen: boolean = true;
   hasAppliedFilters: boolean = false; // Bilgiler ilk etapta direkt listelenmeyecek
 
+  filterId: string = '';
+  filterMusteriAdi: string = '';
+  filterMusteriSoyadi: string = '';
   filterMusteriTipi: string = 'Tümü';
   filterHesapTuru: string = 'Tümü';
   filterDoviz: string = 'Tümü';
@@ -86,6 +89,9 @@ export class HesapListeleriComponent {
   private buildFiltre(): HesapFiltre {
     return {
       searchTerm: this.searchTerm ? this.searchTerm.trim() : null,
+      id: this.filterId ? this.filterId.trim() : null,
+      musteriAdi: this.filterMusteriAdi ? this.filterMusteriAdi.trim() : null,
+      musteriSoyadi: this.filterMusteriSoyadi ? this.filterMusteriSoyadi.trim() : null,
       musteriTipi: this.filterMusteriTipi === 'Bireysel' ? 1
         : (this.filterMusteriTipi === 'Tüzel' ? 2 : null),
       hesapTuru: this.filterHesapTuru === 'Tümü' ? null : this.filterHesapTuru,
@@ -124,6 +130,9 @@ export class HesapListeleriComponent {
 
   resetFilters() {
     this.searchTerm = '';
+    this.filterId = '';
+    this.filterMusteriAdi = '';
+    this.filterMusteriSoyadi = '';
     this.filterMusteriTipi = 'Tümü';
     this.filterHesapTuru = 'Tümü';
     this.filterDoviz = 'Tümü';
@@ -148,9 +157,42 @@ export class HesapListeleriComponent {
     });
   }
 
-  // Filtreleme DB tarafında yapıldığı için burada ek bir eleme yoktur;
-  // "Uygula" öncesinde liste boş kalır.
   get filteredData(): Hesap[] {
-    return this.hasAppliedFilters ? this.hesaplar : [];
+    if (!this.hasAppliedFilters) return [];
+
+    return this.hesaplar.filter(hesap => {
+      // 1. ID Filtresi (Hesap No veya Müşteri ID)
+      if (this.filterId && this.filterId.trim() !== '') {
+        const idTerm = this.filterId.trim().toLowerCase();
+        const matchesHesapNo = hesap.hesapNo ? hesap.hesapNo.toString().toLowerCase().includes(idTerm) : false;
+        const matchesMusteriId = hesap.musteriId ? hesap.musteriId.toString().toLowerCase().includes(idTerm) : false;
+        if (!matchesHesapNo && !matchesMusteriId) {
+          return false;
+        }
+      }
+
+      // 2. Müşteri Adı Filtresi
+      if (this.filterMusteriAdi && this.filterMusteriAdi.trim() !== '') {
+        const searchAd = this.filterMusteriAdi.trim().toLowerCase();
+        const musteri = this.musterilerMap.get(hesap.musteriId);
+        const ad = musteri?.ad ? musteri.ad.toLowerCase() : '';
+        const fullMusteriStr = this.getMusteriAdi(hesap.musteriId).toLowerCase();
+        if (!ad.includes(searchAd) && !fullMusteriStr.includes(searchAd)) {
+          return false;
+        }
+      }
+
+      // 3. Müşteri Soyadı Filtresi
+      if (this.filterMusteriSoyadi && this.filterMusteriSoyadi.trim() !== '') {
+        const searchSoyad = this.filterMusteriSoyadi.trim().toLowerCase();
+        const musteri = this.musterilerMap.get(hesap.musteriId);
+        const soyad = musteri?.soyad ? musteri.soyad.toLowerCase() : '';
+        if (!soyad.includes(searchSoyad)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
   }
 }

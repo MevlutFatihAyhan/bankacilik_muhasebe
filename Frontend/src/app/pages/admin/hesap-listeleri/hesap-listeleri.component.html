@@ -9,6 +9,18 @@
 <div class="filter-panel" *ngIf="isFilterOpen">
     <div class="filter-row">
         <div class="filter-item">
+            <label>ID</label>
+            <input type="text" [(ngModel)]="filterId" (keyup.enter)="applyFilters()" placeholder="Hesap / Müşteri ID">
+        </div>
+        <div class="filter-item">
+            <label>Müşteri Adı</label>
+            <input type="text" [(ngModel)]="filterMusteriAdi" (keyup.enter)="applyFilters()" placeholder="Müşteri Adı">
+        </div>
+        <div class="filter-item">
+            <label>Müşteri Soyadı</label>
+            <input type="text" [(ngModel)]="filterMusteriSoyadi" (keyup.enter)="applyFilters()" placeholder="Müşteri Soyadı">
+        </div>
+        <div class="filter-item">
             <label>Müşteri Tipi</label>
             <select [(ngModel)]="filterMusteriTipi">
                 <option value="Tümü">Tümü</option>
@@ -89,7 +101,8 @@
 
                 <tr *ngIf="!isLoading && !hasAppliedFilters">
                     <td colspan="8" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
-                        🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna tıklayınız.
+                        🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna
+                        tıklayınız.
                     </td>
                 </tr>
 
@@ -111,7 +124,8 @@
                     <td class="p-12" style="font-family: monospace;">{{ hesap.iban }}</td>
                     <td class="p-12">{{ hesap.hesapTuru }}</td>
                     <td class="p-12">{{ hesap.dovizCinsi }}</td>
-                    <td class="p-12" style="font-weight: 600;">{{ hesap.bakiye | number:'1.2-2' }} {{ hesap.dovizCinsi }}</td>
+                    <td class="p-12" style="font-weight: 600;">{{ hesap.bakiye | number:'1.2-2' }} {{ hesap.dovizCinsi
+                        }}</td>
                     <td class="p-12">
                         <span
                             [style.background-color]="hesap.durum === 1 ? '#e6f4ea' : (hesap.durum === 2 ? '#fef7e0' : '#fce8e6')"
@@ -140,7 +154,8 @@
             <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
                 ‹ Önceki
             </button>
-            <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1 }}</span>
+            <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1
+                }}</span>
             <button class="btn-page" (click)="currentPage = currentPage + 1"
                 [disabled]="currentPage * pageSize >= result.length">
                 Sonraki ›

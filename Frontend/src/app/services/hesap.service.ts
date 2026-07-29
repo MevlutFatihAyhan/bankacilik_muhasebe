@@ -32,6 +32,9 @@ export class HesapService {
         let params = new HttpParams();
 
         if (filtre.searchTerm) params = params.set('searchTerm', filtre.searchTerm.trim());
+        if (filtre.id) params = params.set('id', filtre.id.trim());
+        if (filtre.musteriAdi) params = params.set('musteriAdi', filtre.musteriAdi.trim());
+        if (filtre.musteriSoyadi) params = params.set('musteriSoyadi', filtre.musteriSoyadi.trim());
         if (filtre.musteriTipi != null) params = params.set('musteriTipi', filtre.musteriTipi);
         if (filtre.hesapTuru) params = params.set('hesapTuru', filtre.hesapTuru);
         if (filtre.dovizCinsi) params = params.set('dovizCinsi', filtre.dovizCinsi);
