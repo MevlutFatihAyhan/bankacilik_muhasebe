@@ -51,7 +51,11 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
         const targetIndUsers = musteri?.bireyselSayisi || 0;
 
         const hesaplar = data.hesapIstatistikleri || [];
+<<<<<<< Updated upstream
         const targetGoldAccs = hesaplar.find(h => h.dovizCinsi === 'ALTIN' || h.dovizCinsi === 'Altin' || h.dovizCinsi === 'XAU')?.hesapSayisi || 0;
+=======
+        const targetGoldAccs = hesaplar.find(h => h.dovizCinsi === 'XAU' || h.dovizCinsi === 'Altin')?.hesapSayisi || 0;
+>>>>>>> Stashed changes
         const targetDollarAccs = hesaplar.find(h => h.dovizCinsi === 'USD' || h.dovizCinsi === 'Dolar')?.hesapSayisi || 0;
         
         let targetTermAccs = 0;
