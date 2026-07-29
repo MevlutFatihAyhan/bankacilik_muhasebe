@@ -22,7 +22,11 @@ BEGIN
     -- 1) Tablolar (CASCADE CONSTRAINTS sayesinde FK sirasi onemli degil,
     --    ayrica tabloya bagli trigger'lar da otomatik silinir)
     FOR TBL IN (
-        SELECT 'MVD_HESAPHAREKET_H'      AS TBL_NAME FROM DUAL
+        SELECT 'MUH_FIS_HAREKET_H'       AS TBL_NAME FROM DUAL
+        UNION ALL SELECT 'MUH_FIS_HAREKET'     FROM DUAL
+        UNION ALL SELECT 'MUH_FIS_H'           FROM DUAL
+        UNION ALL SELECT 'MUH_FIS'             FROM DUAL
+        UNION ALL SELECT 'MVD_HESAPHAREKET_H'  FROM DUAL
         UNION ALL SELECT 'MVD_HESAPHAREKET'    FROM DUAL
         UNION ALL SELECT 'MVD_HESAP_H'         FROM DUAL
         UNION ALL SELECT 'MVD_HESAP'           FROM DUAL

@@ -13,7 +13,7 @@ Scripts are meant to be run in order against an Oracle instance (schema `APPUSER
 
 ## Database architecture
 
-- Table prefixes indicate the subject area: `MST_*` (master data: customers, addresses), `MVD_*` (movement/transactional data: accounts, transactions, admin, daily volume).
+- Table prefixes indicate the subject area: `MST_*` (master data: customers, addresses), `MVD_*` (movement/transactional data: accounts, transactions, admin, daily volume), `MUH_*` (accounting: `MUH_FIS` voucher header / `MUH_FIS_HAREKET` debit-credit lines).
 - Every core table has a matching `*_H` history table (`MST_MUSTERI_H`, `MVD_HESAP_H`, etc.) populated by `BEFORE INSERT OR UPDATE` triggers in `02_Triggers.sql`, driven by `FN_AKTIF_ADMIN_KULLANICI_ADI` to stamp who made the change. When adding a new table that needs auditing, mirror this pattern (history table + trigger), don't bolt on application-level logging instead.
 - `MVD_HESAPHAREKET.ISLEM_YONU` is `'B'`/`'C'` (borç/alacak — debit/credit); `MST_MUSTERI.MUSTERI_TIPI` is `1` (bireysel/individual) or `2` (tüzel/corporate); `AKTIF_MI`/`DURUM` fields use small integer codes rather than booleans — check the `CHECK` constraints in `01_Tables.sql` for the valid values before writing new procedures.
 - PL/SQL packages in `03_Procedures.sql` are the source of truth for business logic (e.g. account balance updates on transaction insert). If a bug looks like "wrong balance" or "wrong customer count," check the procedure body before touching C#.
