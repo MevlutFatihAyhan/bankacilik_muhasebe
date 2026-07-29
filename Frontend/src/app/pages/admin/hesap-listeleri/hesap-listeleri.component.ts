@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from '../../../pipes/filter.pipe';
 import { SortPipe } from '../../../pipes/sort.pipe';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { HesapService } from '../../../services/hesap.service';
 import { MusteriService } from '../../../services/musteri.service';
 import { Hesap, HesapFiltre } from '../../../models/hesap.model';
@@ -13,7 +14,7 @@ import { ToastService } from '../../../services/toast.service';
 @Component({
   selector: 'app-hesap-listeleri',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, FilterPipe, SortPipe],
+  imports: [CommonModule, RouterModule, FormsModule, FilterPipe, SortPipe, TranslatePipe],
   templateUrl: './hesap-listeleri.component.html'
 })
 export class HesapListeleriComponent {

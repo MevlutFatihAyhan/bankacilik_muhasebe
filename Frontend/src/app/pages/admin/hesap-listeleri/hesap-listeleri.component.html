@@ -1,45 +1,44 @@
 <div class="filter-bar">
     <button class="filter-btn" (click)="toggleFilter()">
-        <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> Filtrele
+        <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> {{ 'COMMON.FILTER' | translate }}
     </button>
-    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" class="search-input shadow-input"
-        placeholder="Hesap No, Müşteri, IBAN veya Tür Ara..." style="background-color: transparent;">
 </div>
 
 <div class="filter-panel" *ngIf="isFilterOpen">
     <div class="filter-row">
         <div class="filter-item">
-            <label>ID</label>
-            <input type="text" [(ngModel)]="filterId" (keyup.enter)="applyFilters()" placeholder="Hesap / Müşteri ID">
+            <label>{{ 'COMMON.ID' | translate }}</label>
+            <input type="text" [(ngModel)]="filterId" (keyup.enter)="applyFilters()" [placeholder]="'ACCOUNT.NO' | translate">
         </div>
         <div class="filter-item">
-            <label>Müşteri Adı</label>
-            <input type="text" [(ngModel)]="filterMusteriAdi" (keyup.enter)="applyFilters()" placeholder="Müşteri Adı">
+            <label>{{ 'CUSTOMER.NAME' | translate }}</label>
+            <input type="text" [(ngModel)]="filterMusteriAdi" (keyup.enter)="applyFilters()" [placeholder]="'CUSTOMER.NAME' | translate">
         </div>
         <div class="filter-item">
-            <label>Müşteri Soyadı</label>
-            <input type="text" [(ngModel)]="filterMusteriSoyadi" (keyup.enter)="applyFilters()" placeholder="Müşteri Soyadı">
+            <label>{{ 'CUSTOMER.SURNAME' | translate }}</label>
+            <input type="text" [(ngModel)]="filterMusteriSoyadi" (keyup.enter)="applyFilters()"
+                [placeholder]="'CUSTOMER.SURNAME' | translate">
         </div>
         <div class="filter-item">
-            <label>Müşteri Tipi</label>
+            <label>{{ 'CUSTOMER.TYPE' | translate }}</label>
             <select [(ngModel)]="filterMusteriTipi">
-                <option value="Tümü">Tümü</option>
-                <option value="Bireysel">Bireysel</option>
-                <option value="Tüzel">Tüzel</option>
+                <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
+                <option value="Bireysel">{{ 'CUSTOMER.INDIVIDUAL' | translate }}</option>
+                <option value="Tüzel">{{ 'CUSTOMER.CORPORATE' | translate }}</option>
             </select>
         </div>
         <div class="filter-item">
-            <label>Hesap Türü</label>
+            <label>{{ 'ACCOUNT.TYPE' | translate }}</label>
             <select [(ngModel)]="filterHesapTuru">
-                <option value="Tümü">Tümü</option>
-                <option value="Vadeli">Vadeli</option>
-                <option value="Vadesiz">Vadesiz</option>
+                <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
+                <option value="Vadeli">{{ 'ACCOUNT.TERM' | translate }}</option>
+                <option value="Vadesiz">{{ 'ACCOUNT.DEMAND' | translate }}</option>
             </select>
         </div>
         <div class="filter-item">
-            <label>Döviz Cinsi</label>
+            <label>{{ 'ACCOUNT.CURRENCY_TYPE' | translate }}</label>
             <select [(ngModel)]="filterDoviz">
-                <option value="Tümü">Tümü</option>
+                <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
                 <option value="TRY">TRY (TL)</option>
                 <option value="USD">USD (Dolar)</option>
                 <option value="EUR">EUR (Euro)</option>
@@ -47,25 +46,25 @@
             </select>
         </div>
         <div class="filter-item">
-            <label>Durum</label>
+            <label>{{ 'COMMON.STATUS' | translate }}</label>
             <select [(ngModel)]="filterDurum">
-                <option value="Tümü">Tümü</option>
-                <option value="Aktif">Aktif</option>
-                <option value="Pasif">Pasif</option>
-                <option value="Kapalı">Kapalı</option>
+                <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
+                <option value="Aktif">{{ 'COMMON.ACTIVE' | translate }}</option>
+                <option value="Pasif">{{ 'COMMON.PASSIVE' | translate }}</option>
+                <option value="Kapalı">{{ 'ACCOUNT.CLOSED' | translate }}</option>
             </select>
         </div>
         <div class="filter-item">
-            <label>Min Bakiye</label>
+            <label>{{ 'ACCOUNT.MIN_BALANCE' | translate }}</label>
             <input type="number" [(ngModel)]="filterMinBakiye" placeholder="0">
         </div>
         <div class="filter-item">
-            <label>Max Bakiye</label>
+            <label>{{ 'ACCOUNT.MAX_BALANCE' | translate }}</label>
             <input type="number" [(ngModel)]="filterMaxBakiye" placeholder="Limit yok">
         </div>
         <div class="filter-actions">
-            <button class="btn-primary" (click)="applyFilters()" [disabled]="isLoading">Uygula</button>
-            <button class="btn-secondary" (click)="resetFilters()" [disabled]="isLoading">Temizle</button>
+            <button class="btn-primary" (click)="applyFilters()" [disabled]="isLoading">{{ 'COMMON.APPLY' | translate }}</button>
+            <button class="btn-secondary" (click)="resetFilters()" [disabled]="isLoading">{{ 'COMMON.CLEAR' | translate }}</button>
         </div>
     </div>
 </div>
@@ -75,40 +74,39 @@
         <table class="data-table">
             <thead>
                 <tr class="table-header-row">
-                    <th class="p-12 sortable" (click)="sortBy('hesapNo')">Hesap No <span
+                    <th class="p-12 sortable" (click)="sortBy('hesapNo')">{{ 'ACCOUNT.NO' | translate }} <span
                             *ngIf="sortColumn === 'hesapNo'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('musteriId')">Müşteri Adı <span
+                    <th class="p-12 sortable" (click)="sortBy('musteriId')">{{ 'CUSTOMER.NAME' | translate }} <span
                             *ngIf="sortColumn === 'musteriId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('iban')">IBAN <span
+                    <th class="p-12 sortable" (click)="sortBy('iban')">{{ 'ACCOUNT.IBAN' | translate }} <span
                             *ngIf="sortColumn === 'iban'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('hesapTuru')">Hesap Türü <span
+                    <th class="p-12 sortable" (click)="sortBy('hesapTuru')">{{ 'ACCOUNT.TYPE' | translate }} <span
                             *ngIf="sortColumn === 'hesapTuru'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('dovizCinsi')">Döviz <span
+                    <th class="p-12 sortable" (click)="sortBy('dovizCinsi')">{{ 'ACCOUNT.CURRENCY' | translate }} <span
                             *ngIf="sortColumn === 'dovizCinsi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('bakiye')">Bakiye <span
+                    <th class="p-12 sortable" (click)="sortBy('bakiye')">{{ 'ACCOUNT.BALANCE' | translate }} <span
                             *ngIf="sortColumn === 'bakiye'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('durum')">Durum <span
+                    <th class="p-12 sortable" (click)="sortBy('durum')">{{ 'COMMON.STATUS' | translate }} <span
                             *ngIf="sortColumn === 'durum'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12" style="text-align: center;">Detay</th>
+                    <th class="p-12" style="text-align: center;">{{ 'COMMON.DETAILS' | translate }}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngIf="isLoading">
                     <td colspan="8" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
-                        Kayıtlar getiriliyor...
+                        {{ 'COMMON.LOADING' | translate }}
                     </td>
                 </tr>
 
                 <tr *ngIf="!isLoading && !hasAppliedFilters">
                     <td colspan="8" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
-                        🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna
-                        tıklayınız.
+                        {{ 'COMMON.PLEASE_SELECT_FILTER' | translate }}
                     </td>
                 </tr>
 
                 <tr *ngIf="!isLoading && hasAppliedFilters && result.length === 0">
                     <td colspan="8" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
-                        Kriterlere uygun hesap bulunamadı.
+                        {{ 'COMMON.NO_RECORDS' | translate }}
                     </td>
                 </tr>
 
@@ -131,12 +129,12 @@
                             [style.background-color]="hesap.durum === 1 ? '#e6f4ea' : (hesap.durum === 2 ? '#fef7e0' : '#fce8e6')"
                             [style.color]="hesap.durum === 1 ? '#137333' : (hesap.durum === 2 ? '#b06000' : '#c5221f')"
                             style="padding: 4px 8px; border-radius: 4px; font-weight: 500; font-size: 12px; display: inline-block;">
-                            {{ hesap.durum === 1 ? 'Aktif' : (hesap.durum === 2 ? 'Pasif' : 'Kapalı') }}
+                            {{ (hesap.durum === 1 ? 'COMMON.ACTIVE' : (hesap.durum === 2 ? 'COMMON.PASSIVE' : 'ACCOUNT.CLOSED')) | translate }}
                         </span>
                     </td>
                     <td class="p-12" style="text-align: center;">
                         <button class="info-btn" [routerLink]="['/admin/hesaplar', hesap.hesapNo]"
-                            title="Hesap Detayı">i</button>
+                            [title]="'COMMON.DETAILS' | translate">i</button>
                     </td>
                 </tr>
             </tbody>
@@ -152,13 +150,13 @@
 
         <div class="pagination-actions">
             <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
-                ‹ Önceki
+                {{ 'COMMON.PREVIOUS' | translate }}
             </button>
-            <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1
+            <span class="page-number-badge">{{ 'COMMON.PAGE' | translate }} {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1
                 }}</span>
             <button class="btn-page" (click)="currentPage = currentPage + 1"
                 [disabled]="currentPage * pageSize >= result.length">
-                Sonraki ›
+                {{ 'COMMON.NEXT' | translate }}
             </button>
         </div>
     </div>

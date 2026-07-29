@@ -1,42 +1,41 @@
 <div class="filter-bar">
     <button class="filter-btn" (click)="toggleFilter()">
-        <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> Filtrele
+        <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> {{ 'COMMON.FILTER' | translate }}
     </button>
-    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" class="search-input shadow-input" placeholder="Müşteri ara..."
-        style="background-color: transparent;">
 </div>
 
 <div class="filter-panel" *ngIf="isFilterOpen">
     <div class="filter-row">
 
         <div class="filter-item">
-            <label>Müşteri Adı</label>
-            <input type="text" [(ngModel)]="filterMusteriAdi" (keyup.enter)="applyFilters()" placeholder="Müşteri Adı">
+            <label>{{ 'CUSTOMER.NAME' | translate }}</label>
+            <input type="text" [(ngModel)]="filterMusteriAdi" (keyup.enter)="applyFilters()" [placeholder]="'CUSTOMER.NAME' | translate">
         </div>
         <div class="filter-item">
-            <label>Müşteri Soyadı</label>
-            <input type="text" [(ngModel)]="filterMusteriSoyadi" (keyup.enter)="applyFilters()" placeholder="Müşteri Soyadı">
+            <label>{{ 'CUSTOMER.SURNAME' | translate }}</label>
+            <input type="text" [(ngModel)]="filterMusteriSoyadi" (keyup.enter)="applyFilters()"
+                [placeholder]="'CUSTOMER.SURNAME' | translate">
         </div>
 
         <div class="filter-item">
-            <label>Müşteri Tipi</label>
+            <label>{{ 'CUSTOMER.TYPE' | translate }}</label>
             <select [(ngModel)]="filterMusteriTipi">
-                <option value="Tümü">Tümü</option>
-                <option value="Bireysel">Bireysel</option>
-                <option value="Tüzel">Tüzel</option>
+                <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
+                <option value="Bireysel">{{ 'CUSTOMER.INDIVIDUAL' | translate }}</option>
+                <option value="Tüzel">{{ 'CUSTOMER.CORPORATE' | translate }}</option>
             </select>
         </div>
         <div class="filter-item">
-            <label>Durum</label>
+            <label>{{ 'COMMON.STATUS' | translate }}</label>
             <select [(ngModel)]="filterDurum">
-                <option value="Tümü">Tümü</option>
-                <option value="Aktif">Aktif</option>
-                <option value="Pasif">Pasif</option>
+                <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
+                <option value="Aktif">{{ 'COMMON.ACTIVE' | translate }}</option>
+                <option value="Pasif">{{ 'COMMON.PASSIVE' | translate }}</option>
             </select>
         </div>
         <div class="filter-actions">
-            <button class="btn-primary" (click)="applyFilters()">Uygula</button>
-            <button class="btn-secondary" (click)="resetFilters()">Temizle</button>
+            <button class="btn-primary" (click)="applyFilters()">{{ 'COMMON.APPLY' | translate }}</button>
+            <button class="btn-secondary" (click)="resetFilters()">{{ 'COMMON.CLEAR' | translate }}</button>
         </div>
     </div>
 </div>
@@ -46,15 +45,15 @@
         <table class="data-table">
             <thead>
                 <tr class="table-header-row">
-                    <th class="p-12 sortable" (click)="sortBy('musteriId')">Müşteri ID <span
+                    <th class="p-12 sortable" (click)="sortBy('musteriId')">{{ 'CUSTOMER.ID' | translate }} <span
                             *ngIf="sortColumn === 'musteriId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('ad')">Ad / Unvan <span
+                    <th class="p-12 sortable" (click)="sortBy('ad')">{{ 'CUSTOMER.NAME_SURNAME' | translate }} <span
                             *ngIf="sortColumn === 'ad'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('email')">Email <span
+                    <th class="p-12 sortable" (click)="sortBy('email')">{{ 'CUSTOMER.EMAIL' | translate }} <span
                             *ngIf="sortColumn === 'email'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('telefon')">Telefon <span
+                    <th class="p-12 sortable" (click)="sortBy('telefon')">{{ 'CUSTOMER.PHONE' | translate }} <span
                             *ngIf="sortColumn === 'telefon'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                    <th class="p-12 sortable" (click)="sortBy('aktifMi')">Durum <span
+                    <th class="p-12 sortable" (click)="sortBy('aktifMi')">{{ 'COMMON.STATUS' | translate }} <span
                             *ngIf="sortColumn === 'aktifMi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
                     <th class="p-12"></th>
                 </tr>
@@ -62,14 +61,13 @@
             <tbody>
                 <tr *ngIf="!hasAppliedFilters">
                     <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
-                        🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna
-                        tıklayınız.
+                        {{ 'COMMON.PLEASE_SELECT_FILTER' | translate }}
                     </td>
                 </tr>
 
                 <tr *ngIf="hasAppliedFilters && result.length === 0">
                     <td colspan="6" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
-                        Kriterlere uygun müşteri bulunamadı.
+                        {{ 'COMMON.NO_RECORDS' | translate }}
                     </td>
                 </tr>
 
@@ -81,11 +79,11 @@
                     <td class="p-12">{{ musteri.telefon }}</td>
                     <td class="p-12"
                         style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                        {{ musteri.aktifMi === 1 ? 'Aktif' : 'Pasif' }}</td>
+                        {{ (musteri.aktifMi === 1 ? 'COMMON.ACTIVE' : 'COMMON.PASSIVE') | translate }}</td>
                     <td class="p-12"
                         style="border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;">
                         <button class="info-btn" [routerLink]="['/admin/musteri-detayi', musteri.musteriId]"
-                            title="Müşteri Detaylarını Gör">i</button>
+                            [title]="'COMMON.DETAILS' | translate">i</button>
                     </td>
                 </tr>
             </tbody>
@@ -101,13 +99,13 @@
 
         <div class="pagination-actions">
             <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
-                ‹ Önceki
+                {{ 'COMMON.PREVIOUS' | translate }}
             </button>
-            <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1
+            <span class="page-number-badge">{{ 'COMMON.PAGE' | translate }} {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1
                 }}</span>
             <button class="btn-page" (click)="currentPage = currentPage + 1"
                 [disabled]="currentPage * pageSize >= result.length">
-                Sonraki ›
+                {{ 'COMMON.NEXT' | translate }}
             </button>
         </div>
     </div>

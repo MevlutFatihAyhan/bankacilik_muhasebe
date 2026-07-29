@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FilterPipe } from '../../../pipes/filter.pipe';
 import { SortPipe } from '../../../pipes/sort.pipe';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { MusteriService } from '../../../services/musteri.service';
 import { Musteri } from '../../../models/musteri.model';
 import { ToastService } from '../../../services/toast.service';
@@ -11,7 +12,7 @@ import { ToastService } from '../../../services/toast.service';
 @Component({
   selector: 'app-musteri-listesi',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, FilterPipe, SortPipe],
+  imports: [CommonModule, FormsModule, RouterModule, FilterPipe, SortPipe, TranslatePipe],
   templateUrl: './musteri-listesi.component.html'
 })
 export class MusteriListesiComponent implements OnInit {

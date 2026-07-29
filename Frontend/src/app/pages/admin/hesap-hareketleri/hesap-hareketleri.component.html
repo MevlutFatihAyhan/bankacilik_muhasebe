@@ -1,25 +1,27 @@
 <div class="filter-bar">
     <button class="filter-btn" (click)="toggleFilter()">
-        <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> Filtrele
+        <img src="images/Icon.svg" alt="Filtre" style="width: 16px; height: 16px;"> {{ 'COMMON.FILTER' | translate }}
     </button>
-    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()"
-        placeholder="İşlem veya Açıklama ara..." class="search-input">
 </div>
 
 <div class="filter-panel" *ngIf="isFilterOpen">
     <div class="filter-row">
         <div class="filter-item">
-            <label>İşlem Yönü</label>
+            <label>{{ 'COMMON.ID' | translate }}</label>
+            <input type="text" [(ngModel)]="filterId" (keyup.enter)="applyFilters()" [placeholder]="'ACCOUNT.NO' | translate">
+        </div>
+        <div class="filter-item">
+            <label>{{ 'TRANSACTION.DIRECTION' | translate }}</label>
             <select [(ngModel)]="filterYon">
-                <option value="Tümü">Tümü</option>
-                <option value="B">Geliş (Gelir)</option>
-                <option value="C">Gidiş (Gider)</option>
+                <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
+                <option value="B">{{ 'TRANSACTION.INCOME' | translate }}</option>
+                <option value="C">{{ 'TRANSACTION.EXPENSE' | translate }}</option>
             </select>
         </div>
         <div class="filter-item">
-            <label>Döviz</label>
+            <label>{{ 'ACCOUNT.CURRENCY' | translate }}</label>
             <select [(ngModel)]="filterDoviz">
-                <option value="Tümü">Tümü</option>
+                <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
                 <option value="TRY">TRY (TL)</option>
                 <option value="USD">USD (Dolar)</option>
                 <option value="EUR">EUR (Euro)</option>
@@ -27,91 +29,101 @@
             </select>
         </div>
         <div class="filter-item">
-            <label>Başlangıç Tarihi</label>
+            <label>{{ 'TRANSACTION.START_DATE' | translate }}</label>
             <input type="date" [(ngModel)]="filterStartDate">
         </div>
         <div class="filter-item">
-            <label>Bitiş Tarihi</label>
+            <label>{{ 'TRANSACTION.END_DATE' | translate }}</label>
             <input type="date" [(ngModel)]="filterEndDate">
         </div>
         <div class="filter-item">
-            <label>Min Tutar</label>
+            <label>{{ 'TRANSACTION.MIN_AMOUNT' | translate }}</label>
             <input type="number" [(ngModel)]="filterMinTutar" placeholder="0">
         </div>
         <div class="filter-item">
-            <label>Max Tutar</label>
+            <label>{{ 'TRANSACTION.MAX_AMOUNT' | translate }}</label>
             <input type="number" [(ngModel)]="filterMaxTutar" placeholder="Limit yok">
         </div>
         <div class="filter-actions">
-            <button class="btn-primary" (click)="applyFilters()" [disabled]="isLoading">Uygula</button>
-            <button class="btn-secondary" (click)="resetFilters()" [disabled]="isLoading">Temizle</button>
+            <button class="btn-primary" (click)="applyFilters()" [disabled]="isLoading">{{ 'COMMON.APPLY' | translate }}</button>
+            <button class="btn-secondary" (click)="resetFilters()" [disabled]="isLoading">{{ 'COMMON.CLEAR' | translate }}</button>
         </div>
     </div>
 </div>
 
 <ng-container *ngIf="(filteredData | sort:sortColumn:sortDirection) as result">
-<div class="table-container">
-    <table class="data-table">
-        <thead>
-            <tr class="table-header-row">
-                <th class="p-12 sortable" (click)="sortBy('islemId')">İşlem ID <span *ngIf="sortColumn === 'islemId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12 sortable" (click)="sortBy('islemTarihi')">İşlem Tarihi <span *ngIf="sortColumn === 'islemTarihi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12 sortable" (click)="sortBy('islemTutari')">İşlem Tutarı <span *ngIf="sortColumn === 'islemTutari'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12 sortable" (click)="sortBy('aciklama')">Açıklama <span *ngIf="sortColumn === 'aciklama'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12 sortable" (click)="sortBy('dovizCinsi')">Döviz Cinsi <span *ngIf="sortColumn === 'dovizCinsi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
-                <th class="p-12"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngIf="isLoading">
-                <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
-                    Kayıtlar getiriliyor...
-                </td>
-            </tr>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr class="table-header-row">
+                    <th class="p-12 sortable" (click)="sortBy('islemId')">{{ 'TRANSACTION.ID' | translate }} <span
+                            *ngIf="sortColumn === 'islemId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('islemTarihi')">{{ 'TRANSACTION.DATE' | translate }} <span
+                            *ngIf="sortColumn === 'islemTarihi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('islemTutari')">{{ 'TRANSACTION.AMOUNT' | translate }} <span
+                            *ngIf="sortColumn === 'islemTutari'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('aciklama')">{{ 'TRANSACTION.DESCRIPTION' | translate }} <span
+                            *ngIf="sortColumn === 'aciklama'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('dovizCinsi')">{{ 'ACCOUNT.CURRENCY_TYPE' | translate }} <span
+                            *ngIf="sortColumn === 'dovizCinsi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="isLoading">
+                    <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
+                        {{ 'COMMON.LOADING' | translate }}
+                    </td>
+                </tr>
 
-            <tr *ngIf="!isLoading && !hasAppliedFilters">
-                <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
-                    🔍 Lütfen yukarıdaki filtre seçimlerinizi belirleyip <strong>"Uygula"</strong> butonuna tıklayınız.
-                </td>
-            </tr>
+                <tr *ngIf="!isLoading && !hasAppliedFilters">
+                    <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
+                        {{ 'COMMON.PLEASE_SELECT_FILTER' | translate }}
+                    </td>
+                </tr>
 
-            <tr *ngIf="!isLoading && hasAppliedFilters && result.length === 0">
-                <td colspan="6" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
-                    Kriterlere uygun işlem hareketi bulunamadı.
-                </td>
-            </tr>
+                <tr *ngIf="!isLoading && hasAppliedFilters && result.length === 0">
+                    <td colspan="6" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
+                        {{ 'COMMON.NO_RECORDS' | translate }}
+                    </td>
+                </tr>
 
-            <tr *ngFor="let h of result | slice:(currentPage-1)*pageSize : currentPage*pageSize" class="table-row">
-                <td class="p-12" style="font-weight: 600;">#{{ h.islemId }}</td>
-                <td class="p-12">{{ h.islemTarihi | date:'dd.MM.yyyy HH:mm' }}</td>
-                <td class="p-12" [style.color]="h.islemYonu === 'A' || h.islemYonu === 'B' ? '#10b981' : '#ef4444'" style="font-weight: 600;">
-                    {{ (h.islemYonu === 'A' || h.islemYonu === 'B') ? '+' : '-' }}{{ h.islemTutari | number:'1.2-2' }} {{ h.dovizCinsi }}
-                </td>
-                <td class="p-12">{{ h.aciklama }}</td>
-                <td class="p-12">{{ h.dovizCinsi }}</td>
-                <td class="p-12" style="text-align: center;">
-                    <button class="info-btn" [routerLink]="['/admin/islem-detayi', h.islemId]" title="Dekont Göster">i</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div class="pagination-controls" *ngIf="hasAppliedFilters && result.length > 0">
-    <span class="page-info">
-        Toplam <strong>{{ result.length }}</strong> kayıttan 
-        <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - 
-        <strong>{{ Math.min(currentPage * pageSize, result.length) }}</strong> arası gösteriliyor
-    </span>
-
-    <div class="pagination-actions">
-        <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
-            ‹ Önceki
-        </button>
-        <span class="page-number-badge">Sayfa {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1 }}</span>
-        <button class="btn-page" (click)="currentPage = currentPage + 1" [disabled]="currentPage * pageSize >= result.length">
-            Sonraki ›
-        </button>
+                <tr *ngFor="let h of result | slice:(currentPage-1)*pageSize : currentPage*pageSize" class="table-row">
+                    <td class="p-12" style="font-weight: 600;">#{{ h.islemId }}</td>
+                    <td class="p-12">{{ h.islemTarihi | date:'dd.MM.yyyy HH:mm' }}</td>
+                    <td class="p-12" [style.color]="h.islemYonu === 'A' || h.islemYonu === 'B' ? '#10b981' : '#ef4444'"
+                        style="font-weight: 600;">
+                        {{ (h.islemYonu === 'A' || h.islemYonu === 'B') ? '+' : '-' }}{{ h.islemTutari | number:'1.2-2'
+                        }} {{ h.dovizCinsi }}
+                    </td>
+                    <td class="p-12">{{ h.aciklama }}</td>
+                    <td class="p-12">{{ h.dovizCinsi }}</td>
+                    <td class="p-12" style="text-align: center;">
+                        <button class="info-btn" [routerLink]="['/admin/islem-detayi', h.islemId]"
+                            [title]="'COMMON.DETAILS' | translate">i</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-</div>
+
+    <div class="pagination-controls" *ngIf="hasAppliedFilters && result.length > 0">
+        <span class="page-info">
+            Toplam <strong>{{ result.length }}</strong> kayıttan
+            <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> -
+            <strong>{{ Math.min(currentPage * pageSize, result.length) }}</strong> arası gösteriliyor
+        </span>
+
+        <div class="pagination-actions">
+            <button class="btn-page" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
+                {{ 'COMMON.PREVIOUS' | translate }}
+            </button>
+            <span class="page-number-badge">{{ 'COMMON.PAGE' | translate }} {{ currentPage }} / {{ Math.ceil(result.length / pageSize) || 1
+                }}</span>
+            <button class="btn-page" (click)="currentPage = currentPage + 1"
+                [disabled]="currentPage * pageSize >= result.length">
+                {{ 'COMMON.NEXT' | translate }}
+            </button>
+        </div>
+    </div>
 </ng-container>

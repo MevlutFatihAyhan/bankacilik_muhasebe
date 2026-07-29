@@ -14,6 +14,7 @@ export interface HesapHareket {
 // Hareket listeleme filtresi — PKG_HESAP.PRC_HAREKET_LISTE parametreleriyle birebir eşleşir
 export interface HesapHareketFiltre {
     searchTerm?: string | null;
+    id?: string | null;             // Hesap No / İşlem ID / Hesap ID
     islemYonu?: string | null;      // 'B': para girişi, 'C': para çıkışı
     dovizCinsi?: string | null;     // TRY / USD / EUR / XAU
     baslangicTarihi?: string | null; // yyyy-MM-dd

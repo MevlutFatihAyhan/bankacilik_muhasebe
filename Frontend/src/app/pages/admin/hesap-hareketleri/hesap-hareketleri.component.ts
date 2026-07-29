@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FilterPipe } from '../../../pipes/filter.pipe';
 import { SortPipe } from '../../../pipes/sort.pipe';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { HesapHareketService } from '../../../services/hesap-hareket.service';
 import { HesapHareket, HesapHareketFiltre } from '../../../models/hesap-hareket.model';
 
 @Component({
   selector: 'app-hesap-hareketleri',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, FilterPipe, SortPipe],
+  imports: [CommonModule, FormsModule, RouterModule, FilterPipe, SortPipe, TranslatePipe],
   templateUrl: './hesap-hareketleri.component.html'
 })
 export class HesapHareketleriComponent {
@@ -26,6 +27,7 @@ export class HesapHareketleriComponent {
   isFilterOpen: boolean = true;
   hasAppliedFilters: boolean = false; // Bilgiler ilk etapta direkt listelenmeyecek
 
+  filterId: string = '';
   filterYon: string = 'Tümü';
   filterDoviz: string = 'Tümü';
   filterStartDate: string = '';
@@ -59,6 +61,7 @@ export class HesapHareketleriComponent {
   private buildFiltre(): HesapHareketFiltre {
     return {
       searchTerm: this.searchTerm ? this.searchTerm.trim() : null,
+      id: this.filterId ? this.filterId.trim() : null,
       islemYonu: this.filterYon === 'Tümü' ? null : this.filterYon,
       dovizCinsi: this.filterDoviz === 'Tümü' ? null : this.filterDoviz,
       baslangicTarihi: this.filterStartDate || null,
@@ -90,6 +93,7 @@ export class HesapHareketleriComponent {
 
   resetFilters() {
     this.searchTerm = '';
+    this.filterId = '';
     this.filterYon = 'Tümü';
     this.filterDoviz = 'Tümü';
     this.filterStartDate = '';
@@ -101,9 +105,19 @@ export class HesapHareketleriComponent {
     this.currentPage = 1;
   }
 
-  // Filtreleme DB tarafında yapıldığı için burada ek bir eleme yoktur;
-  // "Uygula" öncesinde liste boş kalır.
   get filteredData(): HesapHareket[] {
-    return this.hasAppliedFilters ? this.hareketler : [];
+    if (!this.hasAppliedFilters) return [];
+
+    return this.hareketler.filter(h => {
+      if (this.filterId && this.filterId.trim() !== '') {
+        const searchId = this.filterId.trim().toLowerCase();
+        const matchesHesapNo = h.hesapNo ? h.hesapNo.toString().toLowerCase().includes(searchId) : false;
+        const matchesIslemId = h.islemId ? h.islemId.toString().toLowerCase().includes(searchId) : false;
+        if (!matchesHesapNo && !matchesIslemId) {
+          return false;
+        }
+      }
+      return true;
+    });
   }
 }

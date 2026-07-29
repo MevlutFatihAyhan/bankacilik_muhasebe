@@ -32,6 +32,7 @@ export class HesapHareketService {
         let params = new HttpParams();
 
         if (filtre.searchTerm) params = params.set('searchTerm', filtre.searchTerm.trim());
+        if (filtre.id) params = params.set('id', filtre.id.trim());
         if (filtre.islemYonu) params = params.set('islemYonu', filtre.islemYonu);
         if (filtre.dovizCinsi) params = params.set('dovizCinsi', filtre.dovizCinsi);
         if (filtre.baslangicTarihi) params = params.set('baslangicTarihi', filtre.baslangicTarihi);

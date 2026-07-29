@@ -473,3 +473,40 @@ BEGIN
     END IF;
 END TRG_AUD_MVD_HESAPHAREKET;
 /
+
+CREATE OR REPLACE TRIGGER TRG_MVD_HESAPHAREKET_FIS_OLUSTUR
+AFTER INSERT ON MVD_HESAPHAREKET
+FOR EACH ROW
+DECLARE
+    v_fis_id NUMBER;
+    v_skont VARCHAR2(50);
+    v_borc_tutar NUMBER(18, 4) := 0;
+    v_alacak_tutar NUMBER(18, 4) := 0;
+    v_doviz_cins NUMBER;
+BEGIN
+    INSERT INTO MUH_FIS (
+        ACIKLAMA,
+        MUHASEBETARIHI,
+        ISLEM_ZAMANI
+    ) VALUES (
+        :NEW.ACIKLAMA,
+        TRUNC(:NEW.ISLEM_TARIHI),
+        SYSDATE
+    ) RETURNING FIS_ID INTO v_fis_id;
+
+    IF UPPER(:NEW.ISLEM_KODU) = 'B' THEN
+        v_borc_tutar := :NEW.ISLEM_TUTARI;
+        v_alacak_tutar := 0;
+    ELSE
+        v_alacak_tutar := :NEW.ISLEM_TUTARI;
+        v_borc_tutar := 0;
+    END IF;
+
+    v_skont := '002-Bankacılık İşlemleri';
+
+
+END TRG_MVD_HESAPHAREKET_FIS_OLUSTUR;
+/    
+    
+    
+    
