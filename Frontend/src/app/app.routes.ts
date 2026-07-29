@@ -25,5 +25,8 @@ export const routes: Routes = [
       { path: '', redirectTo: 'anasayfa', pathMatch: 'full' }
     ]
   },
-  { path: '', redirectTo: 'login', pathMatch: 'full' }
+
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  { path: '**', redirectTo: 'login' }
 ];

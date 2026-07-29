@@ -2,17 +2,11 @@
   <!-- Top Right Language Switcher -->
   <div class="login-lang-pos">
     <div class="lang-switcher">
-      <button 
-        class="lang-btn" 
-        [class.active]="langService.currentLang() === 'tr'" 
-        (click)="setLanguage('tr')" 
+      <button class="lang-btn" [class.active]="langService.currentLang() === 'tr'" (click)="setLanguage('tr')"
         title="Türkçe">
         <span class="flag">🇹🇷</span> TR
       </button>
-      <button 
-        class="lang-btn" 
-        [class.active]="langService.currentLang() === 'en'" 
-        (click)="setLanguage('en')" 
+      <button class="lang-btn" [class.active]="langService.currentLang() === 'en'" (click)="setLanguage('en')"
         title="English">
         <span class="flag">🇬🇧</span> EN
       </button>
@@ -20,7 +14,7 @@
   </div>
 
   <div class="login-content">
-    
+
     <div class="login-header">
       <img src="images/star1.jpeg" alt="Logo" width="55" height="55">
       <span>VaqıvBank</span>
@@ -30,31 +24,23 @@
     <div class="login-error-alert" *ngIf="errorMessage">
       ⚠️ {{ errorMessage | translate }}
     </div>
-    
+
     <form class="login-form" (ngSubmit)="onLogin()">
-      
+
       <div class="login-form-group">
         <label for="username">{{ 'LOGIN.USERNAME' | translate }}</label>
-        <input 
-          type="text" 
-          id="username" 
-          name="username" 
-          [(ngModel)]="username"
+        <input type="text" id="username" name="username" [(ngModel)]="username"
           [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate">
       </div>
-      
+
       <div class="login-form-group">
         <label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
-        <input 
-          type="password" 
-          id="password" 
-          name="password" 
-          [(ngModel)]="pass"
+        <input type="password" id="password" name="password" [(ngModel)]="pass"
           [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate">
       </div>
-      
+
       <button type="submit">{{ 'LOGIN.SUBMIT' | translate }}</button>
-    
+
     </form>
   </div>
 </div>
