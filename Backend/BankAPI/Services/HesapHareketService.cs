@@ -133,7 +133,10 @@ namespace BankAPI.Services
             DateTime? baslangicTarihi,
             DateTime? bitisTarihi,
             decimal? minTutar,
-            decimal? maxTutar)
+            decimal? maxTutar,
+            string hesapNo,
+            string musteriAdi,
+            string musteriSoyadi)
         {
             List<HesapHareket> hareketListesi = new List<HesapHareket>();
             using (OracleConnection connection = new OracleConnection(_connectionString))
@@ -150,6 +153,9 @@ namespace BankAPI.Services
                     cmd.Parameters.Add("p_bitis_tarihi", OracleDbType.Date).Value = NullIfEmpty(bitisTarihi);
                     cmd.Parameters.Add("p_min_tutar", OracleDbType.Decimal).Value = NullIfEmpty(minTutar);
                     cmd.Parameters.Add("p_max_tutar", OracleDbType.Decimal).Value = NullIfEmpty(maxTutar);
+                    cmd.Parameters.Add("p_hesap_no", OracleDbType.Varchar2).Value = NullIfEmpty(hesapNo);
+                    cmd.Parameters.Add("p_musteri_adi", OracleDbType.Varchar2).Value = NullIfEmpty(musteriAdi);
+                    cmd.Parameters.Add("p_musteri_soyadi", OracleDbType.Varchar2).Value = NullIfEmpty(musteriSoyadi);
                     cmd.Parameters.Add("p_result", OracleDbType.RefCursor, ParameterDirection.Output);
 
                     using (OracleDataReader reader = cmd.ExecuteReader())
@@ -220,6 +226,20 @@ namespace BankAPI.Services
         }
 
 
+        // Kolonun sorgu sonucunda bulunup bulunmadığını kontrol eder — müşteri
+        // kolonları yalnızca PRC_HAREKET_LISTE sonucunda döner.
+        private static bool HasColumn(OracleDataReader reader, string columnName)
+        {
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                if (string.Equals(reader.GetName(i), columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static HesapHareket MapHareket(OracleDataReader reader)
         {
             return new HesapHareket
@@ -233,7 +253,11 @@ namespace BankAPI.Services
                 ISLEM_TARIHI = Convert.ToDateTime(reader["ISLEM_TARIHI"]),
                 ACIKLAMA = reader["ACIKLAMA"]?.ToString(),
                 ISLEM_KODU = reader["ISLEM_KODU"]?.ToString(),
-                REFERANS_NO = reader["REFERANS_NO"]?.ToString()
+                REFERANS_NO = reader["REFERANS_NO"]?.ToString(),
+                MUSTERI_ID = HasColumn(reader, "MUSTERI_ID") && reader["MUSTERI_ID"] != DBNull.Value
+                    ? Convert.ToDecimal(reader["MUSTERI_ID"]) : (decimal?)null,
+                MUSTERI_ADI = HasColumn(reader, "MUSTERI_ADI") ? reader["MUSTERI_ADI"]?.ToString()?.Trim() : null,
+                MUSTERI_SOYADI = HasColumn(reader, "MUSTERI_SOYADI") ? reader["MUSTERI_SOYADI"]?.ToString()?.Trim() : null
             };
         }
     }

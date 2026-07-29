@@ -11,6 +11,16 @@
             <input type="text" [(ngModel)]="filterId" (keyup.enter)="applyFilters()" [placeholder]="'ACCOUNT.NO' | translate">
         </div>
         <div class="filter-item">
+            <label>{{ 'CUSTOMER.NAME' | translate }}</label>
+            <input type="text" [(ngModel)]="filterMusteriAdi" (keyup.enter)="applyFilters()"
+                [placeholder]="'CUSTOMER.NAME' | translate">
+        </div>
+        <div class="filter-item">
+            <label>{{ 'CUSTOMER.SURNAME' | translate }}</label>
+            <input type="text" [(ngModel)]="filterMusteriSoyadi" (keyup.enter)="applyFilters()"
+                [placeholder]="'CUSTOMER.SURNAME' | translate">
+        </div>
+        <div class="filter-item">
             <label>{{ 'TRANSACTION.DIRECTION' | translate }}</label>
             <select [(ngModel)]="filterYon">
                 <option value="Tümü">{{ 'COMMON.ALL' | translate }}</option>
@@ -60,6 +70,8 @@
                             *ngIf="sortColumn === 'islemId'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
                     <th class="p-12 sortable" (click)="sortBy('islemTarihi')">{{ 'TRANSACTION.DATE' | translate }} <span
                             *ngIf="sortColumn === 'islemTarihi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
+                    <th class="p-12 sortable" (click)="sortBy('musteriAdi')">{{ 'CUSTOMER.NAME_SURNAME' | translate }}
+                        <span *ngIf="sortColumn === 'musteriAdi'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
                     <th class="p-12 sortable" (click)="sortBy('islemTutari')">{{ 'TRANSACTION.AMOUNT' | translate }} <span
                             *ngIf="sortColumn === 'islemTutari'">{{sortDirection === 'asc' ? '▲' : '▼'}}</span></th>
                     <th class="p-12 sortable" (click)="sortBy('aciklama')">{{ 'TRANSACTION.DESCRIPTION' | translate }} <span
@@ -71,19 +83,19 @@
             </thead>
             <tbody>
                 <tr *ngIf="isLoading">
-                    <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
+                    <td colspan="7" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
                         {{ 'COMMON.LOADING' | translate }}
                     </td>
                 </tr>
 
                 <tr *ngIf="!isLoading && !hasAppliedFilters">
-                    <td colspan="6" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
+                    <td colspan="7" style="text-align: center; padding: 36px 16px; color: #64748b; font-size: 14px;">
                         {{ 'COMMON.PLEASE_SELECT_FILTER' | translate }}
                     </td>
                 </tr>
 
                 <tr *ngIf="!isLoading && hasAppliedFilters && result.length === 0">
-                    <td colspan="6" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
+                    <td colspan="7" style="text-align: center; padding: 36px 16px; color: #707070; font-size: 14px;">
                         {{ 'COMMON.NO_RECORDS' | translate }}
                     </td>
                 </tr>
@@ -91,6 +103,13 @@
                 <tr *ngFor="let h of result | slice:(currentPage-1)*pageSize : currentPage*pageSize" class="table-row">
                     <td class="p-12" style="font-weight: 600;">#{{ h.islemId }}</td>
                     <td class="p-12">{{ h.islemTarihi | date:'dd.MM.yyyy HH:mm' }}</td>
+                    <td class="p-12">
+                        <a *ngIf="h.musteriId" [routerLink]="['/admin/musteri-detayi', h.musteriId]"
+                            style="color: inherit; text-decoration: none; font-weight: 500;">
+                            {{ getMusteriAdi(h) }}
+                        </a>
+                        <span *ngIf="!h.musteriId">{{ getMusteriAdi(h) }}</span>
+                    </td>
                     <td class="p-12" [style.color]="h.islemYonu === 'A' || h.islemYonu === 'B' ? '#10b981' : '#ef4444'"
                         style="font-weight: 600;">
                         {{ (h.islemYonu === 'A' || h.islemYonu === 'B') ? '+' : '-' }}{{ h.islemTutari | number:'1.2-2'
@@ -105,6 +124,12 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- DB tarafinda FETCH FIRST 10000 ROWS ONLY uygulanir; liste kirpilmis olabilir -->
+    <div class="page-info" *ngIf="hasAppliedFilters && result.length >= 10000"
+        style="padding: 8px 12px; color: #b45309; font-size: 13px;">
+        {{ 'COMMON.MAX_ROWS_INFO' | translate }}
     </div>
 
     <div class="pagination-controls" *ngIf="hasAppliedFilters && result.length > 0">

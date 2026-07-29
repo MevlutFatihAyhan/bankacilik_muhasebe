@@ -30,6 +30,23 @@ namespace BankAPI.Controllers{
                 return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
             }
         }
+        // Filtreye bağlı listeleme — arayüzde "Uygula" butonuna basılmadan çağrılmaz
+        [HttpGet("filtre")]
+        public IActionResult MusterileriFiltrele(
+            [FromQuery] string searchTerm = null,
+            [FromQuery] int? musteriTipi = null,
+            [FromQuery] int? aktifMi = null,
+            [FromQuery] string ad = null,
+            [FromQuery] string soyad = null){
+            try{
+                var musteriListesi = _musteriService.MusterileriFiltrele(
+                    searchTerm, musteriTipi, aktifMi, ad, soyad);
+                return Ok(musteriListesi);
+            }catch(Exception ex){
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
         [HttpGet("{id}")]
         public IActionResult MusteriGetir(decimal id){
             try{

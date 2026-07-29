@@ -52,12 +52,16 @@ namespace BankAPI.Controllers
             [FromQuery] DateTime? baslangicTarihi = null,
             [FromQuery] DateTime? bitisTarihi = null,
             [FromQuery] decimal? minTutar = null,
-            [FromQuery] decimal? maxTutar = null)
+            [FromQuery] decimal? maxTutar = null,
+            [FromQuery] string hesapNo = null,
+            [FromQuery] string musteriAdi = null,
+            [FromQuery] string musteriSoyadi = null)
         {
             try
             {
                 var hareketListesi = _hareketService.HareketleriFiltrele(
-                    searchTerm, islemYonu, dovizCinsi, baslangicTarihi, bitisTarihi, minTutar, maxTutar);
+                    searchTerm, islemYonu, dovizCinsi, baslangicTarihi, bitisTarihi, minTutar, maxTutar,
+                    hesapNo, musteriAdi, musteriSoyadi);
                 return Ok(hareketListesi);
             }
             catch (Exception ex)

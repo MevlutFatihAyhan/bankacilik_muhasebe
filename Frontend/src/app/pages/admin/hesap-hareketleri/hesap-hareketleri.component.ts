@@ -27,7 +27,9 @@ export class HesapHareketleriComponent {
   isFilterOpen: boolean = true;
   hasAppliedFilters: boolean = false; // Bilgiler ilk etapta direkt listelenmeyecek
 
-  filterId: string = '';
+  filterId: string = '';          // Hesap No
+  filterMusteriAdi: string = '';
+  filterMusteriSoyadi: string = '';
   filterYon: string = 'Tümü';
   filterDoviz: string = 'Tümü';
   filterStartDate: string = '';
@@ -41,6 +43,14 @@ export class HesapHareketleriComponent {
   // Sayfa açılışında hiçbir listeleme yapılmaz; veri yalnızca "Uygula" ile
   // seçilen kriterlere göre DB'den (PKG_HESAP.PRC_HAREKET_LISTE) çekilir.
   constructor(private hesapHareketService: HesapHareketService) {}
+
+  // Müşteri bilgisi hareketle birlikte DB'den (PRC_HAREKET_LISTE) gelir
+  getMusteriAdi(hareket: HesapHareket): string {
+    if (!hareket.musteriAdi) {
+      return hareket.musteriId ? `Müşteri #${hareket.musteriId}` : '-';
+    }
+    return hareket.musteriSoyadi ? `${hareket.musteriAdi} ${hareket.musteriSoyadi}` : hareket.musteriAdi;
+  }
 
   sortBy(column: string) {
     if (this.sortColumn === column) {
@@ -67,7 +77,10 @@ export class HesapHareketleriComponent {
       baslangicTarihi: this.filterStartDate || null,
       bitisTarihi: this.filterEndDate || null,
       minTutar: this.filterMinTutar,
-      maxTutar: this.filterMaxTutar
+      maxTutar: this.filterMaxTutar,
+      hesapNo: this.filterId ? this.filterId.trim() : null,
+      musteriAdi: this.filterMusteriAdi ? this.filterMusteriAdi.trim() : null,
+      musteriSoyadi: this.filterMusteriSoyadi ? this.filterMusteriSoyadi.trim() : null
     };
   }
 
@@ -94,6 +107,8 @@ export class HesapHareketleriComponent {
   resetFilters() {
     this.searchTerm = '';
     this.filterId = '';
+    this.filterMusteriAdi = '';
+    this.filterMusteriSoyadi = '';
     this.filterYon = 'Tümü';
     this.filterDoviz = 'Tümü';
     this.filterStartDate = '';

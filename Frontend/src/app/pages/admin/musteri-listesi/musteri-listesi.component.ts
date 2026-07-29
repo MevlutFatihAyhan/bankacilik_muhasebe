@@ -6,7 +6,7 @@ import { FilterPipe } from '../../../pipes/filter.pipe';
 import { SortPipe } from '../../../pipes/sort.pipe';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { MusteriService } from '../../../services/musteri.service';
-import { Musteri } from '../../../models/musteri.model';
+import { Musteri, MusteriFiltre } from '../../../models/musteri.model';
 import { ToastService } from '../../../services/toast.service';
 
 @Component({
@@ -41,28 +41,15 @@ export class MusteriListesiComponent implements OnInit {
     private toastService: ToastService
   ) { }
 
-  ngOnInit(): void {
-    this.loadMusteriler();
-  }
+  // Sayfa açılışında hiçbir listeleme yapılmaz; veri yalnızca "Uygula" ile
+  // seçilen kriterlere göre DB'den (PKG_MUSTERI.PRC_MUSTERI_LISTE) çekilir.
+  ngOnInit(): void { }
 
-  loadMusteriler(forceRefresh: boolean = false): void {
-    this.isLoading = true;
-    this.musteriService.getMusteriler(forceRefresh).subscribe({
-      next: (data) => {
-        if (data && data.length > 0) {
-          this.musteriler = data;
-        }
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('API hatası, veriler çekilemedi.', err);
-        this.isLoading = false;
-      }
-    });
-  }
-
+  // Filtre uygulanmışsa aynı kriterlerle DB'den yeniden çeker
   refreshData(): void {
-    this.loadMusteriler(true);
+    if (this.hasAppliedFilters) {
+      this.applyFilters();
+    }
   }
 
   sortBy(column: string) {
@@ -79,9 +66,38 @@ export class MusteriListesiComponent implements OnInit {
     this.isFilterOpen = !this.isFilterOpen;
   }
 
+  // Ekrandaki seçimleri DB prosedürünün beklediği kodlara çevirir
+  // (MUSTERI_TIPI → 1: Bireysel, 2: Tüzel; AKTIF_MI → 1: Aktif, 2: Pasif)
+  private buildFiltre(): MusteriFiltre {
+    return {
+      searchTerm: this.searchTerm ? this.searchTerm.trim() : null,
+      ad: this.filterMusteriAdi ? this.filterMusteriAdi.trim() : null,
+      soyad: this.filterMusteriSoyadi ? this.filterMusteriSoyadi.trim() : null,
+      musteriTipi: this.filterMusteriTipi === 'Bireysel' ? 1
+        : (this.filterMusteriTipi === 'Tüzel' ? 2 : null),
+      aktifMi: this.filterDurum === 'Aktif' ? 1
+        : (this.filterDurum === 'Pasif' ? 2 : null)
+    };
+  }
+
   applyFilters() {
-    this.hasAppliedFilters = true;
     this.currentPage = 1;
+    this.isLoading = true;
+    this.musteriler = [];
+
+    this.musteriService.getMusterilerByFilter(this.buildFiltre()).subscribe({
+      next: (data) => {
+        this.musteriler = data || [];
+        this.hasAppliedFilters = true;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Müşteriler filtrelenirken hata oluştu:', err);
+        this.musteriler = [];
+        this.hasAppliedFilters = true;
+        this.isLoading = false;
+      }
+    });
   }
 
   resetFilters() {
@@ -91,48 +107,14 @@ export class MusteriListesiComponent implements OnInit {
     this.filterMusteriTipi = 'Tümü';
     this.filterDurum = 'Tümü';
     this.hasAppliedFilters = false;
+    this.musteriler = [];
     this.currentPage = 1;
   }
 
+  // Filtreleme DB tarafında yapıldığı için burada ek bir eleme yoktur;
+  // "Uygula" öncesinde liste boş kalır.
   get filteredData(): Musteri[] {
-    if (!this.hasAppliedFilters) {
-      return [];
-    }
-
-    return this.musteriler.filter(m => {
-      // 1. Text Search (searchTerm)
-      let matchesSearch = true;
-      if (this.searchTerm) {
-        const term = this.searchTerm.toLowerCase();
-        matchesSearch = Object.values(m).some(val => String(val).toLowerCase().includes(term));
-      }
-
-      // 2. Müşteri Adı Filtresi (ad)
-      let matchesAd = true;
-      if (this.filterMusteriAdi && this.filterMusteriAdi.trim() !== '') {
-        const searchAd = this.filterMusteriAdi.trim().toLowerCase();
-        matchesAd = m.ad ? m.ad.toLowerCase().includes(searchAd) : false;
-      }
-
-      // 3. Müşteri Soyadı Filtresi (soyad)
-      let matchesSoyad = true;
-      if (this.filterMusteriSoyadi && this.filterMusteriSoyadi.trim() !== '') {
-        const searchSoyad = this.filterMusteriSoyadi.trim().toLowerCase();
-        matchesSoyad = m.soyad ? m.soyad.toLowerCase().includes(searchSoyad) : false;
-      }
-
-      // 4. Müşteri Tipi Filtresi (1: Bireysel, 2: Tüzel)
-      let matchesTipi = true;
-      if (this.filterMusteriTipi === 'Bireysel') matchesTipi = m.musteriTipi === 1;
-      if (this.filterMusteriTipi === 'Tüzel') matchesTipi = m.musteriTipi === 2;
-
-      // 5. Durum Filtresi (1: Aktif, 0 veya 2: Pasif)
-      let matchesDurum = true;
-      if (this.filterDurum === 'Aktif') matchesDurum = m.aktifMi === 1;
-      if (this.filterDurum === 'Pasif') matchesDurum = m.aktifMi !== 1;
-
-      return matchesSearch && matchesAd && matchesSoyad && matchesTipi && matchesDurum;
-    });
+    return this.hasAppliedFilters ? this.musteriler : [];
   }
 
   showInfo(musteri: Musteri) {

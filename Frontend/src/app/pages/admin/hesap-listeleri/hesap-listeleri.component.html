@@ -141,6 +141,12 @@
         </table>
     </div>
 
+    <!-- DB tarafinda FETCH FIRST 10000 ROWS ONLY uygulanir; liste kirpilmis olabilir -->
+    <div class="page-info" *ngIf="hasAppliedFilters && result.length >= 10000"
+        style="padding: 8px 12px; color: #b45309; font-size: 13px;">
+        {{ 'COMMON.MAX_ROWS_INFO' | translate }}
+    </div>
+
     <div class="pagination-controls" *ngIf="hasAppliedFilters && result.length > 0">
         <span class="page-info">
             Toplam <strong>{{ result.length }}</strong> kayıttan

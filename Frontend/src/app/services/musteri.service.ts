@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, shareReplay, tap } from 'rxjs';
-import { Musteri } from '../models/musteri.model';
+import { Musteri, MusteriFiltre } from '../models/musteri.model';
 import { environment } from '../../environments/environments';
 
 @Injectable({
@@ -25,6 +25,20 @@ export class MusteriService {
 
     clearCache(): void {
         this.musteriCache$ = null;
+    }
+
+    // Filtreye bağlı listeleme — sorgu DB'de (PKG_MUSTERI.PRC_MUSTERI_LISTE) çalışır,
+    // sadece "Uygula" butonuna basıldığında çağrılır. Cache kullanılmaz.
+    getMusterilerByFilter(filtre: MusteriFiltre): Observable<Musteri[]> {
+        let params = new HttpParams();
+
+        if (filtre.searchTerm) params = params.set('searchTerm', filtre.searchTerm.trim());
+        if (filtre.ad) params = params.set('ad', filtre.ad.trim());
+        if (filtre.soyad) params = params.set('soyad', filtre.soyad.trim());
+        if (filtre.musteriTipi != null) params = params.set('musteriTipi', filtre.musteriTipi);
+        if (filtre.aktifMi != null) params = params.set('aktifMi', filtre.aktifMi);
+
+        return this.http.get<Musteri[]>(`${this.apiUrl}/filtre`, { params });
     }
 
     getMusteriById(id: number): Observable<Musteri> {

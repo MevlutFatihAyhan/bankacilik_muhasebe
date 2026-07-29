@@ -158,42 +158,9 @@ export class HesapListeleriComponent {
     });
   }
 
+  // Filtreleme DB tarafında (PKG_HESAP.PRC_HESAP_LISTE) yapıldığı için burada
+  // ek bir eleme yoktur; "Uygula" öncesinde liste boş kalır.
   get filteredData(): Hesap[] {
-    if (!this.hasAppliedFilters) return [];
-
-    return this.hesaplar.filter(hesap => {
-      // 1. ID Filtresi (Hesap No veya Müşteri ID)
-      if (this.filterId && this.filterId.trim() !== '') {
-        const idTerm = this.filterId.trim().toLowerCase();
-        const matchesHesapNo = hesap.hesapNo ? hesap.hesapNo.toString().toLowerCase().includes(idTerm) : false;
-        const matchesMusteriId = hesap.musteriId ? hesap.musteriId.toString().toLowerCase().includes(idTerm) : false;
-        if (!matchesHesapNo && !matchesMusteriId) {
-          return false;
-        }
-      }
-
-      // 2. Müşteri Adı Filtresi
-      if (this.filterMusteriAdi && this.filterMusteriAdi.trim() !== '') {
-        const searchAd = this.filterMusteriAdi.trim().toLowerCase();
-        const musteri = this.musterilerMap.get(hesap.musteriId);
-        const ad = musteri?.ad ? musteri.ad.toLowerCase() : '';
-        const fullMusteriStr = this.getMusteriAdi(hesap.musteriId).toLowerCase();
-        if (!ad.includes(searchAd) && !fullMusteriStr.includes(searchAd)) {
-          return false;
-        }
-      }
-
-      // 3. Müşteri Soyadı Filtresi
-      if (this.filterMusteriSoyadi && this.filterMusteriSoyadi.trim() !== '') {
-        const searchSoyad = this.filterMusteriSoyadi.trim().toLowerCase();
-        const musteri = this.musterilerMap.get(hesap.musteriId);
-        const soyad = musteri?.soyad ? musteri.soyad.toLowerCase() : '';
-        if (!soyad.includes(searchSoyad)) {
-          return false;
-        }
-      }
-
-      return true;
-    });
+    return this.hasAppliedFilters ? this.hesaplar : [];
   }
 }

@@ -34,5 +34,16 @@ namespace BankAPI.Models
 
         [JsonPropertyName("referansNo")]
         public string REFERANS_NO { get; set; }
+
+        // Hesabın sahibi — yalnızca PRC_HAREKET_LISTE sonucunda dolar,
+        // tekil hareket sorgularında null kalır.
+        [JsonPropertyName("musteriId")]
+        public decimal? MUSTERI_ID { get; set; }
+
+        [JsonPropertyName("musteriAdi")]
+        public string MUSTERI_ADI { get; set; }
+
+        [JsonPropertyName("musteriSoyadi")]
+        public string MUSTERI_SOYADI { get; set; }
     }
 }

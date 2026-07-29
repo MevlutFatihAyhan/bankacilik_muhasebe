@@ -49,6 +49,8 @@ CREATE OR REPLACE PACKAGE PKG_MUSTERI AS
         P_SEARCH_TERM  IN  VARCHAR2 DEFAULT NULL,
         P_MUSTERI_TIPI IN  NUMBER DEFAULT NULL,
         P_AKTIF_MI     IN  NUMBER DEFAULT NULL,
+        P_AD           IN  VARCHAR2 DEFAULT NULL,
+        P_SOYAD        IN  VARCHAR2 DEFAULT NULL,
         P_RESULT       OUT SYS_REFCURSOR
     );
 
@@ -98,6 +100,10 @@ END PKG_MUSTERI;
 -- ============================================================
 
 CREATE OR REPLACE PACKAGE BODY PKG_MUSTERI AS
+
+    -- Liste prosedurlerinin dondurecegi azami satir sayisi. Buyuk veri
+    -- senaryosunda arayuze tum tabloyu tasimamak icin kullanilir.
+    C_MAX_SATIR CONSTANT NUMBER := 10000;
 
     -- --------------------------------------------------------
     -- MST_MUSTERI — INSERT
@@ -207,9 +213,12 @@ CREATE OR REPLACE PACKAGE BODY PKG_MUSTERI AS
         P_SEARCH_TERM  IN  VARCHAR2 DEFAULT NULL,
         P_MUSTERI_TIPI IN  NUMBER DEFAULT NULL,
         P_AKTIF_MI     IN  NUMBER DEFAULT NULL,
+        P_AD           IN  VARCHAR2 DEFAULT NULL,
+        P_SOYAD        IN  VARCHAR2 DEFAULT NULL,
         P_RESULT       OUT SYS_REFCURSOR
     ) IS
     BEGIN
+        -- Filtreleme tamamen DB tarafinda yapilir; P_AD tuzel musteride unvani karsilar.
         OPEN P_RESULT FOR
         SELECT MUSTERI_ID, AD, SOYAD, MUSTERI_TIPI, KIMLIK_NO, EMAIL, TELEFON, AKTIF_MI,
                OLUSTURMA_TARIHI, GUNCELLEME_TARIHI
@@ -224,7 +233,10 @@ CREATE OR REPLACE PACKAGE BODY PKG_MUSTERI AS
                ))
            AND (P_MUSTERI_TIPI IS NULL OR MUSTERI_TIPI = P_MUSTERI_TIPI)
            AND (P_AKTIF_MI IS NULL OR AKTIF_MI = P_AKTIF_MI)
-         ORDER BY MUSTERI_ID DESC;
+           AND (P_AD IS NULL OR UPPER(AD) LIKE '%' || UPPER(P_AD) || '%')
+           AND (P_SOYAD IS NULL OR UPPER(SOYAD) LIKE '%' || UPPER(P_SOYAD) || '%')
+         ORDER BY MUSTERI_ID DESC
+         FETCH FIRST C_MAX_SATIR ROWS ONLY;
     END PRC_MUSTERI_LISTE;
 
     -- --------------------------------------------------------
@@ -398,14 +410,17 @@ CREATE OR REPLACE PACKAGE PKG_HESAP AS
     );
 
     PROCEDURE PRC_HESAP_LISTE(
-        P_SEARCH_TERM  IN  VARCHAR2 DEFAULT NULL,
-        P_MUSTERI_TIPI IN  NUMBER DEFAULT NULL,
-        P_HESAP_TURU   IN  VARCHAR2 DEFAULT NULL,
-        P_DOVIZ_CINSI  IN  VARCHAR2 DEFAULT NULL,
-        P_DURUM        IN  NUMBER DEFAULT NULL,
-        P_MIN_BAKIYE   IN  NUMBER DEFAULT NULL,
-        P_MAX_BAKIYE   IN  NUMBER DEFAULT NULL,
-        P_RESULT       OUT SYS_REFCURSOR
+        P_SEARCH_TERM     IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_TIPI    IN  NUMBER DEFAULT NULL,
+        P_HESAP_TURU      IN  VARCHAR2 DEFAULT NULL,
+        P_DOVIZ_CINSI     IN  VARCHAR2 DEFAULT NULL,
+        P_DURUM           IN  NUMBER DEFAULT NULL,
+        P_MIN_BAKIYE      IN  NUMBER DEFAULT NULL,
+        P_MAX_BAKIYE      IN  NUMBER DEFAULT NULL,
+        P_HESAP_NO        IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_ADI     IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_SOYADI  IN  VARCHAR2 DEFAULT NULL,
+        P_RESULT          OUT SYS_REFCURSOR
     );
 
     PROCEDURE PRC_HAREKET_LISTE(
@@ -416,6 +431,9 @@ CREATE OR REPLACE PACKAGE PKG_HESAP AS
         P_BITIS_TARIHI     IN  DATE DEFAULT NULL,
         P_MIN_TUTAR        IN  NUMBER DEFAULT NULL,
         P_MAX_TUTAR        IN  NUMBER DEFAULT NULL,
+        P_HESAP_NO         IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_ADI      IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_SOYADI   IN  VARCHAR2 DEFAULT NULL,
         P_RESULT           OUT SYS_REFCURSOR
     );
 
@@ -433,6 +451,10 @@ END PKG_HESAP;
 -- ============================================================
 
 CREATE OR REPLACE PACKAGE BODY PKG_HESAP AS
+
+    -- Liste prosedurlerinin dondurecegi azami satir sayisi. Buyuk veri
+    -- senaryosunda arayuze tum tabloyu tasimamak icin kullanilir.
+    C_MAX_SATIR CONSTANT NUMBER := 10000;
 
     PROCEDURE PRC_HESAP_EKLE(
         P_HESAP_NO     IN MVD_HESAP.HESAP_NO%TYPE,
@@ -695,14 +717,17 @@ CREATE OR REPLACE PACKAGE BODY PKG_HESAP AS
     END PRC_HESAP_GETIR;
 
     PROCEDURE PRC_HESAP_LISTE(
-        P_SEARCH_TERM  IN  VARCHAR2 DEFAULT NULL,
-        P_MUSTERI_TIPI IN  NUMBER DEFAULT NULL,
-        P_HESAP_TURU   IN  VARCHAR2 DEFAULT NULL,
-        P_DOVIZ_CINSI  IN  VARCHAR2 DEFAULT NULL,
-        P_DURUM        IN  NUMBER DEFAULT NULL,
-        P_MIN_BAKIYE   IN  NUMBER DEFAULT NULL,
-        P_MAX_BAKIYE   IN  NUMBER DEFAULT NULL,
-        P_RESULT       OUT SYS_REFCURSOR
+        P_SEARCH_TERM     IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_TIPI    IN  NUMBER DEFAULT NULL,
+        P_HESAP_TURU      IN  VARCHAR2 DEFAULT NULL,
+        P_DOVIZ_CINSI     IN  VARCHAR2 DEFAULT NULL,
+        P_DURUM           IN  NUMBER DEFAULT NULL,
+        P_MIN_BAKIYE      IN  NUMBER DEFAULT NULL,
+        P_MAX_BAKIYE      IN  NUMBER DEFAULT NULL,
+        P_HESAP_NO        IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_ADI     IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_SOYADI  IN  VARCHAR2 DEFAULT NULL,
+        P_RESULT          OUT SYS_REFCURSOR
     ) IS
     BEGIN
         -- Filtreleme tamamen DB tarafinda yapilir; arayuz "Uygula" ile
@@ -730,7 +755,15 @@ CREATE OR REPLACE PACKAGE BODY PKG_HESAP AS
            AND (P_DURUM IS NULL OR H.DURUM = P_DURUM)
            AND (P_MIN_BAKIYE IS NULL OR H.BAKIYE >= P_MIN_BAKIYE)
            AND (P_MAX_BAKIYE IS NULL OR H.BAKIYE <= P_MAX_BAKIYE)
-         ORDER BY H.HESAP_NO;
+           -- Kolon bazli filtreler: ID alani hesap no veya musteri ID ile eslesir
+           AND (P_HESAP_NO IS NULL OR (
+                   UPPER(H.HESAP_NO) LIKE '%' || UPPER(P_HESAP_NO) || '%' OR
+                   TO_CHAR(H.MUSTERI_ID) LIKE '%' || P_HESAP_NO || '%'
+               ))
+           AND (P_MUSTERI_ADI IS NULL OR UPPER(M.AD) LIKE '%' || UPPER(P_MUSTERI_ADI) || '%')
+           AND (P_MUSTERI_SOYADI IS NULL OR UPPER(M.SOYAD) LIKE '%' || UPPER(P_MUSTERI_SOYADI) || '%')
+         ORDER BY H.HESAP_NO
+         FETCH FIRST C_MAX_SATIR ROWS ONLY;
     END PRC_HESAP_LISTE;
 
     PROCEDURE PRC_HAREKET_LISTE(
@@ -741,33 +774,50 @@ CREATE OR REPLACE PACKAGE BODY PKG_HESAP AS
         P_BITIS_TARIHI     IN  DATE DEFAULT NULL,
         P_MIN_TUTAR        IN  NUMBER DEFAULT NULL,
         P_MAX_TUTAR        IN  NUMBER DEFAULT NULL,
+        P_HESAP_NO         IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_ADI      IN  VARCHAR2 DEFAULT NULL,
+        P_MUSTERI_SOYADI   IN  VARCHAR2 DEFAULT NULL,
         P_RESULT           OUT SYS_REFCURSOR
     ) IS
     BEGIN
         -- Filtreleme tamamen DB tarafinda yapilir; arayuz "Uygula" ile
         -- yalnizca kriterlere uyan kayitlari ister (buyuk veri senaryosu).
         -- P_ISLEM_YONU: 'B' = para girisi, 'C' = para cikisi
+        -- Musteri adi/soyadi filtresi icin hareket -> hesap -> musteri join'i kullanilir.
         OPEN P_RESULT FOR
-        SELECT ISLEM_ID, HESAP_NO, ISLEM_YONU, ISLEM_TUTARI, DOVIZ_CINSI,
-               YENI_BAKIYE, ISLEM_TARIHI, ACIKLAMA, ISLEM_KODU, REFERANS_NO
-          FROM MVD_HESAPHAREKET
+        SELECT HH.ISLEM_ID, HH.HESAP_NO, HH.ISLEM_YONU, HH.ISLEM_TUTARI, HH.DOVIZ_CINSI,
+               HH.YENI_BAKIYE, HH.ISLEM_TARIHI, HH.ACIKLAMA, HH.ISLEM_KODU, HH.REFERANS_NO,
+               M.MUSTERI_ID, M.AD AS MUSTERI_ADI, M.SOYAD AS MUSTERI_SOYADI
+          FROM MVD_HESAPHAREKET HH
+          JOIN MVD_HESAP H
+            ON H.HESAP_NO = HH.HESAP_NO
+          JOIN MST_MUSTERI M
+            ON M.MUSTERI_ID = H.MUSTERI_ID
          WHERE (P_SEARCH_TERM IS NULL OR (
-                   UPPER(HESAP_NO) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
-                   UPPER(ACIKLAMA) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
-                   UPPER(REFERANS_NO) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
-                   UPPER(ISLEM_KODU) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
-                   UPPER(DOVIZ_CINSI) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
-                   TO_CHAR(ISLEM_ID) LIKE '%' || P_SEARCH_TERM || '%'
+                   UPPER(HH.HESAP_NO) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
+                   UPPER(HH.ACIKLAMA) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
+                   UPPER(HH.REFERANS_NO) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
+                   UPPER(HH.ISLEM_KODU) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
+                   UPPER(HH.DOVIZ_CINSI) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
+                   UPPER(M.AD) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
+                   UPPER(M.SOYAD) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
+                   UPPER(TRIM(M.AD) || ' ' || TRIM(M.SOYAD)) LIKE '%' || UPPER(P_SEARCH_TERM) || '%' OR
+                   TO_CHAR(HH.ISLEM_ID) LIKE '%' || P_SEARCH_TERM || '%'
                ))
-           AND (P_ISLEM_YONU IS NULL OR UPPER(ISLEM_YONU) = UPPER(P_ISLEM_YONU))
-           AND (P_DOVIZ_CINSI IS NULL OR UPPER(DOVIZ_CINSI) = UPPER(P_DOVIZ_CINSI)
-                OR (UPPER(P_DOVIZ_CINSI) = 'TRY' AND UPPER(DOVIZ_CINSI) = 'TL'))
-           AND (P_BASLANGIC_TARIHI IS NULL OR ISLEM_TARIHI >= TRUNC(P_BASLANGIC_TARIHI))
+           AND (P_ISLEM_YONU IS NULL OR UPPER(HH.ISLEM_YONU) = UPPER(P_ISLEM_YONU))
+           AND (P_DOVIZ_CINSI IS NULL OR UPPER(HH.DOVIZ_CINSI) = UPPER(P_DOVIZ_CINSI)
+                OR (UPPER(P_DOVIZ_CINSI) = 'TRY' AND UPPER(HH.DOVIZ_CINSI) = 'TL'))
+           AND (P_BASLANGIC_TARIHI IS NULL OR HH.ISLEM_TARIHI >= TRUNC(P_BASLANGIC_TARIHI))
            -- Bitis tarihi dahil olmali: gunun sonuna kadar (TRUNC + 1 gun)
-           AND (P_BITIS_TARIHI IS NULL OR ISLEM_TARIHI < TRUNC(P_BITIS_TARIHI) + 1)
-           AND (P_MIN_TUTAR IS NULL OR ISLEM_TUTARI >= P_MIN_TUTAR)
-           AND (P_MAX_TUTAR IS NULL OR ISLEM_TUTARI <= P_MAX_TUTAR)
-         ORDER BY ISLEM_TARIHI DESC;
+           AND (P_BITIS_TARIHI IS NULL OR HH.ISLEM_TARIHI < TRUNC(P_BITIS_TARIHI) + 1)
+           AND (P_MIN_TUTAR IS NULL OR HH.ISLEM_TUTARI >= P_MIN_TUTAR)
+           AND (P_MAX_TUTAR IS NULL OR HH.ISLEM_TUTARI <= P_MAX_TUTAR)
+           -- Kolon bazli filtreler: hesap no ve musteri adi/soyadi
+           AND (P_HESAP_NO IS NULL OR UPPER(HH.HESAP_NO) LIKE '%' || UPPER(P_HESAP_NO) || '%')
+           AND (P_MUSTERI_ADI IS NULL OR UPPER(M.AD) LIKE '%' || UPPER(P_MUSTERI_ADI) || '%')
+           AND (P_MUSTERI_SOYADI IS NULL OR UPPER(M.SOYAD) LIKE '%' || UPPER(P_MUSTERI_SOYADI) || '%')
+         ORDER BY HH.ISLEM_TARIHI DESC
+         FETCH FIRST C_MAX_SATIR ROWS ONLY;
     END PRC_HAREKET_LISTE;
 
     PROCEDURE PRC_HAREKET_GETIR(

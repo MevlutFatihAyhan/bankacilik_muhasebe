@@ -148,7 +148,10 @@ namespace BankAPI.Services
             string dovizCinsi,
             int? durum,
             decimal? minBakiye,
-            decimal? maxBakiye)
+            decimal? maxBakiye,
+            string hesapNo,
+            string musteriAdi,
+            string musteriSoyadi)
         {
             List<Hesap> hesapListesi = new List<Hesap>();
             using (OracleConnection connection = new OracleConnection(_connectionString))
@@ -166,6 +169,9 @@ namespace BankAPI.Services
                     cmd.Parameters.Add("p_durum", OracleDbType.Int32).Value = NullIfEmpty(durum);
                     cmd.Parameters.Add("p_min_bakiye", OracleDbType.Decimal).Value = NullIfEmpty(minBakiye);
                     cmd.Parameters.Add("p_max_bakiye", OracleDbType.Decimal).Value = NullIfEmpty(maxBakiye);
+                    cmd.Parameters.Add("p_hesap_no", OracleDbType.Varchar2).Value = NullIfEmpty(hesapNo);
+                    cmd.Parameters.Add("p_musteri_adi", OracleDbType.Varchar2).Value = NullIfEmpty(musteriAdi);
+                    cmd.Parameters.Add("p_musteri_soyadi", OracleDbType.Varchar2).Value = NullIfEmpty(musteriSoyadi);
                     cmd.Parameters.Add("p_result", OracleDbType.RefCursor, ParameterDirection.Output);
 
                     using (OracleDataReader reader = cmd.ExecuteReader())

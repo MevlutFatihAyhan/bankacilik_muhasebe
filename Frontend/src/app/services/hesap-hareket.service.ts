@@ -39,6 +39,9 @@ export class HesapHareketService {
         if (filtre.bitisTarihi) params = params.set('bitisTarihi', filtre.bitisTarihi);
         if (filtre.minTutar != null) params = params.set('minTutar', filtre.minTutar);
         if (filtre.maxTutar != null) params = params.set('maxTutar', filtre.maxTutar);
+        if (filtre.hesapNo) params = params.set('hesapNo', filtre.hesapNo.trim());
+        if (filtre.musteriAdi) params = params.set('musteriAdi', filtre.musteriAdi.trim());
+        if (filtre.musteriSoyadi) params = params.set('musteriSoyadi', filtre.musteriSoyadi.trim());
 
         return this.http.get<HesapHareket[]>(`${this.apiUrl}/filtre`, { params });
     }

@@ -52,12 +52,16 @@ namespace BankAPI.Controllers
             [FromQuery] string dovizCinsi = null,
             [FromQuery] int? durum = null,
             [FromQuery] decimal? minBakiye = null,
-            [FromQuery] decimal? maxBakiye = null)
+            [FromQuery] decimal? maxBakiye = null,
+            [FromQuery] string id = null,
+            [FromQuery] string musteriAdi = null,
+            [FromQuery] string musteriSoyadi = null)
         {
             try
             {
                 var hesapListesi = _hesapService.HesaplariFiltrele(
-                    searchTerm, musteriTipi, hesapTuru, dovizCinsi, durum, minBakiye, maxBakiye);
+                    searchTerm, musteriTipi, hesapTuru, dovizCinsi, durum, minBakiye, maxBakiye,
+                    id, musteriAdi, musteriSoyadi);
                 return Ok(hesapListesi);
             }
             catch (Exception ex)

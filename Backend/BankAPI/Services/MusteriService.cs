@@ -105,6 +105,53 @@ namespace BankAPI.Services
             return musteriListesi;
         }
 
+        // Filtreye bağlı müşteri listesi — PKG_MUSTERI.PRC_MUSTERI_LISTE
+        // Tüm kriterler DB tarafında değerlendirilir; boş gelen kriterler NULL olarak
+        // gönderilir ve prosedürde "o kriter yok" anlamına gelir.
+        public List<Musteri> MusterileriFiltrele(
+            string searchTerm,
+            int? musteriTipi,
+            int? aktifMi,
+            string ad,
+            string soyad)
+        {
+            List<Musteri> musteriListesi = new List<Musteri>();
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_MUSTERI.PRC_MUSTERI_LISTE", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+                    cmd.Parameters.Add("P_SEARCH_TERM", OracleDbType.Varchar2).Value = NullIfEmpty(searchTerm);
+                    cmd.Parameters.Add("P_MUSTERI_TIPI", OracleDbType.Int32).Value = NullIfEmpty(musteriTipi);
+                    cmd.Parameters.Add("P_AKTIF_MI", OracleDbType.Int32).Value = NullIfEmpty(aktifMi);
+                    cmd.Parameters.Add("P_AD", OracleDbType.Varchar2).Value = NullIfEmpty(ad);
+                    cmd.Parameters.Add("P_SOYAD", OracleDbType.Varchar2).Value = NullIfEmpty(soyad);
+                    cmd.Parameters.Add("P_RESULT", OracleDbType.RefCursor, ParameterDirection.Output);
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            musteriListesi.Add(MapMusteri(reader));
+                        }
+                    }
+                }
+            }
+            return musteriListesi;
+        }
+
+        private static object NullIfEmpty(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? (object)DBNull.Value : value.Trim();
+        }
+
+        private static object NullIfEmpty<T>(T? value) where T : struct
+        {
+            return value.HasValue ? (object)value.Value : DBNull.Value;
+        }
+
         // Tek müşteri — PKG_MUSTERI.PRC_MUSTERI_GETIR
         public Musteri MusteriGetir(decimal musteriId)
         {
