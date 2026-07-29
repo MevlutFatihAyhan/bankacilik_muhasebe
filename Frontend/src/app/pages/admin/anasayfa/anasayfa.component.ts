@@ -15,7 +15,7 @@ import { TranslatePipe } from '../../../pipes/translate.pipe';
 })
 export class AnasayfaComponent implements AfterViewInit, OnInit {
   chart: any;
-  
+
   // Animasyon için değişkenler
   totalVolume: number = 0;
   activeUsers: number = 0;
@@ -34,7 +34,7 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
     public router: Router,
     private dashboardService: DashboardService,
     public langService: LanguageService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.dashboardDataYukle();
@@ -51,13 +51,9 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
         const targetIndUsers = musteri?.bireyselSayisi || 0;
 
         const hesaplar = data.hesapIstatistikleri || [];
-<<<<<<< Updated upstream
-        const targetGoldAccs = hesaplar.find(h => h.dovizCinsi === 'ALTIN' || h.dovizCinsi === 'Altin' || h.dovizCinsi === 'XAU')?.hesapSayisi || 0;
-=======
         const targetGoldAccs = hesaplar.find(h => h.dovizCinsi === 'XAU' || h.dovizCinsi === 'Altin')?.hesapSayisi || 0;
->>>>>>> Stashed changes
         const targetDollarAccs = hesaplar.find(h => h.dovizCinsi === 'USD' || h.dovizCinsi === 'Dolar')?.hesapSayisi || 0;
-        
+
         let targetTermAccs = 0;
         let targetDemandAccs = 0;
         hesaplar.forEach(h => {
@@ -116,11 +112,11 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      
+
       const easeOut = 1 - Math.pow(1 - progress, 3);
-      
+
       (this as any)[propName] = start + (end - start) * easeOut;
-      
+
       if (progress < 1) {
         window.requestAnimationFrame(step);
       } else {
@@ -180,7 +176,7 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
             bodyFont: { size: 13, family: "'Elms Sans', sans-serif" },
             displayColors: false,
             callbacks: {
-              label: function(context) {
+              label: function (context) {
                 const val = context.parsed?.y ?? 0;
                 return val.toLocaleString('tr-TR') + ' ₺';
               }
@@ -196,7 +192,7 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
             ticks: {
               precision: 0,
               font: { family: "'Elms Sans', sans-serif" },
-              callback: function(value) {
+              callback: function (value) {
                 return Number(value).toLocaleString('tr-TR') + ' ₺';
               }
             }
