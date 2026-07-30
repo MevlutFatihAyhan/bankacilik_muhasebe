@@ -4,13 +4,43 @@
   <div class="form-container" style="display: block;">
     <!-- Satır 1: Giden IBAN ve Gelen IBAN -->
     <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+      
+      <!-- Gönderen IBAN -->
       <div class="form-group" style="flex: 1;">
         <label class="form-label">{{ 'TRANSFER.SENDER_IBAN' | translate }}</label>
-        <input type="text" class="form-control shadow-input" formControlName="senderIban" placeholder="TR..." maxlength="26" style="text-transform: uppercase;">
+        <div class="musteri-secici-row">
+            <input type="text" class="form-control shadow-input musteri-id-input" formControlName="senderIban" placeholder="TR..." maxlength="26" style="text-transform: uppercase;">
+            <button type="button" class="btn-secici" (click)="dialogAc('sender')" [title]="'DIALOG.SEARCH_ACCOUNT' | translate">
+                &#8230;
+            </button>
+        </div>
+        <!-- Seçili Hesap Kartı -->
+        <div class="secilen-musteri-kart" *ngIf="secilenSenderHesap">
+            <div class="secilen-musteri-info">
+                <span class="secilen-musteri-isim">✔ {{ secilenSenderHesap.hesapNo }}</span>
+                <span class="secilen-musteri-id">ID: {{ secilenSenderHesap.musteriId }} | Bakiye: {{ secilenSenderHesap.bakiye }} {{ secilenSenderHesap.dovizCinsi }}</span>
+            </div>
+            <button type="button" class="btn-sifirla" (click)="hesapSifirla('sender')" title="Hesabı kaldır">✕</button>
+        </div>
       </div>
+
+      <!-- Alıcı IBAN -->
       <div class="form-group" style="flex: 1;">
         <label class="form-label">{{ 'TRANSFER.RECEIVER_IBAN' | translate }}</label>
-        <input type="text" class="form-control shadow-input" formControlName="receiverIban" placeholder="TR..." maxlength="26" style="text-transform: uppercase;">
+        <div class="musteri-secici-row">
+            <input type="text" class="form-control shadow-input musteri-id-input" formControlName="receiverIban" placeholder="TR..." maxlength="26" style="text-transform: uppercase;">
+            <button type="button" class="btn-secici" (click)="dialogAc('receiver')" [title]="'DIALOG.SEARCH_ACCOUNT' | translate">
+                &#8230;
+            </button>
+        </div>
+        <!-- Seçili Hesap Kartı -->
+        <div class="secilen-musteri-kart" *ngIf="secilenReceiverHesap">
+            <div class="secilen-musteri-info">
+                <span class="secilen-musteri-isim">✔ {{ secilenReceiverHesap.hesapNo }}</span>
+                <span class="secilen-musteri-id">ID: {{ secilenReceiverHesap.musteriId }} | Bakiye: {{ secilenReceiverHesap.bakiye }} {{ secilenReceiverHesap.dovizCinsi }}</span>
+            </div>
+            <button type="button" class="btn-sifirla" (click)="hesapSifirla('receiver')" title="Hesabı kaldır">✕</button>
+        </div>
       </div>
     </div>
 
@@ -67,3 +97,87 @@
     </div>
 
   </div>
+
+<!-- DIALOG (Hesap Seçici İki Aşamalı) -->
+<div class="dialog-overlay" *ngIf="dialogAcik" (click)="dialogKapat()">
+    <div class="dialog-box" (click)="$event.stopPropagation()">
+        
+        <!-- Dialog Header -->
+        <div class="dialog-header">
+            <h3>{{ dialogAsama === 1 ? ('DIALOG.SEARCH_ACCOUNT' | translate) : 'Hesap Seçimi' }}</h3>
+            <button class="btn-close" (click)="dialogKapat()">✕</button>
+        </div>
+
+        <!-- AŞAMA 1: Müşteri Arama -->
+        <ng-container *ngIf="dialogAsama === 1">
+            <!-- Filtre Alanı -->
+            <div class="dialog-filtre">
+                <div class="dialog-filtre-group">
+                    <label>{{ 'CUSTOMER.ID' | translate }}</label>
+                    <input type="text" [(ngModel)]="dialogAramaMusteriId" [ngModelOptions]="{standalone: true}" placeholder="ID" (keyup.enter)="dialogMusteriAra()">
+                </div>
+                <div class="dialog-filtre-group">
+                    <label>{{ 'DIALOG.NAME_LABEL' | translate }}</label>
+                    <input type="text" [(ngModel)]="dialogAramaMusteriAd" [ngModelOptions]="{standalone: true}" [placeholder]="'DIALOG.NAME_LABEL' | translate" (keyup.enter)="dialogMusteriAra()">
+                </div>
+                <div class="dialog-filtre-group">
+                    <label>{{ 'DIALOG.SURNAME_LABEL' | translate }}</label>
+                    <input type="text" [(ngModel)]="dialogAramaMusteriSoyad" [ngModelOptions]="{standalone: true}" [placeholder]="'DIALOG.SURNAME_LABEL' | translate" (keyup.enter)="dialogMusteriAra()">
+                </div>
+                <button class="btn-dialog-uygula" (click)="dialogMusteriAra()">{{ 'COMMON.APPLY' | translate }}</button>
+            </div>
+
+            <!-- Sonuç Listesi -->
+            <div class="dialog-sonuclar">
+                <!-- Henüz arama yapılmadı -->
+                <div class="dialog-bos-mesaj" *ngIf="!dialogAramaYapildi">
+                    {{ 'DIALOG.FILTER_HINT' | translate }}
+                </div>
+                <!-- Sonuç yok -->
+                <div class="dialog-bos-mesaj" *ngIf="dialogAramaYapildi && dialogMusteriSonuclar.length === 0">
+                    {{ 'DIALOG.NO_RESULTS' | translate }}
+                </div>
+                <!-- Sonuçlar -->
+                <div class="dialog-musteri-satir" *ngFor="let m of dialogMusteriSonuclar" (click)="dialogMusteriSec(m)">
+                    <div class="dialog-musteri-avatar" style="font-size: 14px;">
+                        {{ m.ad.charAt(0) }}{{ m.soyad ? m.soyad.charAt(0) : '' }}
+                    </div>
+                    <div class="dialog-musteri-detay">
+                        <span class="dialog-musteri-isim">{{ m.ad }} {{ m.soyad }}</span>
+                        <span class="dialog-musteri-id">ID: {{ m.musteriId }} | {{ m.kimlikNo || m.email }}</span>
+                    </div>
+                    <span class="dialog-sec-badge" style="background-color: #3b82f6;">İleri ➔</span>
+                </div>
+            </div>
+        </ng-container>
+
+        <!-- AŞAMA 2: Hesap Seçimi -->
+        <ng-container *ngIf="dialogAsama === 2">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                <button type="button" class="btn-secondary shadow-btn" (click)="dialogGeriDon()" style="padding: 5px 10px; font-size: 14px;">⬅ Geri Dön</button>
+                <div style="font-weight: 500; color: #334155;">
+                    {{ dialogSecilenMusteri?.ad }} {{ dialogSecilenMusteri?.soyad }}
+                </div>
+            </div>
+
+            <!-- Hesap Sonuç Listesi -->
+            <div class="dialog-sonuclar" style="margin-top: 0; padding-top: 10px;">
+                <div class="dialog-bos-mesaj" *ngIf="dialogHesapSonuclar.length === 0">
+                    Bu müşteriye ait hesap bulunamadı.
+                </div>
+                
+                <div class="dialog-musteri-satir" *ngFor="let h of dialogHesapSonuclar" (click)="hesapSec(h)">
+                    <div class="dialog-musteri-avatar" style="font-size: 14px;">
+                        {{ h.dovizCinsi }}
+                    </div>
+                    <div class="dialog-musteri-detay">
+                        <span class="dialog-musteri-isim">{{ h.iban }}</span>
+                        <span class="dialog-musteri-id">No: {{ h.hesapNo }} | Bakiye: {{ h.bakiye | number:'1.2-2' }} {{ h.dovizCinsi }}</span>
+                    </div>
+                    <span class="dialog-sec-badge">{{ 'DIALOG.SELECT' | translate }}</span>
+                </div>
+            </div>
+        </ng-container>
+
+    </div>
+</div>

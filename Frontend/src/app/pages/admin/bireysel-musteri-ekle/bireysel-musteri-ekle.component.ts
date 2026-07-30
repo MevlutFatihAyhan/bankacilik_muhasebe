@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { MusteriService } from '../../../services/musteri.service';
 import { AdresService } from '../../../services/adres.service';
 import { ToastService } from '../../../services/toast.service';
@@ -9,7 +10,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-bireysel-musteri-ekle',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './bireysel-musteri-ekle.component.html',
   styleUrls: ['../tuzel-musteri-ekle/tuzel-musteri-ekle.component.css']
 })

@@ -6,3 +6,4 @@ Backend/BankAPI/obj/
 .env
 CLAUDE.md
 /.vscode 
+/scratch

@@ -30,6 +30,17 @@ namespace BankAPI.Controllers{
                 return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
             }
         }
+        
+        [HttpGet("ozet")]
+        public IActionResult MusteriOzetGetir(){
+            try{
+                var ozetListesi = _musteriService.MusteriOzetGetir();
+                return Ok(ozetListesi);
+            }catch(Exception ex){
+                return StatusCode(500, new { message = $"Hata oluştu: {ex.Message}" });
+            }
+        }
+
         // Filtreye bağlı listeleme — arayüzde "Uygula" butonuna basılmadan çağrılmaz
         [HttpGet("filtre")]
         public IActionResult MusterileriFiltrele(

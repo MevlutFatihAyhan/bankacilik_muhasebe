@@ -49,18 +49,8 @@ export class AnasayfaComponent implements AfterViewInit, OnInit {
         const targetActiveUsers = musteri?.aktifMusteriSayisi || 0;
         const targetCorpUsers = musteri?.tuzelSayisi || 0;
         const targetIndUsers = musteri?.bireyselSayisi || 0;
-
         const hesaplar = data.hesapIstatistikleri || [];
-<<<<<<< Updated upstream
-<<<<<<< HEAD
         const targetGoldAccs = hesaplar.find(h => h.dovizCinsi === 'XAU' || h.dovizCinsi === 'Altin')?.hesapSayisi || 0;
-=======
-        // Altın hesaplarında döviz cinsi DB'de her zaman 'XAU' olarak tutulur
-        const targetGoldAccs = hesaplar.find(h => h.dovizCinsi === 'XAU')?.hesapSayisi || 0;
->>>>>>> 919cb7b (Filtreleme özellikleri güncellendi ve sayfaya 10bin veri getiriliyor)
-=======
-        const targetGoldAccs = hesaplar.find(h => h.dovizCinsi === 'XAU' || h.dovizCinsi === 'Altin')?.hesapSayisi || 0;
->>>>>>> Stashed changes
         const targetDollarAccs = hesaplar.find(h => h.dovizCinsi === 'USD' || h.dovizCinsi === 'Dolar')?.hesapSayisi || 0;
 
         let targetTermAccs = 0;

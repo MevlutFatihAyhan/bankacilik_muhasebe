@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { HesapHareketService } from '../../../services/hesap-hareket.service';
 import { HesapHareket } from '../../../models/hesap-hareket.model';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-islem-detayi',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './islem-detayi.component.html',
   styleUrl: './islem-detayi.component.css'
 })

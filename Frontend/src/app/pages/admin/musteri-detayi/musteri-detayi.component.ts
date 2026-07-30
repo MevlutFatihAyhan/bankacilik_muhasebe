@@ -7,11 +7,12 @@ import { AdresService } from '../../../services/adres.service';
 import { Musteri } from '../../../models/musteri.model';
 import { MusteriAdres } from '../../../models/musteri-adres.model';
 import { ToastService } from '../../../services/toast.service';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-musteri-detayi',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslatePipe],
   templateUrl: './musteri-detayi.component.html',
   styleUrl: './musteri-detayi.component.css'
 })

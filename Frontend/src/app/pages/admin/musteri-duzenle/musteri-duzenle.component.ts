@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { MusteriService } from '../../../services/musteri.service';
 import { Musteri } from '../../../models/musteri.model';
 import { ToastService } from '../../../services/toast.service';
@@ -9,7 +10,7 @@ import { ToastService } from '../../../services/toast.service';
 @Component({
   selector: 'app-musteri-duzenle',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './musteri-duzenle.component.html',
   styleUrl: './musteri-duzenle.component.css'
 })

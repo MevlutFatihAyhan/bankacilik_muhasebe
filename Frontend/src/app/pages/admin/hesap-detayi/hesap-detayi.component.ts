@@ -6,11 +6,12 @@ import { MusteriService } from '../../../services/musteri.service';
 import { Hesap } from '../../../models/hesap.model';
 import { Musteri } from '../../../models/musteri.model';
 import { ToastService } from '../../../services/toast.service';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-hesap-detayi',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './hesap-detayi.component.html',
   styleUrl: './hesap-detayi.component.css'
 })

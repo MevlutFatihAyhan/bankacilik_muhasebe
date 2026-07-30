@@ -23,6 +23,11 @@ export class MusteriService {
         return this.musteriCache$;
     }
 
+    // Özet Listesi (Sadece Id, Ad, Soyad) - Sınırsız
+    getMusteriOzet(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/ozet`);
+    }
+
     clearCache(): void {
         this.musteriCache$ = null;
     }

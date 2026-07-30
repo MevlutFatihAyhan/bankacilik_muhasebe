@@ -8,38 +8,38 @@
       <p class="profile-id">Müşteri No: #{{ musteriDetay.musteriId }}</p>
     </div>
     <div class="profile-status">
-      <span class="status-badge" [class.active]="musteriDetay.aktifMi === 1">{{ musteriDetay.aktifMi === 1 ? 'Aktif' : 'Pasif' }}</span>
+      <span class="status-badge" [class.active]="musteriDetay.aktifMi === 1">{{ (musteriDetay.aktifMi === 1 ? 'COMMON.ACTIVE' : 'COMMON.PASSIVE') | translate }}</span>
     </div>
   </div>
 
   <div class="profile-body">
     <div class="info-section">
-      <h3>Genel Bilgiler</h3>
+      <h3>{{ 'CUSTOMER.GENERAL_INFO' | translate }}</h3>
       <div class="info-grid">
         <div class="info-item">
-          <label>Müşteri Tipi</label>
-          <span>{{ musteriDetay.musteriTipi === 1 ? 'Bireysel' : 'Tüzel' }}</span>
+          <label>{{ 'CUSTOMER.TYPE' | translate }}</label>
+          <span>{{ (musteriDetay.musteriTipi === 1 ? 'CUSTOMER.INDIVIDUAL' : 'CUSTOMER.CORPORATE') | translate }}</span>
         </div>
         <div class="info-item">
           <label>TCKN / VKN</label>
           <span>{{ musteriDetay.kimlikNo }}</span>
         </div>
         <div class="info-item">
-          <label>Kayıt Tarihi</label>
+          <label>{{ 'CUSTOMER.REGISTRATION_DATE' | translate }}</label>
           <span>{{ musteriDetay.olusturmaTarihi | date:'dd.MM.yyyy' }}</span>
         </div>
       </div>
     </div>
 
     <div class="info-section">
-      <h3>İletişim Bilgileri</h3>
+      <h3>{{ 'CUSTOMER.CONTACT_INFO' | translate }}</h3>
       <div class="info-grid">
         <div class="info-item">
-          <label>Email</label>
+          <label>{{ 'CUSTOMER.EMAIL' | translate }}</label>
           <span>{{ musteriDetay.email }}</span>
         </div>
         <div class="info-item">
-          <label>Telefon</label>
+          <label>{{ 'CUSTOMER.PHONE' | translate }}</label>
           <span>{{ musteriDetay.telefon }}</span>
         </div>
       </div>
@@ -48,41 +48,41 @@
     <!-- ADRES YÖNETİMİ BÖLÜMÜ -->
     <div class="info-section">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #DA0037; padding-bottom: 8px; margin-bottom: 20px;">
-        <h3 style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">Kayıtlı Adresler ({{ adresler.length }})</h3>
+        <h3 style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">{{ 'CUSTOMER.REGISTERED_ADDRESSES' | translate }} ({{ adresler.length }})</h3>
         <button class="btn-primary" (click)="yeniAdresFormAcik = !yeniAdresFormAcik" style="padding: 6px 14px; font-size: 13px; cursor: pointer;">
-          {{ yeniAdresFormAcik ? 'İptal' : '+ Yeni Adres Ekle' }}
+          {{ yeniAdresFormAcik ? ('COMMON.CANCEL' | translate) : ('CUSTOMER.ADD_NEW_ADDRESS' | translate) }}
         </button>
       </div>
 
       <!-- Yeni Adres Ekleme Formu -->
       <div *ngIf="yeniAdresFormAcik" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e9ecef;">
-        <h4 style="margin-top: 0; margin-bottom: 15px; font-size: 14px; font-weight: 600; color: #333;">+ Yeni Adres Tanımla</h4>
+        <h4 style="margin-top: 0; margin-bottom: 15px; font-size: 14px; font-weight: 600; color: #333;">{{ 'CUSTOMER.DEFINE_NEW_ADDRESS' | translate }}</h4>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
           <div>
-            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">Adres Başlığı</label>
-            <input type="text" class="form-control" [(ngModel)]="yeniAdresBaslik" placeholder="Ev, İş, Yazlık vb." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">{{ 'CUSTOMER.ADDRESS_TITLE' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="yeniAdresBaslik" [placeholder]="'CUSTOMER.ADDRESS_TITLE_PLACEHOLDER' | translate" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
           </div>
           <div>
-            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">Şehir *</label>
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">{{ 'CUSTOMER.CITY_REQUIRED' | translate }}</label>
             <input type="text" class="form-control" [(ngModel)]="yeniSehir" placeholder="İstanbul" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
           </div>
           <div>
-            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">İlçe</label>
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">{{ 'CUSTOMER.DISTRICT' | translate }}</label>
             <input type="text" class="form-control" [(ngModel)]="yeniIlce" placeholder="Kadıköy" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
           </div>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 15px;">
           <div>
-            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">Posta Kodu</label>
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">{{ 'CUSTOMER.POSTAL_CODE' | translate }}</label>
             <input type="text" class="form-control" [(ngModel)]="yeniPostaKodu" placeholder="34000" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
           </div>
           <div>
-            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">Açık Adres *</label>
-            <input type="text" class="form-control" [(ngModel)]="yeniAcikAdres" placeholder="Mahalle, Cadde, Sokak, No/Daire" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <label style="display:block; font-size:12px; color:#666; margin-bottom:4px;">{{ 'CUSTOMER.FULL_ADDRESS_REQUIRED' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="yeniAcikAdres" [placeholder]="'CUSTOMER.FULL_ADDRESS_PLACEHOLDER' | translate" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
           </div>
         </div>
         <div style="text-align: right;">
-          <button class="btn-primary" (click)="yeniAdresEkle()" style="padding: 8px 18px; font-size: 14px; cursor: pointer;">Adresi Kaydet</button>
+          <button class="btn-primary" (click)="yeniAdresEkle()" style="padding: 8px 18px; font-size: 14px; cursor: pointer;">{{ 'CUSTOMER.SAVE_ADDRESS' | translate }}</button>
         </div>
       </div>
 
@@ -91,8 +91,8 @@
         <div *ngFor="let a of adresler" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; background: #fff; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <span style="font-weight: 600; color: #DA0037; font-size: 14px;">📍 {{ a.adresBaslik || 'Adres' }}</span>
-            <button (click)="adresSil(a.adresId)" title="Adresi Sil" style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-              🗑️ Sil
+            <button (click)="adresSil(a.adresId)" [title]="'CUSTOMER.DELETE_ADDRESS' | translate" style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+              🗑️ {{ 'CUSTOMER.DELETE' | translate }}
             </button>
           </div>
           <p style="margin: 0 0 6px 0; font-size: 13px; color: #333; line-height: 1.4;">{{ a.acikAdres }}</p>
@@ -100,16 +100,16 @@
         </div>
       </div>
 
-      <p *ngIf="adresler.length === 0 && !yeniAdresFormAcik" style="color: #888; font-style: italic; font-size: 14px; margin-top: 10px;">Henüz kayıtlı bir adres bulunmamaktadır.</p>
+      <p *ngIf="adresler.length === 0 && !yeniAdresFormAcik" style="color: #888; font-style: italic; font-size: 14px; margin-top: 10px;">{{ 'CUSTOMER.NO_REGISTERED_ADDRESS' | translate }}</p>
     </div>
   </div>
 
   <div class="profile-actions">
-    <button class="btn-primary" [routerLink]="['/admin/musteri-duzenle', musteriDetay.musteriId]">Düzenle</button>
-    <button class="btn-primary" [routerLink]="['/admin/musteri-listesi']" style="margin-left: 10px;">Geri Dön</button>
+    <button class="btn-primary" [routerLink]="['/admin/musteri-duzenle', musteriDetay.musteriId]">{{ 'COMMON.EDIT' | translate }}</button>
+    <button class="btn-primary" [routerLink]="['/admin/musteri-listesi']" style="margin-left: 10px;">{{ 'COMMON.BACK' | translate }}</button>
   </div>
 </div>
 
 <div class="profile-container" *ngIf="!musteriDetay">
-  <p style="padding: 20px; text-align: center;">Yükleniyor...</p>
+  <p style="padding: 20px; text-align: center;">{{ 'COMMON.LOADING' | translate }}</p>
 </div>

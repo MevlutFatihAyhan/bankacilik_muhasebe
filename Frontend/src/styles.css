@@ -76,15 +76,19 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 150px;
+  min-width: 140px;
+  flex: 1 1 140px;
 }
 
 .filter-item label {
-  font-size: 12px;
+  font-size: 11px;
   color: #333333;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .filter-item select, .filter-item input {
@@ -95,6 +99,8 @@ html, body {
   font-size: 14px;
   background-color: #f9f9f9;
   outline: none;
+  width: 100%;
+  box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -107,8 +113,8 @@ html, body {
 .filter-actions {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
   align-items: flex-end;
+  flex-wrap: wrap;
 }
 
 .filter-actions .btn-primary {
@@ -121,9 +127,13 @@ html, body {
   font-weight: 600;
   font-family: 'Elms Sans', sans-serif;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(218, 0, 55, 0.25);
   margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .filter-actions .btn-primary:hover {
@@ -143,7 +153,11 @@ html, body {
   font-weight: 600;
   font-family: 'Elms Sans', sans-serif;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .filter-actions .btn-secondary:hover {

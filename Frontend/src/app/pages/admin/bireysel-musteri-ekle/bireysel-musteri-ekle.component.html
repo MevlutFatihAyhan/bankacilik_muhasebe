@@ -1,52 +1,52 @@
-<h2 style="font-size: 18px; font-weight: 500; margin-bottom: 30px;">+ Yeni Bireysel Müşteri</h2>
+<h2 style="font-size: 18px; font-weight: 500; margin-bottom: 30px;">{{ 'CUSTOMER.ADD_INDIVIDUAL_TITLE' | translate }}</h2>
 
 <div class="form-container">
     <div class="form-left">
         <div class="form-group" style="display: flex; gap: 20px;">
             <div style="flex: 1">
-                <label class="form-label">Ad</label>
+                <label class="form-label">{{ 'CUSTOMER.FIRST_NAME' | translate }}</label>
                 <input type="text" class="form-control shadow-input" [(ngModel)]="ad" placeholder="Fatih">
             </div>
             <div style="flex: 1">
-                <label class="form-label">Soyad</label>
+                <label class="form-label">{{ 'CUSTOMER.LAST_NAME' | translate }}</label>
                 <input type="text" class="form-control shadow-input" [(ngModel)]="soyad" placeholder="Ayhan">
             </div>
         </div>
         <div class="form-group">
-            <label class="form-label">TCKN No</label>
+            <label class="form-label">{{ 'CUSTOMER.TCKN' | translate }}</label>
             <input type="text" class="form-control shadow-input" [(ngModel)]="tckn" placeholder="11111111110">
         </div>
         <div class="form-group">
-            <label class="form-label">Şehir</label>
+            <label class="form-label">{{ 'CUSTOMER.CITY' | translate }}</label>
             <input type="text" class="form-control shadow-input" [(ngModel)]="sehir" placeholder="Adana">
         </div>
         <div class="form-group">
-            <label class="form-label">İlçe</label>
+            <label class="form-label">{{ 'CUSTOMER.DISTRICT' | translate }}</label>
             <input type="text" class="form-control shadow-input" [(ngModel)]="ilce" placeholder="Çukurova">
         </div>
         <div class="form-group">
-            <label class="form-label">Posta Kodu</label>
+            <label class="form-label">{{ 'CUSTOMER.POSTAL_CODE' | translate }}</label>
             <input type="text" class="form-control shadow-input" [(ngModel)]="postaKodu" placeholder="42100">
         </div>
     </div>
 
     <div class="form-right">
         <div class="form-group">
-            <label class="form-label">Email</label>
+            <label class="form-label">{{ 'CUSTOMER.EMAIL' | translate }}</label>
             <input type="email" class="form-control shadow-input" [(ngModel)]="email" placeholder="fatih@ornek.com">
         </div>
         <div class="form-group">
-            <label class="form-label">Telefon</label>
+            <label class="form-label">{{ 'CUSTOMER.PHONE' | translate }}</label>
             <input type="tel" class="form-control shadow-input" [(ngModel)]="telefon" placeholder="05551234567">
         </div>
         <div class="form-group" style="flex: 1">
-            <label class="form-label">Adres</label>
+            <label class="form-label">{{ 'CUSTOMER.ADDRESS' | translate }}</label>
             <textarea class="form-control shadow-input" style="height: 150px; resize: none;" [(ngModel)]="adres" placeholder="Ornek Mahallesi, 11111. sokak
 A Blok Kat 1 No:4"></textarea>
         </div>
         
         <div style="text-align: right; margin-top: 20px;">
-            <button class="btn-primary shadow-btn" (click)="kaydet()" style="width: 150px; height: 45px; font-size: 18px;">Kaydet</button>
+            <button class="btn-primary shadow-btn" (click)="kaydet()">{{ 'COMMON.SAVE' | translate }}</button>
         </div>
     </div>
 </div>

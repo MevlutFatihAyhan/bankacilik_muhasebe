@@ -544,57 +544,94 @@ FOR EACH ROW
 BEGIN
     IF INSERTING THEN
         INSERT INTO MUH_FIS_HAREKET_H (
-            H_ID, H_ISLEM_TIPI, H_ISLEM_YAPAN, FIS_HAREKET_ID, FIS_ID, HESAP_NO, BORC_TUTARI, ALACAK_TUTARI, SKONT, DOVIZ_KURU
+            H_ID, H_ISLEM_TIPI, H_ISLEM_YAPAN, FIS_HAREKET_ID, FIS_ID, HESAP_NO, BORC_TUTARI, ALACAK_TUTARI, SKONT, DOVIZ_CINSI
         ) VALUES (
-            SEQ_ISLEM_H_ID.NEXTVAL, 'I', FN_AKTIF_ADMIN_KULLANICI_ADI(), :NEW.FIS_HAREKET_ID, :NEW.FIS_ID, :NEW.HESAP_NO, :NEW.BORC_TUTARI, :NEW.ALACAK_TUTARI, :NEW.SKONT, :NEW.DOVIZ_KURU
+            SEQ_ISLEM_H_ID.NEXTVAL, 'I', FN_AKTIF_ADMIN_KULLANICI_ADI(), :NEW.FIS_HAREKET_ID, :NEW.FIS_ID, :NEW.HESAP_NO, :NEW.BORC_TUTARI, :NEW.ALACAK_TUTARI, :NEW.SKONT, :NEW.DOVIZ_CINSI
         );
     ELSIF UPDATING THEN
         INSERT INTO MUH_FIS_HAREKET_H (
-            H_ID, H_ISLEM_TIPI, H_ISLEM_YAPAN, FIS_HAREKET_ID, FIS_ID, HESAP_NO, BORC_TUTARI, ALACAK_TUTARI, SKONT, DOVIZ_KURU
+            H_ID, H_ISLEM_TIPI, H_ISLEM_YAPAN, FIS_HAREKET_ID, FIS_ID, HESAP_NO, BORC_TUTARI, ALACAK_TUTARI, SKONT, DOVIZ_CINSI
         ) VALUES (
-            SEQ_ISLEM_H_ID.NEXTVAL, 'U', FN_AKTIF_ADMIN_KULLANICI_ADI(), :NEW.FIS_HAREKET_ID, :NEW.FIS_ID, :NEW.HESAP_NO, :NEW.BORC_TUTARI, :NEW.ALACAK_TUTARI, :NEW.SKONT, :NEW.DOVIZ_KURU
+            SEQ_ISLEM_H_ID.NEXTVAL, 'U', FN_AKTIF_ADMIN_KULLANICI_ADI(), :NEW.FIS_HAREKET_ID, :NEW.FIS_ID, :NEW.HESAP_NO, :NEW.BORC_TUTARI, :NEW.ALACAK_TUTARI, :NEW.SKONT, :NEW.DOVIZ_CINSI
         );
     ELSIF DELETING THEN
         INSERT INTO MUH_FIS_HAREKET_H (
-            H_ID, H_ISLEM_TIPI, H_ISLEM_YAPAN, FIS_HAREKET_ID, FIS_ID, HESAP_NO, BORC_TUTARI, ALACAK_TUTARI, SKONT, DOVIZ_KURU
+            H_ID, H_ISLEM_TIPI, H_ISLEM_YAPAN, FIS_HAREKET_ID, FIS_ID, HESAP_NO, BORC_TUTARI, ALACAK_TUTARI, SKONT, DOVIZ_CINSI
         ) VALUES (
-            SEQ_ISLEM_H_ID.NEXTVAL, 'D', FN_AKTIF_ADMIN_KULLANICI_ADI(), :OLD.FIS_HAREKET_ID, :OLD.FIS_ID, :OLD.HESAP_NO, :OLD.BORC_TUTARI, :OLD.ALACAK_TUTARI, :OLD.SKONT, :OLD.DOVIZ_KURU
+            SEQ_ISLEM_H_ID.NEXTVAL, 'D', FN_AKTIF_ADMIN_KULLANICI_ADI(), :OLD.FIS_HAREKET_ID, :OLD.FIS_ID, :OLD.HESAP_NO, :OLD.BORC_TUTARI, :OLD.ALACAK_TUTARI, :OLD.SKONT, :OLD.DOVIZ_CINSI
         );
     END IF;
 END TRG_AUD_MUH_FIS_HAREKET;
 /
 
+-- ============================================================
+-- TRIGGER: TRG_MVD_HESAPHAREKET_FIS_OLUSTUR
+-- Tablo : MVD_HESAPHAREKET
+-- Olay  : AFTER INSERT
+-- Görev : MVD_HESAPHAREKET tablosuna yeni bir işlem eklendiğinde
+--          otomatik olarak MUH_FIS ve MUH_FIS_HAREKET tablosuna 
+--          muhasebe yevmiye fişi kaydı atar.
+--          ISLEM_YONU kuralı: 
+--            'B' -> Borç (Para Girişi)
+--            'C' -> Alacak (Para Çıkışı)
+-- ============================================================
+
 CREATE OR REPLACE TRIGGER TRG_MVD_HESAPHAREKET_FIS_OLUSTUR
 AFTER INSERT ON MVD_HESAPHAREKET
 FOR EACH ROW
 DECLARE
-    v_fis_id NUMBER;
-    v_skont VARCHAR2(50);
-    v_borc_tutar NUMBER(18, 4) := 0;
+    v_fis_id       NUMBER;
+    v_skont        VARCHAR2(50);
+    v_borc_tutar   NUMBER(18, 4) := 0;
     v_alacak_tutar NUMBER(18, 4) := 0;
-    v_doviz_cins NUMBER;
 BEGIN
+    -- 1. Muhasebe Fişi Başlığı Oluştur
     INSERT INTO MUH_FIS (
         ACIKLAMA,
         MUHASEBETARIHI,
         ISLEM_ZAMANI
     ) VALUES (
-        :NEW.ACIKLAMA,
-        TRUNC(:NEW.ISLEM_TARIHI),
-        SYSDATE
+        NVL(:NEW.ACIKLAMA, 'Bankacılık İşlemi'),
+        TRUNC(NVL(:NEW.ISLEM_TARIHI, SYSDATE)),
+        SYSTIMESTAMP
     ) RETURNING FIS_ID INTO v_fis_id;
 
-    IF UPPER(:NEW.ISLEM_KODU) = 'B' THEN
-        v_borc_tutar := :NEW.ISLEM_TUTARI;
+    -- 2. Tablodaki ISLEM_YONU Kuralına göre ('B' = Borç, 'C' = Alacak) Tutar Dağılımı
+    IF UPPER(:NEW.ISLEM_YONU) = 'B' THEN
+        v_borc_tutar   := :NEW.ISLEM_TUTARI;
         v_alacak_tutar := 0;
-    ELSE
+    ELSIF UPPER(:NEW.ISLEM_YONU) = 'C' THEN
         v_alacak_tutar := :NEW.ISLEM_TUTARI;
-        v_borc_tutar := 0;
+        v_borc_tutar   := 0;
+    ELSE
+        -- ISLEM_YONU boş ise ISLEM_KODU kontrolü yapılır
+        IF UPPER(:NEW.ISLEM_KODU) = 'B' THEN
+            v_borc_tutar   := :NEW.ISLEM_TUTARI;
+            v_alacak_tutar := 0;
+        ELSE
+            v_alacak_tutar := :NEW.ISLEM_TUTARI;
+            v_borc_tutar   := 0;
+        END IF;
     END IF;
 
-    v_skont := '002-Bankacılık İşlemleri';
+    v_skont :=  '002-Bankacılık İşlemleri' ;
 
-
+    -- 3. Muhasebe Fişi Detay Satırını Oluştur (MUH_FIS_HAREKET)
+    INSERT INTO MUH_FIS_HAREKET (
+        FIS_ID,
+        HESAP_NO,
+        BORC_TUTARI,
+        ALACAK_TUTARI,
+        SKONT,
+        DOVIZ_CINSI
+    ) VALUES (
+        v_fis_id,
+        :NEW.HESAP_NO,
+        v_borc_tutar,
+        v_alacak_tutar,
+        v_skont,
+        NVL(:NEW.DOVIZ_CINSI, 'TRY')
+    );
 END TRG_MVD_HESAPHAREKET_FIS_OLUSTUR;
 /    
     

@@ -41,7 +41,7 @@ export class HesapListeleriComponent {
   filterMaxBakiye: number | null = null;
 
   hesaplar: Hesap[] = [];
-  musterilerMap: Map<number, Musteri> = new Map();
+  musterilerMap: Map<string, Musteri> = new Map();
   isLoading: boolean = false;
 
   constructor(
@@ -53,22 +53,27 @@ export class HesapListeleriComponent {
   // Sayfa açılışında hiçbir listeleme yapılmaz; veri yalnızca "Uygula" ile
   // seçilen kriterlere göre DB'den (PKG_HESAP.PRC_HESAP_LISTE) çekilir.
   private loadMusteriMap(): void {
-    this.musteriService.getMusteriler().subscribe({
+    this.musteriService.getMusteriOzet().subscribe({
       next: (musteriler) => {
         this.musterilerMap.clear();
         (musteriler || []).forEach(m => {
-          this.musterilerMap.set(m.musteriId, m);
+          this.musterilerMap.set(String(m.musteriId), m);
         });
       },
       error: (err) => {
-        console.warn('Müşteriler yüklenemedi:', err);
+        console.warn('Müşteri özetleri yüklenemedi:', err);
       }
     });
   }
 
-  getMusteriAdi(musteriId: number): string {
-    const musteri = this.musterilerMap.get(musteriId);
-    if (!musteri) return `Müşteri #${musteriId}`;
+  getMusteriAdi(musteriId: number | string): string {
+    const id = String(musteriId || (musteriId as any).musteriID || (musteriId as any).MusteriID);
+    const musteri = this.musterilerMap.get(id);
+    
+    if (!musteri) {
+      return `Müşteri #${id}`;
+    }
+    
     return musteri.soyad ? `${musteri.ad} ${musteri.soyad}` : musteri.ad;
   }
 

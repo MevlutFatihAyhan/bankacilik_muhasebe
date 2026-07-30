@@ -54,6 +54,10 @@ CREATE OR REPLACE PACKAGE PKG_MUSTERI AS
         P_RESULT       OUT SYS_REFCURSOR
     );
 
+    PROCEDURE PRC_MUSTERI_OZET_LISTE(
+        P_RESULT OUT SYS_REFCURSOR
+    );
+
     -- --------------------------------------------------------
     -- MST_MUSTERIADRES
     -- --------------------------------------------------------
@@ -238,6 +242,19 @@ CREATE OR REPLACE PACKAGE BODY PKG_MUSTERI AS
          ORDER BY MUSTERI_ID DESC
          FETCH FIRST C_MAX_SATIR ROWS ONLY;
     END PRC_MUSTERI_LISTE;
+
+    -- --------------------------------------------------------
+    -- MST_MUSTERI — SELECT (Özet Liste)
+    -- --------------------------------------------------------
+    PROCEDURE PRC_MUSTERI_OZET_LISTE(
+        P_RESULT OUT SYS_REFCURSOR
+    ) IS
+    BEGIN
+        OPEN P_RESULT FOR
+        SELECT MUSTERI_ID, AD, SOYAD
+          FROM MST_MUSTERI
+         ORDER BY MUSTERI_ID DESC;
+    END PRC_MUSTERI_OZET_LISTE;
 
     -- --------------------------------------------------------
     -- MST_MUSTERIADRES — INSERT

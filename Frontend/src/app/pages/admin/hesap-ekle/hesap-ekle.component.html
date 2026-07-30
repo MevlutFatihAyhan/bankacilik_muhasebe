@@ -1,20 +1,37 @@
-<h2 style="font-size: 18px; font-weight: 500; margin-bottom: 30px;">+ Yeni Hesap Ekle</h2>
+<h2 style="font-size: 18px; font-weight: 500; margin-bottom: 30px;">{{ 'ACCOUNT.ADD_TITLE' | translate }}</h2>
 
 <div class="form-container">
     <div class="form-left">
+
+        <!-- Müşteri ID + Arama Butonu -->
         <div class="form-group">
-            <label class="form-label">Müşteri ID</label>
-            <input type="number" class="form-control shadow-input" [(ngModel)]="musteriId" placeholder="Müşteri ID girin">
+            <label class="form-label">{{ 'CUSTOMER.ID' | translate }}</label>
+            <div class="musteri-secici-row">
+                <input type="number" class="form-control shadow-input musteri-id-input"
+                    [(ngModel)]="musteriId" [placeholder]="'CUSTOMER.ID' | translate">
+                <button class="btn-secici" (click)="dialogAc()" [title]="'DIALOG.SEARCH_CUSTOMER' | translate">
+                    &#8230;
+                </button>
+            </div>
+            <!-- Seçili Müşteri Kartı -->
+            <div class="secilen-musteri-kart" *ngIf="secilenMusteri">
+                <div class="secilen-musteri-info">
+                    <span class="secilen-musteri-isim">✔ {{ secilenMusteri.ad }} {{ secilenMusteri.soyad }}</span>
+                    <span class="secilen-musteri-id">ID: {{ secilenMusteri.musteriId }}</span>
+                </div>
+                <button class="btn-sifirla" (click)="musteriSifirla()" title="Müşteriyi kaldır">✕</button>
+            </div>
         </div>
+
         <div class="form-group">
-            <label class="form-label">Hesap Türü</label>
+            <label class="form-label">{{ 'ACCOUNT.TYPE' | translate }}</label>
             <select class="form-control shadow-input" [(ngModel)]="hesapTuru">
-                <option value="Vadesiz">Vadesiz Hesap</option>
-                <option value="Vadeli">Vadeli Hesap</option>
+                <option value="Vadesiz">{{ 'ACCOUNT.DEMAND' | translate }}</option>
+                <option value="Vadeli">{{ 'ACCOUNT.TERM' | translate }}</option>
             </select>
         </div>
         <div class="form-group">
-            <label class="form-label">Döviz Cinsi</label>
+            <label class="form-label">{{ 'ACCOUNT.CURRENCY_TYPE' | translate }}</label>
             <select class="form-control shadow-input" [(ngModel)]="dovizCinsi">
                 <option value="TRY">TL (TRY)</option>
                 <option value="EUR">Euro (EUR)</option>
@@ -23,15 +40,72 @@
             </select>
         </div>
         <div class="form-group">
-            <label class="form-label">Atanacak IBAN (Otomatik)</label>
-            <input type="text" class="form-control shadow-input" [value]="generatedIban" readonly style="background-color: #f3f4f6; cursor: not-allowed; font-family: monospace; font-weight: 600;">
+            <label class="form-label">{{ 'ACCOUNT.NO_IBAN_LABEL' | translate }}</label>
+            <div style="padding: 12px 15px; border-radius: 8px; border: 1px dashed #aaa; background-color: #f9f9f9; font-size: 13px; color: #666; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 16px;">⚙️</span>
+                <span>{{ 'ACCOUNT.AUTO_IBAN_INFO' | translate }}</span>
+            </div>
         </div>
     </div>
 
     <div class="form-right">
         <div style="flex: 1"></div>
         <div style="text-align: right; margin-top: 20px;">
-            <button class="btn-primary shadow-btn" (click)="kaydet()" style="width: 150px; height: 45px; font-size: 18px;">Hesabı Aç</button>
+            <button class="btn-primary shadow-btn" (click)="kaydet()">{{ 'ACCOUNT.OPEN_BTN' | translate }}</button>
         </div>
+    </div>
+</div>
+
+<!-- ========== MÜŞTERİ ARAMA DİALOGU ========== -->
+<div class="dialog-overlay" *ngIf="dialogAcik" (click)="dialogKapat()">
+    <div class="dialog-box" (click)="$event.stopPropagation()">
+
+        <!-- Başlık -->
+        <div class="dialog-header">
+            <h3>{{ 'DIALOG.SEARCH_CUSTOMER' | translate }}</h3>
+            <button class="btn-dialog-kapat" (click)="dialogKapat()">✕</button>
+        </div>
+
+        <!-- Filtre Alanları -->
+        <div class="dialog-filtre">
+            <div class="dialog-filtre-group">
+                <label>{{ 'DIALOG.CUSTOMER_ID_LABEL' | translate }}</label>
+                <input type="text" [(ngModel)]="dialogAramaId" placeholder="ID" (keyup.enter)="dialogAramaUygula()">
+            </div>
+            <div class="dialog-filtre-group">
+                <label>{{ 'DIALOG.NAME_LABEL' | translate }}</label>
+                <input type="text" [(ngModel)]="dialogAramaAd" [placeholder]="'DIALOG.NAME_LABEL' | translate" (keyup.enter)="dialogAramaUygula()">
+            </div>
+            <div class="dialog-filtre-group">
+                <label>{{ 'DIALOG.SURNAME_LABEL' | translate }}</label>
+                <input type="text" [(ngModel)]="dialogAramaSoyad" [placeholder]="'DIALOG.SURNAME_LABEL' | translate"
+                    (keyup.enter)="dialogAramaUygula()">
+            </div>
+            <button class="btn-dialog-uygula" (click)="dialogAramaUygula()">{{ 'COMMON.APPLY' | translate }}</button>
+        </div>
+
+        <!-- Sonuç Listesi -->
+        <div class="dialog-sonuclar">
+            <!-- Henüz arama yapılmadı -->
+            <div class="dialog-bos-mesaj" *ngIf="!dialogAramaYapildi">
+                {{ 'DIALOG.FILTER_HINT' | translate }}
+            </div>
+            <!-- Sonuç yok -->
+            <div class="dialog-bos-mesaj" *ngIf="dialogAramaYapildi && dialogSonuclar.length === 0">
+                {{ 'DIALOG.NO_RESULTS' | translate }}
+            </div>
+            <!-- Sonuçlar -->
+            <div class="dialog-musteri-satir" *ngFor="let m of dialogSonuclar" (click)="musteriSec(m)">
+                <div class="dialog-musteri-avatar">
+                    {{ m.ad.charAt(0).toUpperCase() }}{{ m.soyad.charAt(0).toUpperCase() }}
+                </div>
+                <div class="dialog-musteri-detay">
+                    <span class="dialog-musteri-isim">{{ m.ad }} {{ m.soyad }}</span>
+                    <span class="dialog-musteri-id">ID: {{ m.musteriId }}</span>
+                </div>
+                <span class="dialog-sec-badge">{{ 'DIALOG.SELECT' | translate }}</span>
+            </div>
+        </div>
+
     </div>
 </div>

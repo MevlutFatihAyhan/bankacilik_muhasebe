@@ -105,6 +105,39 @@ namespace BankAPI.Services
             return musteriListesi;
         }
 
+        // Tüm müşterilerin özet listesi — PKG_MUSTERI.PRC_MUSTERI_OZET_LISTE
+        public List<MusteriOzet> MusteriOzetGetir()
+        {
+            List<MusteriOzet> musteriOzetListesi = new List<MusteriOzet>();
+            using (OracleConnection connection = new OracleConnection(_connectionString))
+            {
+                connection.Open();
+                using (OracleCommand cmd = new OracleCommand("PKG_MUSTERI.PRC_MUSTERI_OZET_LISTE", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.BindByName = true;
+
+                    OracleParameter outCursor = new OracleParameter("P_RESULT", OracleDbType.RefCursor);
+                    outCursor.Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add(outCursor);
+
+                    using (OracleDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            musteriOzetListesi.Add(new MusteriOzet
+                            {
+                                MusteriId = Convert.ToDecimal(reader["MUSTERI_ID"]),
+                                Ad = reader["AD"]?.ToString() ?? "",
+                                Soyad = reader["SOYAD"]?.ToString() ?? ""
+                            });
+                        }
+                    }
+                }
+            }
+            return musteriOzetListesi;
+        }
+
         // Filtreye bağlı müşteri listesi — PKG_MUSTERI.PRC_MUSTERI_LISTE
         // Tüm kriterler DB tarafında değerlendirilir; boş gelen kriterler NULL olarak
         // gönderilir ve prosedürde "o kriter yok" anlamına gelir.

@@ -2,20 +2,34 @@
     display: flex;
     gap: 40px;
 }
+
+@media (max-width: 768px) {
+    .form-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
 .form-left, .form-right {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
+
 .form-right {
     justify-content: flex-start;
 }
+
 .form-label {
     font-size: 14px;
-    margin-bottom: 5px;
+    font-weight: 500;
+    margin-bottom: 6px;
     display: block;
+    color: #333;
+    white-space: nowrap;
 }
+
 .form-control {
     width: 100%;
     padding: 12px 15px;
@@ -23,8 +37,16 @@
     border: 1px solid #aaa;
     background-color: #e5e5e5;
     font-family: 'Elms Sans', sans-serif;
+    font-size: 14px;
     outline: none;
     box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    border-color: #DA0037;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(218, 0, 55, 0.12);
 }
 
 .shadow-input {
@@ -33,4 +55,54 @@
 
 .shadow-btn {
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+    background-color: #DA0037;
+    color: #ffffff;
+    border: 1px solid #DA0037;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Elms Sans', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 140px;
+    height: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #b8002e;
+    border-color: #b8002e;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(218, 0, 55, 0.3);
+}
+
+.btn-secondary {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Elms Sans', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 110px;
+    height: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #f5f5f5;
+    border-color: #333;
 }

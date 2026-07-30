@@ -120,7 +120,7 @@
                         </a>
                     </td>
                     <td class="p-12" style="font-family: monospace;">{{ hesap.iban }}</td>
-                    <td class="p-12">{{ hesap.hesapTuru }}</td>
+                    <td class="p-12">{{ (hesap.hesapTuru === 'Vadeli' ? 'ACCOUNT.TERM' : (hesap.hesapTuru === 'Vadesiz' ? 'ACCOUNT.DEMAND' : hesap.hesapTuru)) | translate }}</td>
                     <td class="p-12">{{ hesap.dovizCinsi }}</td>
                     <td class="p-12" style="font-weight: 600;">{{ hesap.bakiye | number:'1.2-2' }} {{ hesap.dovizCinsi
                         }}</td>
