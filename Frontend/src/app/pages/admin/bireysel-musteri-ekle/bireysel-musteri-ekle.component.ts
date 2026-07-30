@@ -33,20 +33,23 @@ export class BireyselMusteriEkleComponent {
   ) { }
 
   kaydet() {
+    const temzTelefon = (this.telefon || '').replace(/\D/g, '');
+    const temzKimlikNo = (this.tckn || '').replace(/\s+/g, '');
+
     this.musteriService.addMusteri({
       musteriId: 0,
-      ad: this.ad,
-      soyad: this.soyad,
-      email: this.email,
-      telefon: this.telefon,
+      ad: (this.ad || '').trim(),
+      soyad: (this.soyad || '').trim(),
+      email: (this.email || '').trim(),
+      telefon: temzTelefon,
       aktifMi: 1,
       musteriTipi: 1, // Bireysel
-      kimlikNo: this.tckn
+      kimlikNo: temzKimlikNo
     }).subscribe({
       next: (response) => {
-        this.musteriService.getMusteriler().subscribe({
+        this.musteriService.getMusteriler(true).subscribe({
           next: (musteriler) => {
-            const yeniMusteri = musteriler.find(m => m.kimlikNo === this.tckn);
+            const yeniMusteri = musteriler.find(m => m.kimlikNo === temzKimlikNo);
             if (yeniMusteri && this.sehir) {
               this.adresService.addAdres({
                 adresId: 0,

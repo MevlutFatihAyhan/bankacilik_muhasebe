@@ -52,13 +52,13 @@ export class MusteriService {
 
     // API'ye yeni kayıt gönder (POST) - Cache temizler
     addMusteri(musteri: Musteri): Observable<any> {
-        return this.http.post(this.apiUrl, musteri, { responseType: 'text' as 'json' }).pipe(
+        return this.http.post<any>(this.apiUrl, musteri).pipe(
             tap(() => this.clearCache())
         );
     }
 
     updateMusteri(musteri: Musteri): Observable<any> {
-        return this.http.put(this.apiUrl, musteri, { responseType: 'text' as 'json' }).pipe(
+        return this.http.put<any>(this.apiUrl, musteri).pipe(
             tap(() => this.clearCache())
         );
     }

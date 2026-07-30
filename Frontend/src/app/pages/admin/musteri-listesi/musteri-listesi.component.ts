@@ -21,7 +21,7 @@ export class MusteriListesiComponent implements OnInit {
   sortDirection: 'asc' | 'desc' = 'asc';
 
   currentPage: number = 1;
-  pageSize: number = 5;
+  pageSize: number = 10;
   Math = Math;
 
   // Advanced Filters (Sayfaya girince varsayılan olarak AÇIK)

@@ -33,20 +33,23 @@ export class TuzelMusteriEkleComponent {
   ) { }
 
   kaydet() {
+    const temzTelefon = (this.telefon || '').replace(/\D/g, '');
+    const temzKimlikNo = (this.vkn || '').replace(/\s+/g, '');
+
     this.musteriService.addMusteri({
       musteriId: 0,
-      ad: this.ad,
+      ad: (this.ad || '').trim(),
       soyad: '',
-      email: this.email,
-      telefon: this.telefon,
+      email: (this.email || '').trim(),
+      telefon: temzTelefon,
       aktifMi: 1,
       musteriTipi: 2, // Tüzel
-      kimlikNo: this.vkn
+      kimlikNo: temzKimlikNo
     }).subscribe({
       next: (response) => {
-        this.musteriService.getMusteriler().subscribe({
+        this.musteriService.getMusteriler(true).subscribe({
           next: (musteriler) => {
-            const yeniMusteri = musteriler.find(m => m.kimlikNo === this.vkn);
+            const yeniMusteri = musteriler.find(m => m.kimlikNo === temzKimlikNo);
             if (yeniMusteri && this.sehir) {
               this.adresService.addAdres({
                 adresId: 0,

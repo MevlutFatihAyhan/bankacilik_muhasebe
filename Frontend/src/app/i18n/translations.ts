@@ -133,6 +133,8 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'TRANSACTION.END_DATE': 'Bitiş Tarihi',
     'TRANSACTION.MIN_AMOUNT': 'Min Tutar',
     'TRANSACTION.MAX_AMOUNT': 'Max Tutar',
+    'TRANSACTION.SALARY': 'Maaş Ödemesi',
+    'TRANSACTION.GOLD': 'Altın İşlemi',
 
     // Dashboard (Anasayfa)
     'DASHBOARD.TITLE': 'Genel Bakış & İstatistikler',
@@ -312,6 +314,8 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     'TRANSACTION.END_DATE': 'End Date',
     'TRANSACTION.MIN_AMOUNT': 'Min Amount',
     'TRANSACTION.MAX_AMOUNT': 'Max Amount',
+    'TRANSACTION.SALARY': 'Salary Payment',
+    'TRANSACTION.GOLD': 'Gold Transaction',
 
     // Dashboard (Anasayfa)
     'DASHBOARD.TITLE': 'Overview & Statistics',
